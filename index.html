@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عالم محمود للمرح والمواقيت</title>
+    <title>عالم محمود للمرح</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -13,7 +13,6 @@
             --text-light: #f8fafc;
             --accent: #f43f5e;
             --success: #10b981;
-            --warning: #f59e0b;
         }
 
         * {
@@ -32,7 +31,6 @@
             align-items: center;
             justify-content: center;
             overflow-x: hidden;
-            padding-bottom: 4rem;
         }
 
         .screen {
@@ -88,48 +86,6 @@
             transform: none;
         }
 
-        /* الميزات الجديدة: لوحة المكافأة والصلاة */
-        .feature-box {
-            background-color: var(--card-bg);
-            border: 2px solid #334155;
-            border-radius: 16px;
-            padding: 1.2rem;
-            margin-bottom: 1.5rem;
-            text-align: right;
-        }
-        .feature-box h3 {
-            color: var(--warning);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .select-style {
-            width: 100%;
-            padding: 0.6rem;
-            border-radius: 8px;
-            background: #0f172a;
-            color: #fff;
-            border: 1px solid #475569;
-            font-size: 1rem;
-            margin-top: 0.5rem;
-        }
-        .prayer-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-top: 1rem;
-            text-align: center;
-        }
-        .prayer-item {
-            background: #0f172a;
-            padding: 0.5rem;
-            border-radius: 8px;
-            border: 1px solid #334155;
-        }
-        .prayer-name { font-size: 0.85rem; color: #94a3b8; }
-        .prayer-time { font-weight: bold; color: #38bdf8; margin-top: 0.25rem; }
-
         /* واجهة التسجيل */
         .form-group {
             margin-bottom: 1.2rem;
@@ -150,14 +106,14 @@
         .games-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.2rem;
-            margin-top: 1.5rem;
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
         @media(max-width: 480px) { .games-grid { grid-template-columns: 1fr; } }
         
         .game-card {
             background-color: var(--card-bg);
-            padding: 1.5rem 1rem;
+            padding: 2rem 1rem;
             border-radius: 16px;
             border: 2px solid #334155;
             cursor: pointer;
@@ -168,7 +124,7 @@
             transform: translateY(-5px);
         }
         .game-card h3 { margin-bottom: 0.5rem; color: #f1f5f9; }
-        .game-card p { font-size: 0.85rem; margin-bottom: 0; color: #94a3b8; }
+        .game-card p { font-size: 0.9rem; margin-bottom: 0; color: #94a3b8; }
 
         /* شريط المعلومات والصوت العلوي */
         .header-bar {
@@ -187,7 +143,7 @@
         .volume-control { display: flex; align-items: center; gap: 0.5rem; }
         .volume-control input { width: 80px; }
 
-        /* الألعاب المتبقية */
+        /* اللعبة الأولى: الزر الهارب */
         .game1-ui-overlay {
             position: absolute;
             top: 5rem;
@@ -202,6 +158,7 @@
             width: 90%;
             max-width: 400px;
         }
+
         #moving-btn {
             position: absolute;
             padding: 1rem 2rem;
@@ -216,6 +173,7 @@
             z-index: 5;
             white-space: nowrap;
         }
+
         .game1-back-wrapper {
             position: absolute;
             bottom: 2rem;
@@ -223,6 +181,8 @@
             transform: translateX(-50%);
             z-index: 10;
         }
+
+        /* اللعبة الثانية: العداد المطور */
         .counter-display {
             font-size: 5rem;
             font-weight: bold;
@@ -236,6 +196,8 @@
             border: 2px solid #1e293b;
             display: inline-block;
         }
+
+        /* اللعبة الثالثة: طيارة ون اكسبت */
         .plane-container {
             position: relative;
             width: 100%;
@@ -245,35 +207,204 @@
             margin: 1rem 0;
             overflow: hidden;
         }
-        #plane { position: absolute; left: 10%; bottom: 10%; font-size: 2.5rem; transition: all 0.1s linear; }
-        .multiplier { position: absolute; top: 20%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; font-weight: bold; color: #f59e0b; }
-        .bet-controls { display: flex; gap: 0.5rem; flex-direction: column; align-items: center; margin-top: 1rem; }
-        .bet-input-wrapper { display: flex; align-items: center; gap: 0.5rem; }
-        .bet-input { width: 120px; padding: 0.5rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; text-align: center; font-size: 1.1rem; }
+        #plane {
+            position: absolute;
+            left: 10%;
+            bottom: 10%;
+            font-size: 2.5rem;
+            transition: all 0.1s linear;
+        }
+        .multiplier {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+        .bet-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        .bet-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .bet-input {
+            width: 120px;
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            font-size: 1.1rem;
+        }
 
-        .apple-board { display: flex; flex-direction: column-reverse; gap: 4px; background: #020617; padding: 10px; border-radius: 12px; border: 2px solid #334155; margin: 1rem auto; max-width: 450px; max-height: 480px; overflow-y: auto; }
-        .apple-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 4px; border-radius: 6px; transition: background 0.2s; }
-        .apple-row.active-row { background: rgba(99, 102, 241, 0.2); border: 1px solid var(--primary); }
-        .apple-row.disabled-row { opacity: 0.4; pointer-events: none; }
-        .apple-cell { background: #1e293b; border: 1px solid #475569; aspect-ratio: 1; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: all 0.2s; user-select: none; }
-        .apple-cell:hover { background: #334155; border-color: #818cf8; }
-        .row-info { font-size: 0.85rem; color: #f59e0b; font-weight: bold; display: flex; align-items: center; justify-content: center; background: #0f172a; border-radius: 4px; grid-column: span 5; padding: 2px 0; margin-bottom: 2px; }
+        /* اللعبة الرابعة: تفاحة ون اكسبت */
+        .apple-board {
+            display: flex;
+            flex-direction: column-reverse; 
+            gap: 4px;
+            background: #020617;
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            margin: 1rem auto;
+            max-width: 450px;
+            max-height: 480px;
+            overflow-y: auto;
+        }
+        .apple-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            padding: 4px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .apple-row.active-row {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid var(--primary);
+        }
+        .apple-row.disabled-row {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .apple-cell {
+            background: #1e293b;
+            border: 1px solid #475569;
+            aspect-ratio: 1;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .apple-cell:hover {
+            background: #334155;
+            border-color: #818cf8;
+        }
+        .apple-row.active-row .apple-cell {
+            box-shadow: inset 0 0 8px rgba(99, 102, 241, 0.4);
+        }
+        .row-info {
+            font-size: 0.85rem;
+            color: #f59e0b;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            border-radius: 4px;
+            grid-column: span 5;
+            padding: 2px 0;
+            margin-bottom: 2px;
+        }
 
-        /* تعديلات الأنيميشن والحركة السريعة للأكواب السحرية */
-        .cups-area { display: flex; justify-content: space-around; align-items: flex-end; min-height: 220px; background: #020617; border-radius: 16px; padding: 2rem 1rem; position: relative; margin: 1.5rem 0; border: 2px solid #334155; overflow: hidden; }
-        .cup-wrapper { display: flex; flex-direction: column; align-items: center; position: relative; width: 25%; transition: transform 0.09s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(0); }
-        .cup { font-size: 4.8rem; cursor: pointer; user-select: none; transition: transform 0.25s ease; z-index: 2; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.5)); }
-        .cup.lifted { transform: translateY(-60px); }
-        .ball { font-size: 2rem; position: absolute; bottom: 15px; z-index: 1; opacity: 0; transition: opacity 0.15s; }
-        .ball.visible { opacity: 1; }
+        /* اللعبة الخامسة: لعبة الأكواب */
+        .cups-area {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            min-height: 200px;
+            background: #020617;
+            border-radius: 16px;
+            padding: 2rem 1rem;
+            position: relative;
+            margin: 1.5rem 0;
+            border: 2px solid #334155;
+            overflow: hidden;
+        }
+        .cup-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 25%;
+            transition: left 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+            left: 0;
+        }
+        .cup {
+            font-size: 4.5rem;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.3s ease;
+            z-index: 2;
+        }
+        .cup.lifted {
+            transform: translateY(-50px);
+        }
+        .ball {
+            font-size: 1.8rem;
+            position: absolute;
+            bottom: 10px;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .ball.visible {
+            opacity: 1;
+        }
 
-        .subway-canvas-container { width: 100%; height: calc(100vh - 140px); max-height: 400px; background: linear-gradient(to bottom, #1e293b, #020617); position: relative; margin: 1rem 0; border-radius: 16px; border: 3px solid #475569; overflow: hidden; touch-action: none; cursor: grab; }
-        #subwayCanvas { width: 100%; height: 100%; display: block; }
-        .subway-ui { display: flex; justify-content: space-around; background: rgba(15, 23, 42, 0.8); padding: 0.5rem; border-radius: 8px; font-weight: bold; font-size: 1.1rem; }
+        /* اللعبة السادسة الجديده: سابواي لسرقة الذهب */
+        .subway-canvas-container {
+            width: 100%;
+            height: calc(100vh - 140px);
+            max-height: 500px;
+            background: linear-gradient(to bottom, #1e293b, #020617);
+            position: relative;
+            margin: 1rem 0;
+            border-radius: 16px;
+            border: 3px solid #475569;
+            overflow: hidden;
+            touch-action: none; /* لمنع حركة الصفحة أثناء اللمس على الموبايل */
+            cursor: grab;
+        }
+        .subway-canvas-container:active {
+            cursor: grabbing;
+        }
+        #subwayCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .subway-ui {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
 
-        .captcha-box { background: #334155; padding: 1rem; font-size: 1.5rem; letter-spacing: 5px; font-weight: bold; margin: 1rem 0; border-radius: 6px; user-select: none; }
-        .back-btn { margin-top: 1.5rem; background-color: #475569; }
+        /* الكابتشا */
+        .captcha-box {
+            background: #334155;
+            padding: 1rem;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            font-weight: bold;
+            margin: 1rem 0;
+            border-radius: 6px;
+            user-select: none;
+        }
+
+        .back-btn {
+            margin-top: 1.5rem;
+            background-color: #475569;
+        }
         .back-btn:hover { background-color: #334155; }
+        
         .info-text { font-size: 1.1rem; margin: 0.5rem 0; color: #e2e8f0; }
         .status-msg { margin-top: 1rem; font-weight: bold; font-size: 1.2rem; min-height: 1.5rem;}
     </style>
@@ -314,28 +445,8 @@
         <button class="btn" style="width:100%;" onclick="handleAuth()">دخول / تسجيل</button>
     </div>
 
-    <!-- 3. شاشة قائمة الألعاب الرئيسيّة والميزات المضافة -->
+    <!-- 3. شاشة قائمة الألعاب الرئيسيّة -->
     <div class="screen" id="menuScreen" style="padding-top: 5rem; max-width: 700px;">
-        
-        <!-- ميزة تسجيل الدخول اليومي المتصاعد -->
-        <div class="feature-box">
-            <h3>🎁 الهدية اليومية المتصاعدة</h3>
-            <p id="checkInStatus" style="font-size: 1rem; margin-bottom: 0.5rem; text-align: right; color: #cbd5e1;">سجل دخولك اليومي لتحصل على الكاش الفوري!</p>
-            <button class="btn" id="checkInBtn" style="padding: 0.5rem 1.5rem; font-size: 1rem;" onclick="claimDailyReward()">استلام هدية اليوم</button>
-        </div>
-
-        <!-- ميزة مواقيت الصلاة في مصر لجميع المحافظات -->
-        <div class="feature-box">
-            <h3>🕌 مواقيت الصلاة في مصر</h3>
-            <label for="governorateSelect" style="font-size: 0.9rem; color: #94a3b8;">اختر محافظتك:</label>
-            <select id="governorateSelect" class="select-style" onchange="updatePrayerTimesUI()">
-                <!-- سيتم ملؤها برمجياً لجميع محافظات مصر -->
-            </select>
-            <div class="prayer-grid" id="prayerContainer">
-                <!-- تعبئة التوقيت هنا تلقائياً -->
-            </div>
-        </div>
-
         <h2>اختر لعبة لتلعبها يابطل</h2>
         <div class="games-grid">
             <div class="game-card" onclick="startGame1()">
@@ -344,29 +455,30 @@
             </div>
             <div class="game-card" onclick="startGame2()">
                 <h3>تحدي العداد ⏱️</h3>
-                <p>أوقف ساعة الإيقاف بدقة متناهية!</p>
+                <p>أوقف ساعة الإيقاف عند الوقت المطلوب بالثانية وجزء الثانية!</p>
             </div>
             <div class="game-card" onclick="startGame3()">
                 <h3>طيارة ون اكسبت ✈️</h3>
-                <p>راهن واكسب كاش تصاعدي فوري!</p>
+                <p>راهن واكسب كاش من أول 8 جنيه لأي مبلغ!</p>
             </div>
             <div class="game-card" onclick="startGame4()">
                 <h3>تفاحة الحظ 🍎</h3>
-                <p>تحدي الـ 13 سطر مثل ون اكسبت واجمع الأرباح!</p>
+                <p>تحدي الـ 13 سطر مثل ون اكسبت تماماً واجمع الأرباح!</p>
             </div>
-            <div class="game-card" style="border-color: #6366f1; box-shadow: 0 0 10px rgba(99,102,241,0.3);" onclick="startGame5()">
-                <h3>لعبة الأكواب السحرية 🥛🔥</h3>
-                <p>سرعة خاطفة وكرة واحدة! خمن واربح ضعف الرهان!</p>
+            <div class="game-card" onclick="startGame5()">
+                <h3>لعبة الأكواب 🥛</h3>
+                <p>خمن مكان الكورة السحرية واكسب ضعف رهانك!</p>
             </div>
+            <!-- اللعبة السادسة الجديدة -->
             <div class="game-card" style="border-color: #f59e0b;" onclick="startGame6()">
                 <h3>سابواي سرقة الذهب 🏃‍♂️🚇</h3>
-                <p>اضغط مطول واسحب بالماوس لتفادي المترو وجمع الذهب!</p>
+                <p>اضغط مطول واسحب بالماوس أو اصبعك لجمع الذهب وتفادي القطارات!</p>
             </div>
         </div>
         <button class="btn back-btn" onclick="logout()">تسجيل الخروج</button>
     </div>
 
-    <!-- الألعاب (الزر الهارب) -->
+    <!-- اللعبة الأولى: الزر المتحرك -->
     <div class="screen fullscreen-game" id="game1Screen">
         <div class="game1-ui-overlay">
             <h2 id="g1Title" style="font-size: 1.5rem; margin-bottom: 0.25rem;">المرحلة 1</h2>
@@ -379,17 +491,18 @@
         </div>
     </div>
 
-    <!-- لعبة العداد -->
+    <!-- اللعبة الثانية: تحدي العداد المطور -->
     <div class="screen" id="game2Screen" style="padding-top: 5rem;">
-        <h2 id="g2Title">لعبة ساعة الإيقاف</h2>
+        <h2 id="g2Title">لعبة ساعة الإيقاف - المرحلة 1</h2>
         <div class="info-text" id="g2Target" style="font-size: 1.4rem; color: #f59e0b; font-weight: bold;">الهدف: أوقف عند 02:40</div>
-        <div class="counter-display" id="counterView">00:00</div><br>
+        <div class="counter-display" id="counterView">00:00</div>
+        <br>
         <button class="btn" id="g2ActionBtn" onclick="stopGame2Counter()">ابدأ العداد</button>
         <div class="status-msg" id="g2Status"></div>
         <button class="btn back-btn" onclick="backToMenu()">العودة للقائمة</button>
     </div>
 
-    <!-- لعبة طيارة ون اكسبت -->
+    <!-- اللعبة الثالثة: طيارة ون اكسبت -->
     <div class="screen" id="game3Screen" style="padding-top: 5rem;">
         <h2>طيارة ون اكسبت ✈️</h2>
         <div class="plane-container">
@@ -398,14 +511,15 @@
         </div>
         <div class="bet-controls">
             <div class="bet-input-wrapper">
-                <label>مبلغ الرهان:</label>
+                <label>مبلغ الرهان (من أول 8 جنيه):</label>
                 <input type="number" id="betAmount" class="bet-input" value="8" min="8">
             </div>
             <button class="btn" id="planeBtn" style="margin-top:0.5rem;" onclick="startPlaneFlight()">إقلاع ومراهنة</button>
         </div>
         <div class="status-msg" id="g3Status"></div>
+
         <div id="captchaSection" style="display: none; margin-top: 1.5rem; border-top: 1px dashed #475569; padding-top: 1rem;">
-            <h3>الرصيد خلص! حل الكابتشا الفورية لربح 20 جنيه دعم</h3>
+            <h3>الرصيد خلص! حل الكابتشا دي عشان تاخد 20 جنيه</h3>
             <div class="captcha-box" id="captchaCode">XXXX</div>
             <input type="text" id="captchaInput" class="bet-input" placeholder="اكتب الكود هنا" style="width: 150px; margin-bottom: 0.5rem;">
             <button class="btn" style="padding: 0.5rem 1rem; font-size: 1rem;" onclick="verifyCaptcha()">تحقق</button>
@@ -413,56 +527,69 @@
         <button class="btn back-btn" onclick="backToMenu()">العودة للقائمة</button>
     </div>
 
-    <!-- تفاحة الحظ -->
+    <!-- اللعبة الرابعة: تفاحة الحظ ون اكسبت -->
     <div class="screen" id="game4Screen" style="padding-top: 4.5rem; max-width: 500px;">
-        <h2>تفاحة الحظ 🍎</h2>
-        <div class="info-text" id="g4Pot" style="color: #f59e0b; font-weight: bold; margin-bottom: 0.5rem;">الربح الحالي: 0 جنيه</div>
+        <h2>تفاحة الحظ 🍎 (13 سطر)</h2>
+        <div class="info-text" id="g4Pot" style="color: #f59e0b; font-weight: bold; margin-bottom: 0.5rem;">الربح الحالي المتاح: 0 جنيه</div>
         <div class="apple-board" id="appleBoardContainer"></div>
         <div class="bet-controls" id="g4Controls">
             <div class="bet-input-wrapper">
-                <label>مبلغ الرهان:</label>
+                <label>مبلغ الرهان (من أول 8 جنيه):</label>
                 <input type="number" id="appleBetAmount" class="bet-input" value="8" min="8">
             </div>
             <div style="display:flex; gap: 0.5rem; margin-top: 0.5rem;">
                 <button class="btn" id="appleStartBtn" onclick="startAppleGame()">ابدأ الرهان</button>
-                <button class="btn" id="appleCashoutBtn" style="background-color: var(--success); display: none;" onclick="cashOutApple()">جني الأرباح</button>
+                <button class="btn" id="appleCashoutBtn" style="background-color: var(--success); display: none;" onclick="cashOutApple()">جني الأرباح (Cash Out)</button>
             </div>
         </div>
         <div class="status-msg" id="g4Status"></div>
         <button class="btn back-btn" onclick="backToMenu()">العودة للقائمة</button>
     </div>
 
-    <!-- لعبة الأكواب الحماسية الفائقة السريعة -->
+    <!-- اللعبة الخامسة: لعبة الأكواب الثلاثة -->
     <div class="screen" id="game5Screen" style="padding-top: 5rem;">
-        <h2>الأكواب السحرية السريعة 🥛⚡</h2>
-        <p style="font-size:0.95rem; color:#94a3b8; margin-bottom: 0.5rem;">تابع الكوب المحتوي على الكرة بدقة وركز لأن التبديل سريع ومجنون!</p>
+        <h2>لعبة الأكواب السحرية 🥛</h2>
+        <p style="font-size: 1rem; margin-bottom: 1rem; color: #a5b4fc;">ركّز مع الكوب المخبأ تحته الكورة واربح الضعف 2x!</p>
         <div class="cups-area" id="cupsAreaContainer">
-            <div class="cup-wrapper" id="cup-wrap-0"><div class="cup" id="cup-0" onclick="selectCup(0)">🥛</div><div class="ball" id="ball-0">🔮</div></div>
-            <div class="cup-wrapper" id="cup-wrap-1"><div class="cup" id="cup-1" onclick="selectCup(1)">🥛</div><div class="ball" id="ball-1">🔮</div></div>
-            <div class="cup-wrapper" id="cup-wrap-2"><div class="cup" id="cup-2" onclick="selectCup(2)">🥛</div><div class="ball" id="ball-2">🔮</div></div>
+            <div class="cup-wrapper" id="cup-wrap-0">
+                <div class="cup" id="cup-0" onclick="selectCup(0)">🥛</div>
+                <div class="ball" id="ball-0">🔮</div>
+            </div>
+            <div class="cup-wrapper" id="cup-wrap-1">
+                <div class="cup" id="cup-1" onclick="selectCup(1)">🥛</div>
+                <div class="ball" id="ball-1">🔮</div>
+            </div>
+            <div class="cup-wrapper" id="cup-wrap-2">
+                <div class="cup" id="cup-2" onclick="selectCup(2)">🥛</div>
+                <div class="ball" id="ball-2">🔮</div>
+            </div>
         </div>
         <div class="bet-controls" id="g5Controls">
             <div class="bet-input-wrapper">
-                <label>مبلغ الرهان:</label>
+                <label>مبلغ الرهان (من أول 8 جنيه):</label>
                 <input type="number" id="cupsBetAmount" class="bet-input" value="8" min="8">
             </div>
-            <button class="btn" id="cupsStartBtn" onclick="startCupsGame()">ابدأ الرهان السريع</button>
+            <button class="btn" id="cupsStartBtn" style="margin-top:0.5rem;" onclick="startCupsGame()">ابدأ رهان الأكواب</button>
         </div>
         <div class="status-msg" id="g5Status"></div>
         <button class="btn back-btn" onclick="backToMenu()">العودة للقائمة</button>
     </div>
 
-    <!-- سابواي المترو -->
+    <!-- اللعبة السادسة: سابواي كاملة ومطورة -->
     <div class="screen" id="game6Screen" style="padding-top: 4.5rem; max-width: 550px;">
-        <h2>مترو الذهب (سابواي) 🚇</h2>
+        <h2>مترو الذهب (سابواي) 🚇🏃‍♂️</h2>
         <div class="subway-ui">
             <div style="color: #f59e0b;">الذهب: <span id="subwayCoins">0</span></div>
             <div style="color: #38bdf8;">النقاط: <span id="subwayScore">0</span></div>
         </div>
-        <div class="subway-canvas-container" id="subwayContainer"><canvas id="subwayCanvas"></canvas></div>
+
+        <div class="subway-canvas-container" id="subwayContainer">
+            <canvas id="subwayCanvas"></canvas>
+        </div>
+
         <div class="bet-controls" id="g6Controls">
             <div class="bet-input-wrapper">
-                <label>مبلغ الدخول:</label>
+                <label>مبلغ الدخول (من أول 8 جنيه):</label>
                 <input type="number" id="subwayBetInput" class="bet-input" value="8" min="8">
             </div>
             <button class="btn" id="subwayStartBtn" onclick="initSubwayGamePlay()">ابدأ الهروب والجمع</button>
@@ -472,76 +599,73 @@
     </div>
 
     <script>
-        // --- قاعدة بيانات مواقيت الصلاة الثابتة لجميع محافظات مصر الفلكية لعام 2026 ---
-        const EgyptPrayersData = {
-            "القاهرة": { fajr: "04:12", shorouk: "05:48", dhuhr: "12:54", asr: "16:30", maghrib: "19:50", isha: "21:20" },
-            "الإسكندرية": { fajr: "04:15", shorouk: "05:53", dhuhr: "12:59", asr: "16:38", maghrib: "19:57", isha: "21:29" },
-            "الجيزة": { fajr: "04:13", shorouk: "05:49", dhuhr: "12:54", asr: "16:31", maghrib: "19:50", isha: "21:21" },
-            "القليوبية": { fajr: "04:11", shorouk: "05:48", dhuhr: "12:54", asr: "16:31", maghrib: "19:51", isha: "21:22" },
-            "بورسعيد": { fajr: "04:05", shorouk: "05:42", dhuhr: "12:48", asr: "16:26", maghrib: "19:46", isha: "21:16" },
-            "السويس": { fajr: "04:07", shorouk: "05:43", dhuhr: "12:49", asr: "16:25", maghrib: "19:45", isha: "21:14" },
-            "دمياط": { fajr: "04:06", shorouk: "05:43", dhuhr: "12:50", asr: "16:28", maghrib: "19:48", isha: "21:19" },
-            "الدقهلية (المنصورة)": { fajr: "04:09", shorouk: "05:46", dhuhr: "12:52", asr: "16:30", maghrib: "19:50", isha: "21:21" },
-            "الشرقية (الزقازيق)": { fajr: "04:10", shorouk: "05:46", dhuhr: "12:52", asr: "16:29", maghrib: "19:49", isha: "21:19" },
-            "الغربية (طنطا)": { fajr: "04:11", shorouk: "05:48", dhuhr: "12:54", asr: "16:32", maghrib: "19:52", isha: "21:23" },
-            "المنوفية (شبين الكوم)": { fajr: "04:12", shorouk: "05:49", dhuhr: "12:55", asr: "16:32", maghrib: "19:52", isha: "21:23" },
-            "البحيرة (دمنهور)": { fajr: "04:14", shorouk: "05:51", dhuhr: "12:57", asr: "16:35", maghrib: "19:55", isha: "21:26" },
-            "كفر الشيخ": { fajr: "04:11", shorouk: "05:48", dhuhr: "12:54", asr: "16:32", maghrib: "19:52", isha: "21:24" },
-            "الفيوم": { fajr: "04:15", shorouk: "05:51", dhuhr: "12:56", asr: "16:32", maghrib: "19:51", isha: "21:20" },
-            "بني سويف": { fajr: "04:15", shorouk: "05:50", dhuhr: "12:55", asr: "16:31", maghrib: "19:50", isha: "21:18" },
-            "المنيا": { fajr: "04:18", shorouk: "05:53", dhuhr: "12:57", asr: "16:31", maghrib: "19:50", isha: "21:17" },
-            "أسيوط": { fajr: "04:20", shorouk: "05:54", dhuhr: "12:56", asr: "16:29", maghrib: "19:48", isha: "21:13" },
-            "سوهاج": { fajr: "04:21", shorouk: "05:54", dhuhr: "12:55", asr: "16:27", maghrib: "19:45", isha: "21:09" },
-            "قنا": { fajr: "04:18", shorouk: "05:51", dhuhr: "12:51", asr: "16:22", maghrib: "19:40", isha: "21:04" },
-            "الأقصر": { fajr: "04:20", shorouk: "05:52", dhuhr: "12:51", asr: "16:21", maghrib: "19:39", isha: "21:03" },
-            "أسوان": { fajr: "04:22", shorouk: "05:53", dhuhr: "12:50", asr: "16:17", maghrib: "19:35", isha: "20:57" },
-            "مطروح": { fajr: "04:26", shorouk: "06:04", dhuhr: "13:10", asr: "16:50", maghrib: "20:09", isha: "21:42" },
-            "الوادي الجديد": { fajr: "04:33", shorouk: "06:07", dhuhr: "13:07", asr: "16:41", maghrib: "19:58", isha: "21:21" },
-            "البحر الأحمر (الغردقة)": { fajr: "04:09", shorouk: "05:43", dhuhr: "12:44", asr: "16:16", maghrib: "19:35", isha: "20:59" },
-            "شمال سيناء (العريش)": { fajr: "03:59", shorouk: "05:37", dhuhr: "12:43", asr: "16:21", maghrib: "19:41", isha: "21:11" },
-            "جنوب سيناء (الطور)": { fajr: "04:07", shorouk: "05:42", dhuhr: "12:46", asr: "16:21", maghrib: "19:39", isha: "21:06" },
-            "الإسماعيلية": { fajr: "04:07", shorouk: "05:44", dhuhr: "12:50", asr: "16:27", maghrib: "19:47", isha: "21:16" }
-        };
-
-        // --- إعداد الويب أوديو والتحكم في الصوت الاستباقي ---
+        // --- نظام الصوت المريح الجديد (Web Audio API) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let bgMusicNode = null;
         let musicGainNode = audioCtx.createGain();
         musicGainNode.connect(audioCtx.destination);
 
         const volSlider = document.getElementById('volumeSlider');
-        volSlider.addEventListener('input', (e) => { musicGainNode.gain.value = e.target.value; });
+        volSlider.addEventListener('input', (e) => {
+            musicGainNode.gain.value = e.target.value;
+        });
 
         function playTone(freq, type, duration) {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             let osc = audioCtx.createOscillator();
             let gain = audioCtx.createGain();
+            
             osc.type = (type === 'sawtooth' || type === 'square') ? 'triangle' : 'sine';
             osc.frequency.value = freq;
+            
             gain.gain.setValueAtTime(volSlider.value * 0.2, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
         }
 
         function startProceduralMusic(style) {
             stopProceduralMusic();
             if(audioCtx.state === 'suspended') audioCtx.resume();
+            
             bgMusicNode = audioCtx.createOscillator();
             let lfo = audioCtx.createOscillator();
             let lfoGain = audioCtx.createGain();
+
             bgMusicNode.type = 'sine'; 
-            if(style === 'game1') { bgMusicNode.frequency.value = 180; lfo.frequency.value = 1.5; lfoGain.gain.value = 8; }
-            else if(style === 'game2' || style === 'game6') { bgMusicNode.frequency.value = 200; lfo.frequency.value = 1.2; lfoGain.gain.value = 6; }
-            else { bgMusicNode.frequency.value = 150; lfo.frequency.value = 0.5; lfoGain.gain.value = 4; }
-            lfo.connect(lfoGain); lfoGain.connect(bgMusicNode.frequency);
-            musicGainNode.gain.value = volSlider.value * 0.12; bgMusicNode.connect(musicGainNode);
-            lfo.start(); bgMusicNode.start();
+            
+            if(style === 'game1') {
+                bgMusicNode.frequency.value = 180; 
+                lfo.frequency.value = 1.5; lfoGain.gain.value = 8; 
+            } else if(style === 'game2' || style === 'game6') {
+                bgMusicNode.frequency.value = 200; 
+                lfo.frequency.value = 1.2; lfoGain.gain.value = 6; 
+            } else {
+                bgMusicNode.frequency.value = 150; 
+                lfo.frequency.value = 0.5; lfoGain.gain.value = 4;
+            }
+
+            lfo.connect(lfoGain);
+            lfoGain.connect(bgMusicNode.frequency);
+            
+            musicGainNode.gain.value = volSlider.value * 0.12;
+            bgMusicNode.connect(musicGainNode);
+            
+            lfo.start();
+            bgMusicNode.start();
         }
 
-        function stopProceduralMusic() { if (bgMusicNode) { try { bgMusicNode.stop(); } catch(e){} bgMusicNode = null; } }
+        function stopProceduralMusic() {
+            if (bgMusicNode) {
+                try { bgMusicNode.stop(); } catch(e){}
+                bgMusicNode = null;
+            }
+        }
 
-        // --- إدارة حسابات المستخدم والبيانات المحليّة وسجل الهدية المتصاعدة ---
+        // --- إدارة الحسابات والبيانات ---
         let currentUser = null;
         let usersData = JSON.parse(localStorage.getItem('mahmoud_users')) || {};
         let deviceRegistered = localStorage.getItem('mahmoud_device_registered') || null;
@@ -560,466 +684,780 @@
             const passIn = document.getElementById('password').value.trim();
             const errEl = document.getElementById('authError');
 
-            if(!userIn || !passIn) { errEl.innerText = "برجاء كتابة الاسم والباسورد!"; return; }
-            if (deviceRegistered && deviceRegistered !== userIn) { errEl.innerText = "هذا الجهاز مسجل به حساب آخر بالفعل!"; return; }
+            if(!userIn || !passIn) {
+                errEl.innerText = "برجاء كتابة الاسم والباسورد!";
+                return;
+            }
+
+            if (deviceRegistered && deviceRegistered !== userIn) {
+                errEl.innerText = "هذا الجهاز مسجل به حساب آخر بالفعل!";
+                return;
+            }
 
             if (usersData[userIn]) {
-                if (usersData[userIn].password === passIn) { currentUser = userIn; } 
-                else { errEl.innerText = "كلمة رومانسية أو كلمة مرور خاطئة!"; return; }
+                if (usersData[userIn].password === passIn) {
+                    currentUser = userIn;
+                } else {
+                    errEl.innerText = "كلمة المرور غير صحيحة!";
+                    return;
+                }
             } else {
-                if(deviceRegistered) { errEl.innerText = "مسموح بحساب واحد فقط لكل جهاز!"; return; }
+                if(deviceRegistered) {
+                    errEl.innerText = "مسموح بحساب واحد فقط لكل جهاز!";
+                    return;
+                }
                 usersData[userIn] = {
                     password: passIn,
                     wallet: 50,
                     g1Stage: 1,
-                    g2Stage: 1,
-                    lastCheckIn: null,
-                    checkInStreak: 0
+                    g2Stage: 1
                 };
-                currentUser = userIn; deviceRegistered = userIn;
+                currentUser = userIn;
+                deviceRegistered = userIn;
                 localStorage.setItem('mahmoud_device_registered', userIn);
                 saveData();
             }
 
             document.getElementById('headerBar').style.display = 'flex';
-            document.getElementById('userDisplay').innerText = `البطل: ${currentUser}`;
             updateHeaderInfo();
-            initPrayerDropdown();
-            updateCheckInUI();
             showScreen('menuScreen');
         }
 
-        function saveData() { localStorage.setItem('mahmoud_users', JSON.stringify(usersData)); }
-        function updateHeaderInfo() { if(!currentUser) return; document.getElementById('walletDisplay').innerText = `الرصيد: ${usersData[currentUser].wallet} جنيه`; }
-        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-        function backToMenu() { stopGame1(); stopGame2(); stopPlaneGame(); stopSubwayGame(); showScreen('menuScreen'); updateCheckInUI(); }
-        function logout() { stopProceduralMusic(); currentUser = null; document.getElementById('headerBar').style.display = 'none'; document.getElementById('password').value = ""; goToAuth(); }
+        function saveData() {
+            localStorage.setItem('mahmoud_users', JSON.stringify(usersData));
+        }
 
-        // --- نظام تسجيل الدخول اليومي المتصاعد ---
-        function updateCheckInUI() {
+        function updateHeaderInfo() {
             if(!currentUser) return;
-            const user = usersData[currentUser];
-            const todayStr = new Date().toISOString().split('T')[0];
-            if(user.checkInStreak === undefined) user.checkInStreak = 0;
-            
-            if (user.lastCheckIn === todayStr) {
-                document.getElementById('checkInStatus').innerText = `لقد استلمت مكافأتك اليوم بنجاح! متتالي أيامك الحالي هو: ${user.checkInStreak} يوم. عُد غداً لجني مكافأة أكبر! 🔥`;
-                document.getElementById('checkInBtn').disabled = true;
-            } else {
-                let nextReward = (user.checkInStreak + 1) * 10;
-                if(user.lastCheckIn) {
-                    const lastDate = new Date(user.lastCheckIn);
-                    const todayDate = new Date(todayStr);
-                    const diffTime = Math.abs(todayDate - lastDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    if(diffDays > 1) { user.checkInStreak = 0; nextReward = 10; }
-                }
-                document.getElementById('checkInStatus').innerText = `هدية تسجيل الدخول جاهزة! مكافأة اليوم: [ ${nextReward} جنيه كاش ] 🎁`;
-                document.getElementById('checkInBtn').disabled = false;
-            }
+            document.getElementById('walletDisplay').innerText = `الرصيد: ${usersData[currentUser].wallet} جنيه`;
         }
 
-        function claimDailyReward() {
-            if(!currentUser) return;
-            const user = usersData[currentUser];
-            const todayStr = new Date().toISOString().split('T')[0];
-            if (user.lastCheckIn === todayStr) return;
-
-            user.checkInStreak = (user.checkInStreak || 0) + 1;
-            let currentReward = user.checkInStreak * 10;
-            user.wallet += currentReward; user.lastCheckIn = todayStr;
-            saveData(); updateHeaderInfo(); updateCheckInUI();
-
-            playTone(523.25, 'sine', 0.15); setTimeout(() => playTone(659.25, 'sine', 0.2), 120);
-            alert(`مبروك يا بطل! تم إضافة ${currentReward} جنيه إلى رصيدك بنجاح لليوم الـ ${user.checkInStreak}! 🎉`);
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        // --- مواقيت الصلاة في مصر لجميع المحافظات ---
-        function initPrayerDropdown() {
-            const select = document.getElementById('governorateSelect'); select.innerHTML = "";
-            for(let gov in EgyptPrayersData) {
-                let opt = document.createElement('option'); opt.value = gov; opt.innerText = gov; select.appendChild(opt);
-            }
-            updatePrayerTimesUI();
+        function backToMenu() {
+            stopGame1();
+            stopGame2();
+            stopPlaneGame();
+            stopSubwayGame();
+            showScreen('menuScreen');
         }
 
-        function updatePrayerTimesUI() {
-            const gov = document.getElementById('governorateSelect').value; const data = EgyptPrayersData[gov];
-            const container = document.getElementById('prayerContainer'); if(!data) return;
-            const prayers = [
-                { name: "الفجر", time: data.fajr }, { name: "الشروق", time: data.shorouk }, { name: "الظهر", time: data.dhuhr },
-                { name: "العصر", time: data.asr }, { name: "المغرب", time: data.maghrib }, { name: "العشاء", time: data.isha }
-            ];
-            container.innerHTML = "";
-            prayers.forEach(p => {
-                let item = document.createElement('div'); item.className = "prayer-item";
-                item.innerHTML = `<div class="prayer-name">${p.name}</div><div class="prayer-time">${p.time}</div>`;
-                container.appendChild(item);
-            });
+        function logout() {
+            stopProceduralMusic();
+            currentUser = null;
+            document.getElementById('headerBar').style.display = 'none';
+            document.getElementById('password').value = "";
+            goToAuth();
         }
 
         // --- اللعبة الأولى: الزر الهارب ---
-        let g1Interval, g1TimerInterval; let g1TimeLeft = 15; let g1CurrentStage = 1;
-        function startGame1() { g1CurrentStage = usersData[currentUser].g1Stage || 1; if(g1CurrentStage > 50) g1CurrentStage = 50; showScreen('game1Screen'); setupGame1Stage(); startProceduralMusic('game1'); }
+        let g1Interval, g1TimerInterval;
+        let g1TimeLeft = 15;
+        let g1CurrentStage = 1;
+
+        function startGame1() {
+            g1CurrentStage = usersData[currentUser].g1Stage || 1;
+            if(g1CurrentStage > 50) g1CurrentStage = 50;
+            showScreen('game1Screen');
+            setupGame1Stage();
+            startProceduralMusic('game1');
+        }
+
         function setupGame1Stage() {
-            document.getElementById('g1Title').innerText = `المرحلة ${g1CurrentStage}`; document.getElementById('g1Status').innerText = ""; g1TimeLeft = 15;
-            document.getElementById('g1Timer').innerText = `الوقت المتبقي: ${g1TimeLeft}`; document.getElementById('moving-btn').disabled = false; moveButton();
-            clearInterval(g1Interval); let speed = Math.max(200, 900 - (g1CurrentStage * 16)); g1Interval = setInterval(moveButton, speed);
-            clearInterval(g1TimerInterval); g1TimerInterval = setInterval(() => { g1TimeLeft--; document.getElementById('g1Timer').innerText = `الوقت المتبقي: ${g1TimeLeft}`; if(g1TimeLeft <= 0) endGame1(false); }, 1000);
+            document.getElementById('g1Title').innerText = `المرحلة ${g1CurrentStage}`;
+            document.getElementById('g1Status').innerText = "";
+            g1TimeLeft = 15;
+            document.getElementById('g1Timer').innerText = `الوقت المتبقي: ${g1TimeLeft}`;
+            document.getElementById('moving-btn').disabled = false;
+            moveButton();
+
+            clearInterval(g1Interval);
+            let speed = Math.max(200, 900 - (g1CurrentStage * 16)); 
+            g1Interval = setInterval(moveButton, speed);
+
+            clearInterval(g1TimerInterval);
+            g1TimerInterval = setInterval(() => {
+                g1TimeLeft--;
+                document.getElementById('g1Timer').innerText = `الوقت المتبقي: ${g1TimeLeft}`;
+                if(g1TimeLeft <= 0) endGame1(false);
+            }, 1000);
         }
+
         function moveButton() {
-            const btn = document.getElementById('moving-btn'); const maxX = window.innerWidth - btn.clientWidth - 20; const maxY = window.innerHeight - btn.clientHeight - 120;
-            btn.style.left = Math.max(10, Math.floor(Math.random() * Math.max(10, maxX))) + 'px'; btn.style.top = Math.max(90, Math.floor(Math.random() * Math.max(10, maxY)) + 80) + 'px';
+            const btn = document.getElementById('moving-btn');
+            const maxX = window.innerWidth - btn.clientWidth - 20;
+            const maxY = window.innerHeight - btn.clientHeight - 120;
+            btn.style.left = Math.max(10, Math.floor(Math.random() * Math.max(10, maxX))) + 'px';
+            btn.style.top = Math.max(90, Math.floor(Math.random() * Math.max(10, maxY)) + 80) + 'px';
         }
+
         function winGame1Stage() {
-            playTone(440, 'sine', 0.12); setTimeout(() => playTone(554.37, 'sine', 0.15), 100); clearInterval(g1Interval); clearInterval(g1TimerInterval);
-            document.getElementById('moving-btn').disabled = true; document.getElementById('g1Status').style.color = "var(--success)"; document.getElementById('g1Status').innerText = "يبارك لك علي فوزك 🎉";
-            if(g1CurrentStage < 50) { g1CurrentStage++; usersData[currentUser].g1Stage = g1CurrentStage; saveData(); setTimeout(setupGame1Stage, 2000); } else { document.getElementById('g1Status').innerText = "لقد قهرت الـ 50 مرحلة! 👑"; }
+            playTone(440, 'sine', 0.12);
+            setTimeout(() => playTone(554.37, 'sine', 0.15), 100);
+            clearInterval(g1Interval);
+            clearInterval(g1TimerInterval);
+            document.getElementById('moving-btn').disabled = true;
+            document.getElementById('g1Status').style.color = "var(--success)";
+            document.getElementById('g1Status').innerText = "يبارك لك علي فوزك 🎉";
+
+            if(g1CurrentStage < 50) {
+                g1CurrentStage++;
+                usersData[currentUser].g1Stage = g1CurrentStage;
+                saveData();
+                setTimeout(setupGame1Stage, 2000);
+            } else {
+                document.getElementById('g1Status').innerText = "لقد قهرت الـ 50 مرحلة! 👑";
+            }
         }
-        function endGame1(won) { clearInterval(g1Interval); clearInterval(g1TimerInterval); document.getElementById('moving-btn').disabled = true; if(!won) { playTone(180, 'sine', 0.4); document.getElementById('g1Status').style.color = "var(--accent)"; document.getElementById('g1Status').innerText = "حاول تاني 🫵"; setTimeout(setupGame1Stage, 2500); } }
+
+        function endGame1(won) {
+            clearInterval(g1Interval);
+            clearInterval(g1TimerInterval);
+            document.getElementById('moving-btn').disabled = true;
+            if(!won) {
+                playTone(180, 'sine', 0.4);
+                document.getElementById('g1Status').style.color = "var(--accent)";
+                document.getElementById('g1Status').innerText = "حاول تاني 🫵";
+                setTimeout(setupGame1Stage, 2500);
+            }
+        }
+
         function stopGame1() { clearInterval(g1Interval); clearInterval(g1TimerInterval); stopProceduralMusic(); }
 
         // --- اللعبة الثانية: تحدي العداد المطور ---
-        let g2Interval; let g2CurrentStage = 1; let g2Seconds = 0, g2Milliseconds = 0; let g2TargetSeconds = 0, g2TargetMilliseconds = 0; let g2IsRunning = false;
-        function startGame2() { g2CurrentStage = usersData[currentUser].g2Stage || 1; if(g2CurrentStage > 50) g2CurrentStage = 50; showScreen('game2Screen'); setupGame2Stage(); }
-        function formatTimeStr(sec, ms) { return `${sec < 10 ? '0' + sec : sec}:${ms < 10 ? '0' + ms : ms}`; }
-        function setupGame2Stage() {
-            document.getElementById('g2Title').innerText = `لعبة ساعة الإيقاف - المرحلة ${g2CurrentStage}`; document.getElementById('g2Status').innerText = "";
-            g2TargetSeconds = Math.floor(Math.random() * 4) + 1; g2TargetMilliseconds = Math.floor(Math.random() * 10) * 10;
-            document.getElementById('g2Target').innerText = `الهدف: أوقف عند الوقت [ ${formatTimeStr(g2TargetSeconds, g2TargetMilliseconds)} ]`;
-            g2Seconds = 0; g2Milliseconds = 0; document.getElementById('counterView').innerText = "00:00"; document.getElementById('g2ActionBtn').innerText = "ابدأ العداد"; g2IsRunning = false; stopProceduralMusic();
+        let g2Interval;
+        let g2CurrentStage = 1;
+        let g2Seconds = 0, g2Milliseconds = 0;
+        let g2TargetSeconds = 0, g2TargetMilliseconds = 0;
+        let g2IsRunning = false;
+
+        function startGame2() {
+            g2CurrentStage = usersData[currentUser].g2Stage || 1;
+            if(g2CurrentStage > 50) g2CurrentStage = 50;
+            showScreen('game2Screen');
+            setupGame2Stage();
         }
+
+        function formatTimeStr(sec, ms) {
+            return `${sec < 10 ? '0' + sec : sec}:${ms < 10 ? '0' + ms : ms}`;
+        }
+
+        function setupGame2Stage() {
+            document.getElementById('g2Title').innerText = `لعبة ساعة الإيقاف - المرحلة ${g2CurrentStage}`;
+            document.getElementById('g2Status').innerText = "";
+            g2TargetSeconds = Math.floor(Math.random() * 4) + 1;
+            g2TargetMilliseconds = Math.floor(Math.random() * 10) * 10; 
+            document.getElementById('g2Target').innerText = `الهدف: أوقف عند الوقت [ ${formatTimeStr(g2TargetSeconds, g2TargetMilliseconds)} ]`;
+            g2Seconds = 0; g2Milliseconds = 0;
+            document.getElementById('counterView').innerText = "00:00";
+            document.getElementById('g2ActionBtn').innerText = "ابدأ العداد";
+            g2IsRunning = false;
+            stopProceduralMusic();
+        }
+
         function stopGame2Counter() {
             if(!g2IsRunning) {
-                g2IsRunning = true; document.getElementById('g2ActionBtn').innerText = "إيقاف الآن! ⏱️"; startProceduralMusic('game2');
-                let intervalSpeed = Math.max(10, 20 - Math.floor(g2CurrentStage / 3));
+                g2IsRunning = true;
+                document.getElementById('g2ActionBtn').innerText = "إيقاف الآن! ⏱️";
+                startProceduralMusic('game2');
+                let intervalSpeed = Math.max(10, 20 - Math.floor(g2CurrentStage / 3)); 
+
                 g2Interval = setInterval(() => {
-                    g2Milliseconds += 2; if(g2Milliseconds >= 100) { g2Milliseconds = 0; g2Seconds++; }
+                    g2Milliseconds += 2; 
+                    if(g2Milliseconds >= 100) { g2Milliseconds = 0; g2Seconds++; }
                     document.getElementById('counterView').innerText = formatTimeStr(g2Seconds, g2Milliseconds);
-                    if (g2Milliseconds % 20 === 0) playTone(350, 'sine', 0.008); if(g2Seconds > g2TargetSeconds + 2) { evaluateGame2Result(); }
+                    if (g2Milliseconds % 20 === 0) playTone(350, 'sine', 0.008);
+                    if(g2Seconds > g2TargetSeconds + 2) { evaluateGame2Result(); }
                 }, intervalSpeed);
-            } else { evaluateGame2Result(); }
+            } else {
+                evaluateGame2Result();
+            }
         }
+
         function evaluateGame2Result() {
             clearInterval(g2Interval); g2IsRunning = false; stopProceduralMusic();
             if (g2Seconds === g2TargetSeconds && g2Milliseconds === g2TargetMilliseconds) {
-                playTone(523.25, 'sine', 0.15); setTimeout(() => playTone(659.25, 'sine', 0.2), 120);
-                document.getElementById('g2Status').style.color = "var(--success)"; document.getElementById('g2Status').innerText = "توقيت خرافي! فزت بالمرحلة بنجاح 🔥";
-                if(g2CurrentStage < 50) { g2CurrentStage++; usersData[currentUser].g2Stage = g2CurrentStage; saveData(); setTimeout(setupGame2Stage, 2500); }
+                playTone(523.25, 'sine', 0.15);
+                setTimeout(() => playTone(659.25, 'sine', 0.2), 120);
+                document.getElementById('g2Status').style.color = "var(--success)";
+                document.getElementById('g2Status').innerText = "توقيت خرافي! فزت بالمرحلة بنجاح 🔥";
+                if(g2CurrentStage < 50) {
+                    g2CurrentStage++;
+                    usersData[currentUser].g2Stage = g2CurrentStage; saveData();
+                    setTimeout(setupGame2Stage, 2500);
+                }
             } else {
-                playTone(196, 'sine', 0.35); document.getElementById('g2Status').style.color = "var(--accent)";
+                playTone(196, 'sine', 0.35);
+                document.getElementById('g2Status').style.color = "var(--accent)";
                 let diff = Math.abs(((g2Seconds * 100) + g2Milliseconds) - ((g2TargetSeconds * 100) + g2TargetMilliseconds)) / 100;
-                document.getElementById('g2Status').innerText = `خطأ! الفارق كان ${diff.toFixed(2)} ثانية. حاول تاني 🌀`; setTimeout(setupGame2Stage, 2500);
+                document.getElementById('g2Status').innerText = `خطأ! الفارق كان ${diff.toFixed(2)} ثانية. حاول تاني 🌀`;
+                setTimeout(setupGame2Stage, 2500);
             }
         }
+
         function stopGame2() { clearInterval(g2Interval); stopProceduralMusic(); }
 
         // --- اللعبة الثالثة: طيارة ون اكسبت ---
-        let planeInterval; let planeMultiplier = 1.0; let isFlying = false; let currentBet = 0, crashPoint = 0;
+        let planeInterval;
+        let planeMultiplier = 1.0;
+        let isFlying = false;
+        let currentBet = 0, crashPoint = 0;
+
         function startGame3() { showScreen('game3Screen'); document.getElementById('g3Status').innerText = ""; checkBankruptcy(); }
-        function checkBankruptcy() { if (usersData[currentUser].wallet < 8) { document.getElementById('captchaSection').style.display = 'block'; document.getElementById('planeBtn').disabled = true; generateCaptcha(); } else { document.getElementById('captchaSection').style.display = 'none'; document.getElementById('planeBtn').disabled = false; } }
+
+        function checkBankruptcy() {
+            if (usersData[currentUser].wallet < 8) {
+                document.getElementById('captchaSection').style.display = 'block';
+                document.getElementById('planeBtn').disabled = true;
+                generateCaptcha();
+            } else {
+                document.getElementById('captchaSection').style.display = 'none';
+                document.getElementById('planeBtn').disabled = false;
+            }
+        }
+
         function startPlaneFlight() {
             if(isFlying) { cashOutPlane(); return; }
             const betIn = parseInt(document.getElementById('betAmount').value);
-            if (isNaN(betIn) || betIn < 8 || betIn > usersData[currentUser].wallet) { alert("تحقق من قيمة الرهان والرصيد!"); return; }
-            currentBet = betIn; usersData[currentUser].wallet -= currentBet; saveData(); updateHeaderInfo();
-            isFlying = true; planeMultiplier = 1.00; document.getElementById('g3Status').innerText = ""; document.getElementById('planeBtn').innerText = "خذ الأرباح كاش أوت 💰";
-            let rand = Math.random(); if(rand < 0.15) crashPoint = 1.00; else if(rand < 0.7) crashPoint = 1.1 + (Math.random() * 2.5); else crashPoint = 3.5 + (Math.random() * 8.0);
+            if (isNaN(betIn) || betIn < 8) { alert("أقل رهان مسموح به هو 8 جنيه!"); return; }
+            if (betIn > usersData[currentUser].wallet) { alert("رصيدك الحالي لا يكفي!"); return; }
+
+            currentBet = betIn;
+            usersData[currentUser].wallet -= currentBet;
+            saveData(); updateHeaderInfo();
+
+            isFlying = true; planeMultiplier = 1.00;
+            document.getElementById('g3Status').innerText = "";
+            document.getElementById('planeBtn').innerText = "خذ الأرباح كاش أوت 💰";
+            
+            let rand = Math.random();
+            if(rand < 0.15) crashPoint = 1.00; 
+            else if(rand < 0.7) crashPoint = 1.1 + (Math.random() * 2.5);
+            else crashPoint = 3.5 + (Math.random() * 8.0); 
+
             startProceduralMusic('game3');
             planeInterval = setInterval(() => {
-                planeMultiplier += 0.04; document.getElementById('planeMult').innerText = planeMultiplier.toFixed(2) + "x";
-                let progress = Math.min(75, 10 + (planeMultiplier * 8)); document.getElementById('plane').style.left = progress + "%"; document.getElementById('plane').style.bottom = progress + "%";
+                planeMultiplier += 0.04;
+                document.getElementById('planeMult').innerText = planeMultiplier.toFixed(2) + "x";
+                let progress = Math.min(75, 10 + (planeMultiplier * 8));
+                document.getElementById('plane').style.left = progress + "%";
+                document.getElementById('plane').style.bottom = progress + "%";
                 if(Math.floor(planeMultiplier * 10) % 2 === 0) playTone(240 + (planeMultiplier * 15), 'sine', 0.04);
                 if (planeMultiplier >= crashPoint) crashPlane();
             }, 100);
         }
+
         function cashOutPlane() {
-            clearInterval(planeInterval); isFlying = false; stopProceduralMusic(); let winnings = Math.floor(currentBet * planeMultiplier);
-            usersData[currentUser].wallet += winnings; saveData(); updateHeaderInfo(); playTone(587.33, 'sine', 0.25);
-            document.getElementById('g3Status').style.color = "var(--success)"; document.getElementById('g3Status').innerText = `تم السحب! كسبت ${winnings} جنيه بمضاعف ${planeMultiplier.toFixed(2)}x 💸`;
-            document.getElementById('planeBtn').innerText = "إقلاع ومراهنة"; checkBankruptcy();
+            clearInterval(planeInterval); isFlying = false; stopProceduralMusic();
+            let winnings = Math.floor(currentBet * planeMultiplier);
+            usersData[currentUser].wallet += winnings; saveData(); updateHeaderInfo();
+            playTone(587.33, 'sine', 0.25);
+            document.getElementById('g3Status').style.color = "var(--success)";
+            document.getElementById('g3Status').innerText = `تم السحب! كسبت ${winnings} جنيه بمضاعف ${planeMultiplier.toFixed(2)}x 💸`;
+            document.getElementById('planeBtn').innerText = "إقلاع ومراهنة";
+            checkBankruptcy();
         }
+
         function crashPlane() {
-            clearInterval(planeInterval); isFlying = false; stopProceduralMusic(); playTone(160, 'sine', 0.4);
-            document.getElementById('g3Status').style.color = "var(--accent)"; document.getElementById('g3Status').innerText = `انفجرت الطيارة كراش عند ${planeMultiplier.toFixed(2)}x ! 💥`;
-            document.getElementById('planeBtn').innerText = "إقلاع ومراهنة"; document.getElementById('planeMult').innerText = "انفجرت!"; checkBankruptcy();
+            clearInterval(planeInterval); isFlying = false; stopProceduralMusic();
+            playTone(160, 'sine', 0.4);
+            document.getElementById('g3Status').style.color = "var(--accent)";
+            document.getElementById('g3Status').innerText = `انفجرت الطيارة كراش عند ${planeMultiplier.toFixed(2)}x ! 💥`;
+            document.getElementById('planeBtn').innerText = "إقلاع ومراهنة";
+            document.getElementById('planeMult').innerText = "انفجرت!";
+            checkBankruptcy();
         }
         function stopPlaneGame() { clearInterval(planeInterval); isFlying = false; stopProceduralMusic(); }
 
         // --- اللعبة الرابعة: تفاحة ون اكسبت ---
-        let appleCurrentRow = 0, appleBet = 0, appleGameActive = false; const appleMultipliers = [1.23, 1.54, 1.93, 2.41, 3.01, 4.02, 5.71, 8.56, 13.22, 22.44, 41.22, 85.55, 180.00]; let boardState = [];
+        let appleCurrentRow = 0, appleBet = 0, appleGameActive = false;
+        const appleMultipliers = [1.23, 1.54, 1.93, 2.41, 3.01, 4.02, 5.71, 8.56, 13.22, 22.44, 41.22, 85.55, 180.00];
+        let boardState = []; 
+
         function startGame4() { showScreen('game4Screen'); buildInitialAppleUI(); }
+
         function buildInitialAppleUI() {
             const container = document.getElementById('appleBoardContainer'); container.innerHTML = "";
-            document.getElementById('appleStartBtn').style.display = "block"; document.getElementById('appleCashoutBtn').style.display = "none"; document.getElementById('appleBetAmount').disabled = false;
+            document.getElementById('appleStartBtn').style.display = "block";
+            document.getElementById('appleCashoutBtn').style.display = "none";
+            document.getElementById('appleBetAmount').disabled = false;
+
             for (let r = 0; r < 13; r++) {
-                const rowDiv = document.createElement('div'); rowDiv.className = `apple-row disabled-row`; rowDiv.id = `apple-row-${r}`;
-                const info = document.createElement('div'); info.className = "row-info"; info.innerText = `السطر ${r+1} | المضاعف: ${appleMultipliers[r]}x`; rowDiv.appendChild(info);
-                for (let c = 0; c < 5; c++) { const cell = document.createElement('div'); cell.className = "apple-cell"; cell.innerText = "❓"; cell.setAttribute('onclick', `clickAppleCell(${r}, ${c})`); rowDiv.appendChild(cell); }
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `apple-row disabled-row`; rowDiv.id = `apple-row-${r}`;
+                const info = document.createElement('div'); info.className = "row-info"; info.innerText = `السطر ${r+1} | المضاعف: ${appleMultipliers[r]}x`;
+                rowDiv.appendChild(info);
+                for (let c = 0; c < 5; c++) {
+                    const cell = document.createElement('div'); cell.className = "apple-cell"; cell.innerText = "❓";
+                    cell.setAttribute('onclick', `clickAppleCell(${r}, ${c})`); rowDiv.appendChild(cell);
+                }
                 container.appendChild(rowDiv);
             }
         }
+
         function startAppleGame() {
-            const betIn = parseInt(document.getElementById('appleBetAmount').value); if (isNaN(betIn) || betIn < 8 || betIn > usersData[currentUser].wallet) { alert("تأكد من الرهان والرصيد!"); return; }
-            generateAppleBoard(); appleBet = betIn; usersData[currentUser].wallet -= appleBet; saveData(); updateHeaderInfo();
-            appleGameActive = true; appleCurrentRow = 0; document.getElementById('g4Pot').innerText = `الربح الحالي: ${appleBet} جنيه`;
-            document.getElementById('appleStartBtn').style.display = "none"; document.getElementById('appleCashoutBtn').style.display = "block";
-            document.getElementById('appleCashoutBtn').innerText = `انسحاب وجني: ${Math.floor(appleBet * appleMultipliers[0])} جنيه`; document.getElementById('appleBetAmount').disabled = true;
+            const betIn = parseInt(document.getElementById('appleBetAmount').value);
+            if (isNaN(betIn) || betIn < 8 || betIn > usersData[currentUser].wallet) { alert("تأكد من الرهان والرصيد!"); return; }
+            generateAppleBoard();
+            appleBet = betIn; usersData[currentUser].wallet -= appleBet; saveData(); updateHeaderInfo();
+            appleGameActive = true; appleCurrentRow = 0;
+            document.getElementById('g4Pot').innerText = `الربح الحالي: ${appleBet} جنيه`;
+            document.getElementById('appleStartBtn').style.display = "none";
+            document.getElementById('appleCashoutBtn').style.display = "block";
+            document.getElementById('appleCashoutBtn').innerText = `انسحاب وجني: ${Math.floor(appleBet * appleMultipliers[0])} جنيه`;
+            document.getElementById('appleBetAmount').disabled = true;
             setActiveRowUI(); startProceduralMusic('game4');
         }
+
         function generateAppleBoard() {
-            boardState = []; for (let r = 0; r < 13; r++) {
-                let rowCells = new Array(5).fill("🍏"); let bombCount = r < 4 ? 1 : (r < 8 ? 2 : (r < 11 ? 3 : 4)); let placed = 0;
-                while(placed < bombCount) { let idx = Math.floor(Math.random() * 5); if(rowCells[idx] !== "💥") { rowCells[idx] = "💥"; placed++; } } boardState.push(rowCells);
+            boardState = [];
+            for (let r = 0; r < 13; r++) {
+                let rowCells = new Array(5).fill("🍏");
+                let bombCount = r < 4 ? 1 : (r < 8 ? 2 : (r < 11 ? 3 : 4));
+                let placed = 0;
+                while(placed < bombCount) {
+                    let idx = Math.floor(Math.random() * 5);
+                    if(rowCells[idx] !== "💥") { rowCells[idx] = "💥"; placed++; }
+                }
+                boardState.push(rowCells);
             }
         }
-        function setActiveRowUI() { for (let r = 0; r < 13; r++) document.getElementById(`apple-row-${r}`).className = r === appleCurrentRow ? "apple-row active-row" : "apple-row disabled-row"; }
+
+        function setActiveRowUI() {
+            for (let r = 0; r < 13; r++) document.getElementById(`apple-row-${r}`).className = r === appleCurrentRow ? "apple-row active-row" : "apple-row disabled-row";
+        }
+
         function clickAppleCell(rowIdx, cellIdx) {
             if (!appleGameActive || rowIdx !== appleCurrentRow) return;
-            const item = boardState[rowIdx][cellIdx]; const cell = document.getElementById(`apple-row-${rowIdx}`).querySelectorAll('.apple-cell')[cellIdx];
+            const item = boardState[rowIdx][cellIdx];
+            const cell = document.getElementById(`apple-row-${rowIdx}`).querySelectorAll('.apple-cell')[cellIdx];
+
             if (item === "🍏") {
                 cell.innerText = "🍎"; cell.style.background = "#064e3b"; playTone(480, 'sine', 0.08);
-                let currentWinnings = Math.floor(appleBet * appleMultipliers[appleCurrentRow]); document.getElementById('g4Pot').innerText = `الربح الحالي المتاح: ${currentWinnings} جنيه`;
-                if (appleCurrentRow < 12) { appleCurrentRow++; setActiveRowUI(); document.getElementById('appleCashoutBtn').innerText = `انسحاب وجني: ${currentWinnings} جنيه`; } 
-                else { usersData[currentUser].wallet += Math.floor(appleBet * appleMultipliers[12]); saveData(); updateHeaderInfo(); endAppleGameSession(); }
-            } else { cell.innerText = "💥"; cell.style.background = "#7f1d1d"; playTone(170, 'sine', 0.35); endAppleGameSession(); }
+                let currentWinnings = Math.floor(appleBet * appleMultipliers[appleCurrentRow]);
+                document.getElementById('g4Pot').innerText = `الربح الحالي المتاح: ${currentWinnings} جنيه`;
+                if (appleCurrentRow < 12) {
+                    appleCurrentRow++; setActiveRowUI();
+                    document.getElementById('appleCashoutBtn').innerText = `انسحاب وجني: ${currentWinnings} جنيه`;
+                } else {
+                    usersData[currentUser].wallet += Math.floor(appleBet * appleMultipliers[12]); saveData(); updateHeaderInfo();
+                    endAppleGameSession();
+                }
+            } else {
+                cell.innerText = "💥"; cell.style.background = "#7f1d1d"; playTone(170, 'sine', 0.35);
+                endAppleGameSession();
+            }
         }
-        function cashOutApple() { if (!appleGameActive) return; let finalWinnings = appleCurrentRow > 0 ? Math.floor(appleBet * appleMultipliers[appleCurrentRow - 1]) : appleBet; usersData[currentUser].wallet += finalWinnings; saveData(); updateHeaderInfo(); endAppleGameSession(); }
-        function endAppleGameSession() { appleGameActive = false; stopProceduralMusic(); document.getElementById('appleStartBtn').style.display = "block"; document.getElementById('appleCashoutBtn').style.display = "none"; document.getElementById('appleBetAmount').disabled = false; }
 
+        function cashOutApple() {
+            if (!appleGameActive) return;
+            let finalWinnings = appleCurrentRow > 0 ? Math.floor(appleBet * appleMultipliers[appleCurrentRow - 1]) : appleBet;
+            usersData[currentUser].wallet += finalWinnings; saveData(); updateHeaderInfo();
+            endAppleGameSession();
+        }
 
-        // --- اللعبة الخامسة: الأكواب السحرية الحماسية الفائقة السريعة ---
+        function endAppleGameSession() {
+            appleGameActive = false; stopProceduralMusic();
+            document.getElementById('appleStartBtn').style.display = "block";
+            document.getElementById('appleCashoutBtn').style.display = "none";
+            document.getElementById('appleBetAmount').disabled = false;
+        }
+
+        // --- اللعبة الخامسة: لعبة الأكواب الثلاثة ---
         let cupsBet = 0, cupsGameActive = false, isShuffling = false, winningCupIndex = 0;
-        let virtualMapping = [0, 1, 2]; // مصفوفة لتتبع المواقع الحقيقية للأكواب برمجياً
-
         function startGame5() { showScreen('game5Screen'); resetCupsUI(); }
-
         function resetCupsUI() {
-            document.getElementById('cupsStartBtn').disabled = false;
-            document.getElementById('cupsBetAmount').disabled = false;
-            document.getElementById('g5Status').innerText = "";
-            virtualMapping = [0, 1, 2];
-            
+            document.getElementById('cupsStartBtn').disabled = false; document.getElementById('cupsBetAmount').disabled = false;
             for(let i=0; i<3; i++) {
-                const wrap = document.getElementById(`cup-wrap-${i}`);
-                wrap.style.transform = "translateX(0px)";
                 document.getElementById(`cup-${i}`).classList.remove('lifted');
                 document.getElementById(`ball-${i}`).classList.remove('visible');
             }
         }
-
         function startCupsGame() {
-            if(isShuffling || cupsGameActive) return;
             const betIn = parseInt(document.getElementById('cupsBetAmount').value);
-            if (isNaN(betIn) || betIn < 8 || betIn > usersData[currentUser].wallet) { alert("رصيدك لا يكفي للرهان (الحد الأدنى 8 جنيه)!"); return; }
-            
-            cupsBet = betIn;
-            usersData[currentUser].wallet -= cupsBet;
-            saveData();
-            updateHeaderInfo();
-            
-            document.getElementById('cupsStartBtn').disabled = true;
-            document.getElementById('cupsBetAmount').disabled = true;
-            document.getElementById('g5Status').innerText = "تأمل مكان الكرة السحرية بعناية... 🔮";
-
-            // اختيار كوب عشوائي واحد فقط ليحتوي على الكرة
+            if (isNaN(betIn) || betIn < 8 || betIn > usersData[currentUser].wallet) { alert("خطأ في الرصيد!"); return; }
+            cupsBet = betIn; usersData[currentUser].wallet -= cupsBet; saveData(); updateHeaderInfo();
             winningCupIndex = Math.floor(Math.random() * 3);
-            
-            // إخفاء كل الكرات وإظهار الكرة الواحدة المطلوبة فقط
-            for(let i=0; i<3; i++) {
-                document.getElementById(`ball-${i}`).classList.remove('visible');
-                document.getElementById(`cup-${i}`).classList.remove('lifted');
-            }
-            
-            // رفع الكوب الفائز لإظهار الكرة قبل الخلط
             document.getElementById(`cup-${winningCupIndex}`).classList.add('lifted');
             document.getElementById(`ball-${winningCupIndex}`).classList.add('visible');
-            
             startProceduralMusic('game5');
 
-            // بدء الخلط السريع جداً بعد ثانية واحدة من المعاينة
             setTimeout(() => {
                 document.getElementById(`cup-${winningCupIndex}`).classList.remove('lifted');
                 setTimeout(() => {
                     document.getElementById(`ball-${winningCupIndex}`).classList.remove('visible');
-                    shuffleCupsHyperFast();
-                }, 250);
-            }, 1100);
+                    shuffleCupsEffect();
+                }, 300);
+            }, 1000);
         }
 
-        // تأثير الخلط الحماسي الخاطف المتكرر 16 حركة!
-        function shuffleCupsHyperFast() {
-            isShuffling = true;
-            let currentMoves = 0;
-            const totalMoves = 16; // عدد مرات التبديل لرفع الصعوبة والحماس
-            const moveIntervalTime = 100; // 100 مللي ثانية فقط لكل حركة (سرعة مجنونة)
-
-            // حساب المسافة بين الأكواب ديناميكياً لتأثير بصري دقيق
-            const areaWidth = document.getElementById('cupsAreaContainer').clientWidth;
-            const stepDistance = areaWidth / 3.4; 
-
-            let shuffleInterval = setInterval(() => {
-                // اختيار كوبين عشوائيين لتبديل مراكزهما
-                let idxA = Math.floor(Math.random() * 3);
-                let idxB = Math.floor(Math.random() * 3);
-                while(idxA === idxB) { idxB = Math.floor(Math.random() * 3); }
-
-                // تبديل قيمهم في المصفوفة الافتراضية
-                let temp = virtualMapping[idxA];
-                virtualMapping[idxA] = virtualMapping[idxB];
-                virtualMapping[idxB] = temp;
-
-                // تطبيق حركة الـ CSS Transform فوراً لتتحرك الأكواب بشكل حماسي وسريع
-                for(let i=0; i<3; i++) {
-                    let positionIndex = virtualMapping.indexOf(i); // أين أصبح الكوب i الآن؟
-                    let originalIndex = i;
-                    let diff = positionIndex - originalIndex;
-                    document.getElementById(`cup-wrap-${i}`).style.transform = `translateX(${diff * stepDistance}px)`;
+        function shuffleCupsEffect() {
+            isShuffling = true; let count = 0;
+            let interval = setInterval(() => {
+                let r1 = Math.floor(Math.random() * 3), r2 = Math.floor(Math.random() * 3);
+                while(r1 === r2) r2 = Math.floor(Math.random() * 3);
+                document.getElementById(`cup-wrap-${r1}`).style.left = "30px";
+                document.getElementById(`cup-wrap-${r2}`).style.left = "-30px";
+                playTone(200 + (count * 12), 'sine', 0.04);
+                count++;
+                if(count >= 8) {
+                    clearInterval(interval);
+                    for(let i=0; i<3; i++) document.getElementById(`cup-wrap-${i}`).style.left = "0px";
+                    isShuffling = false; cupsGameActive = true; stopProceduralMusic();
                 }
-
-                // صوت تك خفيفة مع كل حركة تبديل سريعة لزيادة التركيز والحماس
-                playTone(320 + (currentMoves * 15), 'sine', 0.03);
-                
-                currentMoves++;
-                if(currentMoves >= totalMoves) {
-                    clearInterval(shuffleInterval);
-                    isShuffling = false;
-                    cupsGameActive = true;
-                    stopProceduralMusic();
-                    document.getElementById('g5Status').style.color = "var(--warning)";
-                    document.getElementById('g5Status').innerText = "⚡ اختر الآن! أين الكوب الفائز الحاوي على الكرة؟ ⚡";
-                }
-            }, moveIntervalTime);
+            }, 150);
         }
 
-        function selectCup(clickedIndex) {
-            if (!cupsGameActive || isShuffling) return;
-            cupsGameActive = false;
-
-            // رفع الكوب الذي ضغط عليه المستخدم
-            document.getElementById(`cup-${clickedIndex}`).classList.add('lifted');
-
-            if (clickedIndex === winningCupIndex) {
-                // فوز محقق!
-                document.getElementById(`ball-${clickedIndex}`).classList.add('visible');
-                let prize = cupsBet * 2;
-                usersData[currentUser].wallet += prize;
-                saveData();
-                updateHeaderInfo();
-                
-                playTone(523.25, 'sine', 0.15); setTimeout(() => playTone(659.25, 'sine', 0.2), 110);
-                document.getElementById('g5Status').style.color = "var(--success)";
-                document.getElementById('g5Status').innerText = `🔥 عبقري يا حودة! تخمينك صحيح وكسبت ضعف رهانك: +${prize} جنيه!`;
+        function selectCup(idx) {
+            if (!cupsGameActive) return; cupsGameActive = false;
+            document.getElementById(`cup-${idx}`).classList.add('lifted');
+            if (idx === winningCupIndex) {
+                document.getElementById(`ball-${idx}`).classList.add('visible');
+                usersData[currentUser].wallet += cupsBet * 2; saveData(); updateHeaderInfo();
             } else {
-                // خسارة، إظهار الكوب المختار وإظهار الكوب الصحيح أيضاً
-                playTone(140, 'sine', 0.4);
                 document.getElementById(`cup-${winningCupIndex}`).classList.add('lifted');
                 document.getElementById(`ball-${winningCupIndex}`).classList.add('visible');
-                
-                document.getElementById('g5Status').style.color = "var(--accent)";
-                document.getElementById('g5Status').innerText = `❌ للأسف خدعتك السرعة! الكرة كانت في الكوب الآخر. حاول مرة أخرى!`;
             }
-
-            // إعادة تهيئة الواجهة للعب من جديد بعد ثانيتين ونصف
-            setTimeout(resetCupsUI, 2600);
+            setTimeout(resetCupsUI, 2000);
         }
 
-
-        // --- اللعبة السادسة: سابواي سرقة الذهب ---
-        let subwayCanvas, subwayCtx, subwayAnimationId, subwayScore = 0, subwayCoins = 0, subwayBet = 8, subwayActive = false;
-        let subwayPlayer = { lane: 1, targetX: 0, currentX: 0, y: 0, jumpY: 0, jumpTime: 0, isJumping: false, isSliding: false, slideTime: 0 };
-        let subwayLanes = [-80, 0, 80]; let subwayEntities = []; let subwaySpeed = 4; let subwayLastSpawn = 0; let isMouseDown = false; let startX = 0, startY = 0; const swipeThreshold = 40;
+        // --- اللعبة السادسة: سابواي سرقة الذهب الكاملة والمطورة ---
+        let subwayCanvas, subwayCtx;
+        let subwayAnimationId;
+        let subwayScore = 0, subwayCoins = 0, subwayBet = 8;
+        let subwayActive = false;
         
-        window.onload = function() {
+        // كائن اللاعب والمضامير
+        let subwayPlayer = { lane: 1, targetX: 0, currentX: 0, y: 0, jumpY: 0, jumpTime: 0, isJumping: false, isSliding: false, slideTime: 0 };
+        let subwayLanes = [-80, 0, 80]; // ثلاثة حارات بمنظور عمق
+        let subwayEntities = []; // القطارات، الحواجز، والذهب
+        let subwaySpeed = 4;
+        let subwayLastSpawn = 0;
+
+        // متغيرات تتبع السحب للماوس والموبايل (كليك مطول + حركة)
+        let isMouseDown = false;
+        let startX = 0, startY = 0;
+        const swipeThreshold = 40; // المسافة بالبكسل لاعتبارها سحب كامل
+
+        function startGame6() {
+            showScreen('game6Screen');
             subwayCanvas = document.getElementById('subwayCanvas');
             subwayCtx = subwayCanvas.getContext('2d');
-            window.addEventListener('resize', resizeSubwayCanvas);
             resizeSubwayCanvas();
-        };
-
-        function resizeSubwayCanvas() { if(subwayCanvas) { const rect = subwayCanvas.parentElement.getBoundingClientRect(); subwayCanvas.width = rect.width; subwayCanvas.height = rect.height; } }
-        
-        function initSubwayGamePlay() {
-            const betIn = parseInt(document.getElementById('subwayBetInput').value); if(isNaN(betIn) || betIn < 8 || betIn > usersData[currentUser].wallet) { alert("تحقق من رصيدك!"); return; }
-            subwayBet = betIn; usersData[currentUser].wallet -= subwayBet; saveData(); updateHeaderInfo();
-            document.getElementById('subwayStartBtn').disabled = true; document.getElementById('subwayBetInput').disabled = true; document.getElementById('g6Status').innerText = "تجاوز العقبات بحرص!";
-            subwayActive = true; subwayPlayer.lane = 1; subwayPlayer.currentX = subwayLanes[1]; subwayPlayer.targetX = subwayLanes[1]; subwayPlayer.jumpY = 0; subwayPlayer.isJumping = false; subwayPlayer.isSliding = false;
-            startProceduralMusic('game6'); setupSubwayControls(); subwayLastSpawn = Date.now(); if(subwayAnimationId) cancelAnimationFrame(subwayAnimationId); updateSubwayLoop();
+            resetSubwayGameUI();
         }
+
+        function resizeSubwayCanvas() {
+            const rect = subwayCanvas.parentElement.getBoundingClientRect();
+            subwayCanvas.width = rect.width;
+            subwayCanvas.height = rect.height;
+        }
+
+        function resetSubwayGameUI() {
+            subwayActive = false;
+            subwayScore = 0;
+            subwayCoins = 0;
+            subwayEntities = [];
+            subwaySpeed = 4;
+            document.getElementById('subwayCoins').innerText = "0";
+            document.getElementById('subwayScore').innerText = "0";
+            document.getElementById('subwayStartBtn').disabled = false;
+            document.getElementById('subwayBetInput').disabled = false;
+            document.getElementById('g6Status').innerText = "اضغط على زر البدء واستعد للسحب والتحكم الممتع!";
+            drawSubwayStaticScene();
+        }
+
+        function initSubwayGamePlay() {
+            const betIn = parseInt(document.getElementById('subwayBetInput').value);
+            if(isNaN(betIn) || betIn < 8 || betIn > usersData[currentUser].wallet) {
+                alert("تأكد من كتابة مبلغ رهان صحيح ومتوفر في محفظتك!");
+                return;
+            }
+            subwayBet = betIn;
+            usersData[currentUser].wallet -= subwayBet;
+            saveData(); updateHeaderInfo();
+
+            document.getElementById('subwayStartBtn').disabled = true;
+            document.getElementById('subwayBetInput').disabled = true;
+            document.getElementById('g6Status').innerText = "تجاوز العقبات بحرص!";
+            
+            subwayActive = true;
+            subwayPlayer.lane = 1;
+            subwayPlayer.currentX = subwayLanes[1];
+            subwayPlayer.targetX = subwayLanes[1];
+            subwayPlayer.jumpY = 0;
+            subwayPlayer.isJumping = false;
+            subwayPlayer.isSliding = false;
+            
+            startProceduralMusic('game6');
+            setupSubwayControls();
+            subwayLastSpawn = Date.now();
+            
+            if(subwayAnimationId) cancelAnimationFrame(subwayAnimationId);
+            updateSubwayLoop();
+        }
+
+        // إعداد مستشعرات الإدخال (الضغط المطول والسحب للماوس والموبايل)
         function setupSubwayControls() {
             const container = document.getElementById('subwayContainer');
-            container.onmousedown = function(e) { isMouseDown = true; startX = e.clientX; startY = e.clientY; };
-            window.onmousemove = function(e) {
-                if(!isMouseDown || !subwayActive) return; let diffX = e.clientX - startX; let diffY = e.clientY - startY;
-                if(Math.abs(diffX) > swipeThreshold || Math.abs(diffY) > swipeThreshold) { processSwipeAction(diffX, diffY); startX = e.clientX; startY = e.clientY; }
+
+            // --- الفأرة (الكمبيوتر) ---
+            container.onmousedown = function(e) {
+                isMouseDown = true;
+                startX = e.clientX;
+                startY = e.clientY;
             };
+
+            window.onmousemove = function(e) {
+                if(!isMouseDown || !subwayActive) return;
+                let diffX = e.clientX - startX;
+                let diffY = e.clientY - startY;
+
+                if(Math.abs(diffX) > swipeThreshold || Math.abs(diffY) > swipeThreshold) {
+                    processSwipeAction(diffX, diffY);
+                    // إعادة التعيين لمنع تكرار الحركة في نفس السحبة بدون رفع الكليك
+                    startX = e.clientX;
+                    startY = e.clientY;
+                }
+            };
+
             window.onmouseup = function() { isMouseDown = false; };
-            container.ontouchstart = function(e) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; };
+
+            // --- الشاشات اللمسية (الهواتف) ---
+            container.ontouchstart = function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            };
+
             container.ontouchmove = function(e) {
-                if(!subwayActive) return; let diffX = e.touches[0].clientX - startX; let diffY = e.touches[0].clientY - startY;
-                if(Math.abs(diffX) > swipeThreshold || Math.abs(diffY) > swipeThreshold) { processSwipeAction(diffX, diffY); startX = e.touches[0].clientX; startY = e.touches[0].clientY; }
+                if(!subwayActive) return;
+                let diffX = e.touches[0].clientX - startX;
+                let diffY = e.touches[0].clientY - startY;
+
+                if(Math.abs(diffX) > swipeThreshold || Math.abs(diffY) > swipeThreshold) {
+                    processSwipeAction(diffX, diffY);
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                }
             };
         }
+
         function processSwipeAction(diffX, diffY) {
             if(Math.abs(diffX) > Math.abs(diffY)) {
-                if(diffX > 0 && subwayPlayer.lane < 2) subwayPlayer.lane++; else if(diffX < 0 && subwayPlayer.lane > 0) subwayPlayer.lane--;
+                // حركة أفقية (يمين / يسار)
+                if(diffX > 0 && subwayPlayer.lane < 2) {
+                    subwayPlayer.lane++; playTone(400, 'sine', 0.05);
+                } else if(diffX < 0 && subwayPlayer.lane > 0) {
+                    subwayPlayer.lane--; playTone(400, 'sine', 0.05);
+                }
                 subwayPlayer.targetX = subwayLanes[subwayPlayer.lane];
             } else {
-                if(diffY < 0 && !subwayPlayer.isJumping && !subwayPlayer.isSliding) { subwayPlayer.isJumping = true; subwayPlayer.jumpTime = 0; playTone(450, 'sine', 0.08); } 
-                else if(diffY > 0 && !subwayPlayer.isJumping && !subwayPlayer.isSliding) { subwayPlayer.isSliding = true; subwayPlayer.slideTime = 0; playTone(300, 'sine', 0.08); }
+                // حركة رأسية (نط / تزحلق)
+                if(diffY < 0 && !subwayPlayer.isJumping && !subwayPlayer.isSliding) {
+                    subwayPlayer.isJumping = true;
+                    subwayPlayer.jumpTime = 0;
+                    playTone(450, 'sine', 0.08);
+                } else if(diffY > 0 && !subwayPlayer.isJumping && !subwayPlayer.isSliding) {
+                    subwayPlayer.isSliding = true;
+                    subwayPlayer.slideTime = 0;
+                    playTone(300, 'sine', 0.08);
+                }
             }
         }
+
+        // حلقة اللعب الرئيسية وتوليد العقبات والذهب
         function updateSubwayLoop() {
-            if(!subwayActive) return; subwayScore++; document.getElementById('subwayScore').innerText = subwayScore; if(subwayScore % 400 === 0) subwaySpeed += 0.5;
+            if(!subwayActive) return;
+
+            // زيادة النقاط والصعوبة تدريجياً
+            subwayScore++;
+            document.getElementById('subwayScore').innerText = subwayScore;
+            if(subwayScore % 400 === 0) subwaySpeed += 0.5;
+
+            // حركة اللاعب السلسة بين الحارات
             subwayPlayer.currentX += (subwayPlayer.targetX - subwayPlayer.currentX) * 0.25;
-            if(subwayPlayer.isJumping) { subwayPlayer.jumpTime += 0.06; subwayPlayer.jumpY = Math.sin(subwayPlayer.jumpTime) * 65; if(subwayPlayer.jumpTime >= Math.PI) { subwayPlayer.isJumping = false; subwayPlayer.jumpY = 0; } }
-            if(subwayPlayer.isSliding) { subwayPlayer.slideTime += 1; if(subwayPlayer.slideTime > 25) subwayPlayer.isSliding = false; }
-            let now = Date.now(); if(now - subwayLastSpawn > 1200 - (subwaySpeed * 30)) {
-                let randomLane = Math.floor(Math.random() * 3); let randType = Math.random(); let type = "coin";
-                if(randType < 0.35) type = "train"; else if(randType < 0.6) type = "barrier"; subwayEntities.push({ lane: randomLane, type: type, z: 500 }); subwayLastSpawn = now;
+
+            // حسابات القفز والتزحلق
+            if(subwayPlayer.isJumping) {
+                subwayPlayer.jumpTime += 0.06;
+                subwayPlayer.jumpY = Math.sin(subwayPlayer.jumpTime) * 65;
+                if(subwayPlayer.jumpTime >= Math.PI) { subwayPlayer.isJumping = false; subwayPlayer.jumpY = 0; }
             }
+            if(subwayPlayer.isSliding) {
+                subwayPlayer.slideTime += 1;
+                if(subwayPlayer.slideTime > 25) subwayPlayer.isSliding = false;
+            }
+
+            // توليد كائنات جديدة في المترو
+            let now = Date.now();
+            if(now - subwayLastSpawn > 1200 - (subwaySpeed * 30)) {
+                let randomLane = Math.floor(Math.random() * 3);
+                let randType = Math.random();
+                let type = "coin";
+                if(randType < 0.35) type = "train";     // قطار متحرك كبير
+                else if(randType < 0.6) type = "barrier"; // حاجز منخفض يتطلب القفز
+                
+                subwayEntities.push({ lane: randomLane, type: type, z: 500 });
+                subwayLastSpawn = now;
+            }
+
+            // تحديث الكائنات وفحص التصادم
             for(let i = subwayEntities.length - 1; i >= 0; i--) {
-                let entity = subwayEntities[i]; entity.z -= subwaySpeed;
+                let entity = subwayEntities[i];
+                entity.z -= subwaySpeed; // اقتراب الكائنات من الشاشة لتعزيز الـ 3D
+
+                // حساب الإحداثيات على الـ Canvas بناء على البعد بـ المقياس النظري لخط الأفق
+                let scale = 200 / (200 + entity.z);
+                let canvasX = subwayCanvas.width / 2 + subwayLanes[entity.lane] * scale * 2.5;
+                let canvasY = subwayCanvas.height / 2 + 120 * scale;
+
+                // التحقق من وصول الكائن لمنطقة اللاعب (Z قريبة جداً)
                 if(entity.z < 15 && entity.z > -15) {
                     if(entity.lane === subwayPlayer.lane) {
-                        if(entity.type === "coin") { subwayCoins++; document.getElementById('subwayCoins').innerText = subwayCoins; playTone(587.33, 'sine', 0.04); subwayEntities.splice(i, 1); continue; } 
-                        else if(entity.type === "barrier" && !subwayPlayer.isJumping) { gameOverSubway(); break; } 
-                        else if(entity.type === "train" && subwayPlayer.isJumping && subwayPlayer.jumpY > 40) {} 
-                        else if(entity.type === "train") { gameOverSubway(); break; }
+                        if(entity.type === "coin") {
+                            subwayCoins++;
+                            document.getElementById('subwayCoins').innerText = subwayCoins;
+                            playTone(587.33, 'sine', 0.04);
+                            subwayEntities.splice(i, 1);
+                            continue;
+                        } else if(entity.type === "barrier" && !subwayPlayer.isJumping) {
+                            gameOverSubway(); break;
+                        } else if(entity.type === "train" && subwayPlayer.isJumping && subwayPlayer.jumpY > 40) {
+                            // لو قفز بشكل مثالي فوق القطار ينجو
+                        } else if(entity.type === "train") {
+                            gameOverSubway(); break;
+                        }
                     }
                 }
+
                 if(entity.z < -50) { subwayEntities.splice(i, 1); }
             }
-            renderSubwayGraphics(); subwayAnimationId = requestAnimationFrame(updateSubwayLoop);
+
+            // الرسم
+            renderSubwayGraphics();
+            subwayAnimationId = requestAnimationFrame(updateSubwayLoop);
         }
+
         function renderSubwayGraphics() {
-            if(!subwayCtx) return;
-            subwayCtx.fillStyle = "#0f172a"; subwayCtx.fillRect(0, 0, subwayCanvas.width, subwayCanvas.height);
-            let horizonX = subwayCanvas.width / 2; let horizonY = subwayCanvas.height / 2 - 30; subwayCtx.strokeStyle = "#475569"; subwayCtx.lineWidth = 2;
-            for(let i = 0; i < subwayLanes.length; i++) { subwayCtx.beginPath(); subwayCtx.moveTo(horizonX, horizonY); subwayCtx.lineTo(horizonX + subwayLanes[i] * 5, subwayCanvas.height); subwayCtx.stroke(); }
-            subwayEntities.sort((a,b) => b.z - a.z);
+            // تنظيف وإعادة تعيين الخلفية والسماء
+            subwayCtx.fillStyle = "#0f172a";
+            subwayCtx.fillRect(0, 0, subwayCanvas.width, subwayCanvas.height);
+            
+            // رسم النفق والمضامير (3D Lanes Perspective)
+            let horizonX = subwayCanvas.width / 2;
+            let horizonY = subwayCanvas.height / 2 - 30;
+            
+            subwayCtx.strokeStyle = "#475569";
+            subwayCtx.lineWidth = 2;
+            
+            // خطوط مسار المترو
+            for(let i = 0; i < subwayLanes.length; i++) {
+                subwayCtx.beginPath();
+                subwayCtx.moveTo(horizonX, horizonY);
+                subwayCtx.lineTo(horizonX + subwayLanes[i] * 5, subwayCanvas.height);
+                subwayCtx.stroke();
+            }
+
+            // رسم الكائنات (القطارات، الذهب والحواجز) بترتيب العمق
+            subwayEntities.sort((a,b) => b.z - a.z); // رسم الأبعد فالأقرب
+            
             subwayEntities.forEach(ent => {
-                let scale = 220 / (220 + ent.z); let x = horizonX + subwayLanes[ent.lane] * scale * 2.8; let y = subwayCanvas.height / 2 + 30 + (130 * scale); let size = 45 * scale;
-                if(ent.type === "coin") { subwayCtx.fillStyle = "#f59e0b"; subwayCtx.beginPath(); subwayCtx.arc(x, y - size, size * 0.4, 0, Math.PI * 2); subwayCtx.fill(); } 
-                else if(ent.type === "barrier") { subwayCtx.fillStyle = "#ef4444"; subwayCtx.fillRect(x - size * 0.7, y - size * 0.6, size * 1.4, size * 0.6); } 
-                else if(ent.type === "train") { subwayCtx.fillStyle = "#3b82f6"; subwayCtx.fillRect(x - size * 0.9, y - size * 1.8, size * 1.8, size * 1.8); }
+                let scale = 220 / (220 + ent.z);
+                let x = horizonX + subwayLanes[ent.lane] * scale * 2.8;
+                let y = subwayCanvas.height / 2 + 30 + (130 * scale);
+                let size = 45 * scale;
+
+                if(ent.type === "coin") {
+                    subwayCtx.fillStyle = "#f59e0b";
+                    subwayCtx.beginPath();
+                    subwayCtx.arc(x, y - size, size * 0.4, 0, Math.PI * 2);
+                    subwayCtx.fill();
+                    subwayCtx.fillStyle = "#fff";
+                    subwayCtx.font = `${size*0.4}px Arial`;
+                    subwayCtx.fillText("⭐", x - size*0.2, y - size*0.8);
+                } else if(ent.type === "barrier") {
+                    subwayCtx.fillStyle = "#ef4444";
+                    subwayCtx.fillRect(x - size * 0.7, y - size * 0.6, size * 1.4, size * 0.6);
+                    subwayCtx.fillStyle = "#000";
+                    subwayCtx.fillRect(x - size * 0.5, y - size * 0.5, size * 1.0, size * 0.1);
+                } else if(ent.type === "train") {
+                    subwayCtx.fillStyle = "#3b82f6";
+                    subwayCtx.fillRect(x - size * 0.9, y - size * 1.8, size * 1.8, size * 1.8);
+                    subwayCtx.fillStyle = "#60a5fa"; // زجاج المترو الأمامي
+                    subwayCtx.fillRect(x - size * 0.7, y - size * 1.6, size * 1.4, size * 0.5);
+                }
             });
-            let pX = horizonX + subwayPlayer.currentX * 2.1; let pY = subwayCanvas.height - 40 - subwayPlayer.jumpY; subwayCtx.fillStyle = "var(--primary)";
-            if(subwayPlayer.isSliding) { subwayCtx.beginPath(); subwayCtx.ellipse(pX, pY + 15, 25, 12, 0, 0, Math.PI*2); subwayCtx.fill(); } 
-            else { subwayCtx.beginPath(); subwayCtx.arc(pX, pY, 20, 0, Math.PI*2); subwayCtx.fill(); }
+
+            // رسم بطل اللعبة (العداء)
+            let pX = horizonX + subwayPlayer.currentX * 2.1;
+            let pY = subwayCanvas.height - 40 - subwayPlayer.jumpY;
+            
+            subwayCtx.fillStyle = "var(--primary)";
+            if(subwayPlayer.isSliding) {
+                // رسم في حالة التزحلق المنخفض
+                subwayCtx.beginPath();
+                subwayCtx.ellipse(pX, pY + 15, 25, 12, 0, 0, Math.PI*2);
+                subwayCtx.fill();
+                subwayCtx.fillStyle = "#fff";
+                subwayCtx.font = "14px Arial";
+                subwayCtx.fillText("🏃‍♂️💨", pX - 16, pY + 20);
+            } else {
+                // وضع الركض أو القفز الطبيعي
+                subwayCtx.beginPath();
+                subwayCtx.arc(pX, pY, 20, 0, Math.PI*2);
+                subwayCtx.fill();
+                subwayCtx.fillStyle = "#fff";
+                subwayCtx.font = "20px Arial";
+                subwayCtx.fillText("🏃", pX - 10, pY + 7);
+            }
         }
+
+        function drawSubwayStaticScene() {
+            subwayCtx.fillStyle = "#1e293b";
+            subwayCtx.fillRect(0, 0, subwayCanvas.width, subwayCanvas.height);
+            subwayCtx.fillStyle = "#fff";
+            subwayCtx.font = "18px sans-serif";
+            subwayCtx.textAlign = "center";
+            subwayCtx.fillText("اضغط ابدأ لبدء الهروب في الأنفاق", subwayCanvas.width/2, subwayCanvas.height/2);
+        }
+
         function gameOverSubway() {
-            subwayActive = false; cancelAnimationFrame(subwayAnimationId); stopProceduralMusic(); playTone(150, 'sine', 0.5);
-            let goldReward = subwayCoins * 2; usersData[currentUser].wallet += goldReward; saveData(); updateHeaderInfo();
-            document.getElementById('g6Status').style.color = "var(--accent)"; document.getElementById('g6Status').innerText = `اصطدمت بالمترو! جمعت ${subwayCoins} ذهبة وربحت ${goldReward} جنيه! 💥`;
-            document.getElementById('subwayStartBtn').disabled = false; document.getElementById('subwayBetInput').disabled = false;
+            subwayActive = false;
+            cancelAnimationFrame(subwayAnimationId);
+            stopProceduralMusic();
+            playTone(150, 'sine', 0.5);
+
+            // الحسابات المالية: نجمع الذهب المكتسب ليتحول إلى رصيد حقيقي!
+            let goldReward = subwayCoins * 2; // كل عملة ذهب تساوي 2 جنيه
+            let netResult = goldReward;
+            usersData[currentUser].wallet += netResult;
+            saveData(); updateHeaderInfo();
+
+            document.getElementById('g6Status').style.color = "var(--accent)";
+            document.getElementById('g6Status').innerText = `اصطدمت بقطار مترو الأنفاق! جمعت ${subwayCoins} ذهبة وربحت ${goldReward} جنيه كاش! 💥💸`;
+            
+            document.getElementById('subwayStartBtn').disabled = false;
+            document.getElementById('subwayBetInput').disabled = false;
         }
+
         function stopSubwayGame() { subwayActive = false; cancelAnimationFrame(subwayAnimationId); stopProceduralMusic(); }
 
-        // كابتشا المساعدة والتحقق
+        // نظام الكابتشا والمكملات المالية
         let currentCaptchaText = "";
-        function generateCaptcha() { const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; currentCaptchaText = ""; for (let i = 0; i < 5; i++) { currentCaptchaText += chars.charAt(Math.floor(Math.random() * chars.length)); } document.getElementById('captchaCode').innerText = currentCaptchaText; }
-        function verifyCaptcha() { if (document.getElementById('captchaInput').value.trim().toUpperCase() === currentCaptchaText) { usersData[currentUser].wallet += 20; saveData(); updateHeaderInfo(); alert("تم تزويدك بـ 20 جنيه دعم! 🤝"); checkBankruptcy(); } else { alert("الكود خاطئ!"); generateCaptcha(); } }
+        function generateCaptcha() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; currentCaptchaText = "";
+            for (let i = 0; i < 5; i++) { currentCaptchaText += chars.charAt(Math.floor(Math.random() * chars.length)); }
+            document.getElementById('captchaCode').innerText = currentCaptchaText;
+        }
+        function verifyCaptcha() {
+            if (document.getElementById('captchaInput').value.trim().toUpperCase() === currentCaptchaText) {
+                usersData[currentUser].wallet += 20; saveData(); updateHeaderInfo();
+                alert("تم تزويد رصيدك بـ 20 جنيه دعم مجاني 🤝"); checkBankruptcy();
+            } else { alert("الكود خاطئ!"); generateCaptcha(); }
+        }
     </script>
 </body>
 </html>
