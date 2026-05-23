@@ -266,10 +266,13 @@
         let currentStreakDay = 1;
 
         window.onload = function() {
+            // تنظيف التذكر القديم إذا كان الحساب غير موجود في الفايربيز بعد الحذف
             const savedUser = localStorage.getItem('saved_username');
             if (savedUser) {
                 database.ref('users/' + savedUser).once('value').then((snapshot) => {
-                    if (snapshot.exists() && snapshot.val().status === 'banned' && savedUser !== ADMIN_USERNAME) {
+                    if (!snapshot.exists()) {
+                        localStorage.removeItem('saved_username');
+                    } else if (snapshot.val().status === 'banned' && savedUser !== ADMIN_USERNAME) {
                         localStorage.removeItem('saved_username');
                         alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
                         location.reload();
@@ -489,7 +492,7 @@
             database.ref('users/' + currentUser).update({ balance: userCurrentBalance }).then(() => { alert(`كاش أوت ناجح! 🎉 كسبت ${winnings} جنيه! 💰`); endGameCycle(); });
         }
         function endGameCycle() { gameRunning = false; activeStartBtn.disabled = false; activeBetInput.disabled = false; activeCashoutBtn.style.display = 'none'; }
-        function resetCanvas() { if(!activeCtx) return; activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height); activeCtx.strokeStyle = '#1e293b'; activeCtx.lineWidth = 1; for(let i=0; i<activeCanvas.width; i+=40) { activeCtx.beginPath(); activeCtx.moveTo(i, 0); activeCtx.lineTo(i, activeCanvas.height); activeCtx.stroke(); } for(let j=0; j<activeCanvas.height; j+=40) { activeCtx.beginPath(); activeCtx.moveTo(0, j); activeCtx.lineTo(activeCanvas.width, j); activeCtx.stroke(); } }
+        function resetCanvas() { if(!activeCtx) return; activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height); activeCtx.strokeStyle = '#1e293b'; activeCtx.lineWidth = 1; for(let i=0; i<activeCanvas.width; i+=40) { i=Math.floor(i); activeCtx.beginPath(); activeCtx.moveTo(i, 0); activeCtx.lineTo(i, activeCanvas.height); activeCtx.stroke(); } for(let j=0; j<activeCanvas.height; j+=40) { j=Math.floor(j); activeCtx.beginPath(); activeCtx.moveTo(0, j); activeCtx.lineTo(activeCanvas.width, j); activeCtx.stroke(); } }
 
         // التواجد والمستمع لايف
         function setupPresence(username) {
@@ -547,11 +550,11 @@
             });
         }
 
-        // 🔥 تعديل ميزة إنشاء حساب واحد فقط لكل جهاز
+        // إنشاء الحساب النظيف بعد تصفير الـ LocalStorage برمجياً
         function handleSignUp() {
-            // فحص البصمة المسجلة في جهاز اللاعب لمنع الاحتيال
-            if (localStorage.getItem('has_created_account') === 'true') {
-                alert("عفواً، مسموح بإنشاء حساب واحد فقط لكل جهاز! 📱⚠️");
+            // استخدام اسم مفتاح جديد تماماً (cleared_v1_account) لتجاوز البصمة القديمة والسماح للجميع بالبدء من جديد
+            if (localStorage.getItem('cleared_v1_account') === 'true') {
+                alert("عفواً، مسموح بإنشاء حساب واحد فقط لكل جهاز في الموسم الجديد! 📱⚠️");
                 return false;
             }
 
@@ -567,11 +570,11 @@
                         username: username, password: password, balance: 15, status: 'offline',
                         dailyReward: { lastClaimDate: "", currentDay: 1 }
                     }).then(() => {
-                        // 🔒 هنا بنطبع البصمة فوراً في متصفحه أول ما حسابه يتنشئ بنجاح
-                        localStorage.setItem('has_created_account', 'true');
+                        // طباعة البصمة الجديدة للموسم الجديد
+                        localStorage.setItem('cleared_v1_account', 'true');
                         localStorage.setItem('saved_username', username);
                         
-                        alert("تم إنشاء حسابك اللذوذ بنجاح! 🎉 وأخذت 15 جنيه ترحيبية.");
+                        alert("تم إنشاء حسابك اللذوذ بنجاح في البداية الجديدة! 🎉 وأخذت 15 جنيه ترحيبية.");
                         location.reload(); 
                     });
                 }
