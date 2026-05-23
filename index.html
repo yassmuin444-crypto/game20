@@ -83,11 +83,11 @@
 
         /* زر الأدمن السري المخفي */
         #secret-admin-btn {
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
             background: transparent;
             cursor: pointer;
-            margin-right: 10px;
+            margin-right: 15px;
         }
 
         /* الحاويات والشاشات */
@@ -264,6 +264,7 @@
     <div id="top-bar">
         <button class="btn-logout" onclick="logout()">تسجيل خروج 🚪</button>
         <div style="display: flex; align-items: center;">
+            <!-- المربع الشفاف المخفي مخصص للأدمن هنا -->
             <div id="secret-admin-btn" onclick="openAdminPanel()"></div>
             <div id="balance-bar">رصيدك: <span id="balance-amount">0</span> جنيه</div>
         </div>
@@ -272,7 +273,7 @@
     <!-- 1. الشاشة الافتتاحية -->
     <div id="screen-welcome" class="container">
         <h1>منور يسطا في موقعك اللذوذ ✨</h1>
-        <p>هتلعب ولا تضرب البوز؟ 🤔</p>
+        <p>هتلعب ولا تضرب البوز？ 🤔</p>
         <div class="btn-group">
             <button onclick="choosePlay()">هلعب 🎮</button>
             <button class="btn-secondary" onclick="chooseBout()">هضرب البوز 😒</button>
@@ -336,18 +337,18 @@
         <button style="margin-top: 20px; background: #333;" onclick="showGamesList()">رجوع للألعاب ⬅️</button>
     </div>
 
-    <!-- 6. لوحة الأدمن -->
+    <!-- 6. لوحة الأدمن لشحن الرصيد -->
     <div id="screen-admin" class="container">
         <h2>👑 لوحة تحكم الأدمن السري 👑</h2>
         <div class="form-group">
-            <label>إسم المستخدم المراد شحنه:</label>
-            <input type="text" id="admin-target-user" placeholder="اليوزر نيم بالظبط">
+            <label>إسم المستخدم المراد شحنه بالظبط:</label>
+            <input type="text" id="admin-target-user" placeholder="اكتب اليوزر نيم هنا">
         </div>
         <div class="form-group">
-            <label>المبلغ (بالجنيه):</label>
+            <label>المبلغ المراد إضافته (بالجنيه):</label>
             <input type="number" id="admin-amount-to-add" placeholder="مثال: 50">
         </div>
-        <button class="btn-admin" style="width: 100%; margin-bottom: 15px;" onclick="addMoneyAsAdmin()">شحن الرصيد 💸</button>
+        <button class="btn-admin" style="width: 100%; margin-bottom: 15px;" onclick="addMoneyAsAdmin()">شحن الرصيد فوراً 💸</button>
         <button style="background: #333; width: 100%;" onclick="closeAdminPanelAndReturn()">رجوع ⬅️</button>
     </div>
 
@@ -360,13 +361,9 @@
         const ADMIN_PASSWORD = "admin123"; 
         let previousScreen = "screen-games";
 
-        // تشغيل النجوم وفحص الحساب أول ما الصفحة تفتح
         window.onload = function() {
-            // تأثير النجوم المتساقطة لمدة 3 ثواني
             let starInterval = setInterval(createStar, 60);
             setTimeout(() => { clearInterval(starInterval); }, 3000);
-
-            // فحص حالة المستخدم مباشرة بدون تعليق
             checkUserSession();
         };
 
@@ -382,15 +379,10 @@
         }
 
         function showScreen(screenId) {
-            // إخفاء كل الحاويات أولاً
             const containers = document.querySelectorAll('.container');
             containers.forEach(c => c.classList.remove('active'));
-            
-            // إظهار الشاشة المطلوبة
             const target = document.getElementById(screenId);
-            if(target) {
-                target.classList.add('active');
-            }
+            if(target) target.classList.add('active');
         }
 
         function checkUserSession() {
@@ -412,7 +404,6 @@
                     showScreen('screen-welcome');
                 }
             } catch (e) {
-                // في حالة وجود قيود في المتصفح على الـ localStorage
                 showScreen('screen-welcome');
             }
         }
@@ -478,6 +469,7 @@
             }
         }
 
+        /* دالة الشحن المصلحة تماماً بنسبة 100% للتأكد من قراءة البيانات بالشكل الصحيح */
         function addMoneyAsAdmin() {
             const targetUser = document.getElementById('admin-target-user').value.trim();
             const amountToAdd = parseFloat(document.getElementById('admin-amount-to-add').value);
@@ -494,22 +486,24 @@
             }
 
             let userData = JSON.parse(existingUser);
-            if(userData.username === targetUser) {
+            
+            // المقارنة الآن تتم بين النصوص بشكل مباشر وصحيح لتفادي مشاكل الحفظ
+            if(String(userData.username).toLowerCase() === String(targetUser).toLowerCase()) {
                 userData.balance = (parseFloat(userData.balance) || 0) + amountToAdd;
                 localStorage.setItem('registeredUser', JSON.stringify(userData));
                 
+                // تحديث الرصيد الحالي لو الأدمن بيشحن لنفسه وهو فاتح الحساب
                 balance = userData.balance;
                 updateBalanceDisplay();
                 
-                alert(` تم إضافة ${amountToAdd} جنيه لـ [${targetUser}]`);
+                alert(`🎯 تم بنجاح إضافة ${amountToAdd} جنيه لحساب [${targetUser}]`);
                 document.getElementById('admin-target-user').value = "";
                 document.getElementById('admin-amount-to-add').value = "";
             } else {
-                alert("❌ المستخدم ده مش موجود، اتأكد من الاسم!");
+                alert(`❌ المستخدم [${targetUser}] مش موجود، اتأكد إن الحروف والاسم صح!`);
             }
         }
 
-        function cancelAdmin() { showScreen(previousScreen); }
         function closeAdminPanelAndReturn() { showScreen(previousScreen); }
 
         function logout() {
