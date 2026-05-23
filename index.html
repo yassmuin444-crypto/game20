@@ -4,77 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مرحبا بك في موقعك اللذوذ 👑🚀</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <style>
-        /* [نفس الستايل الأصلي بتاعك] */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .container { background: #1e293b; width: 100%; max-width: 550px; padding: 25px; border-radius: 15px; border: 1px solid #334155; margin-bottom: 20px; display: none; }
-        .container.active { display: block; }
-        input { width: 100%; padding: 12px; border: 1px solid #334155; background: #0f172a; color: #fff; border-radius: 8px; font-size: 16px; text-align: center; }
-        button { color: #fff; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; }
-        .banned-panel { display: none; } .banned-panel.open { display: block; }
-    </style>
-</head>
-<body>
-    <div id="login-screen" class="container active">
-        <h3>تسجيل الدخول</h3>
-        <input type="text" id="login-username" placeholder="اسم المستخدم">
-        <input type="password" id="login-password" placeholder="كلمة المرور">
-        <button class="btn-primary" onclick="handleLogin()">دخول للموقع 🚀</button>
-    </div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBlbW15S2V5X0R1bW15X01haG1vdWQyMDI2",
-            databaseURL: "https://game11-5dfa1-default-rtdb.firebaseio.com",
-            projectId: "game11-5dfa1"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // 1. الدالة الوحيدة الجديدة للحماية
-        function getDeviceFingerprint() {
-            return "dev_" + btoa(window.navigator.userAgent + window.screen.width + window.screen.height);
-        }
-
-        // 2. تحديث دالة الـ Ban (داخل اللوجيك الخاص بيك)
-        function banUser() {
-            const username = document.getElementById('friend-username').value.trim().toLowerCase();
-            database.ref('users/' + username).once('value').then((snap) => {
-                if (!snap.exists()) return alert("اللاعب غير موجود!");
-                const fp = snap.val().device_fp || getDeviceFingerprint();
-                database.ref('blacklisted_devices/' + fp).set({ username: username });
-                database.ref('users/' + username).update({ status: 'banned' });
-                alert("تم حظر اللاعب نهائياً!");
-            });
-        }
-
-        // 3. تحديث دالة اللوجين (لفحص الباند)
-        function handleLogin() {
-            const username = document.getElementById('login-username').value.trim().toLowerCase();
-            const password = document.getElementById('login-password').value.trim();
-            const fp = getDeviceFingerprint();
-
-            database.ref('blacklisted_devices/' + fp).once('value').then((snap) => {
-                if (snap.exists()) {
-                    return alert("جهازك محظور من دخول الموقع! 🚫");
-                }
-                // [هنا كمل باقي الكود بتاعك اللي كان بيشيك على الباسورد واليوزر]
-                // تأكد أنك بتحدث الـ device_fp في الفايربيز عند كل دخول
-                database.ref('users/' + username).update({ device_fp: fp });
-                // أكمل باقي دوالك هنا...
-            });
-        }
-
-        // [<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مرحبا بك في موقعك اللذوذ 👑🚀</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -607,32 +536,25 @@
             }
         }
 
-        // 🔥 تعديل دالة حظر اللاعب لقفل جهازه نهائياً
-        function banUser() {
-            const username = document.getElementById('friend-username').value.trim().toLowerCase();
-            if (!username) return alert("اكتب اسم اللاعب اللي عاوز تحظره! ⚠️");
-            if (username === ADMIN_USERNAME) return alert("مش هتعرف تحظر نفسك يا حودة! 😂👑");
-
-            database.ref('users/' + username).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    // قفش البصمة الفريدة المحفوظة في حسابه لما سجل أول مرة
-                    const deviceFp = userData.device_fp || "unknown";
-
-                    database.ref('users/' + username).update({ status: 'banned' }).then(() => {
-                        // وضع بصمة جهازه في القائمة السوداء الأبدية
-                        if(deviceFp !== "unknown") {
-                            database.ref('blacklisted_devices/' + deviceFp).set({
-                                banned_username: username,
-                                ban_date: new Date().toISOString()
-                            });
-                        }
-                        alert(`تم بنجاح حظر اللاعب (${username}) وحظر بصمة جهازه نهائياً! 🚫🔒`);
-                        document.getElementById('friend-username').value = "";
-                    });
-                } else { alert("اسم الحساب ده مش موجود أصلاً عشان تحظره! ❌"); }
+      // 1. حظر اللاعب: بيربط اسمه ببصمة جهازه في قاعدة البيانات
+function banUser() {
+    const username = document.getElementById('friend-username').value.trim().toLowerCase();
+    if (!username) return alert("اكتب اسم اللاعب!");
+    
+    database.ref('users/' + username).once('value').then((snapshot) => {
+        if (snapshot.exists()) {
+            const userData = snapshot.val();
+            // هنا بنسجل البصمة بتاعته في قائمة الحظر المركزية
+            database.ref('banned_fingerprints/' + userData.device_fp).set({
+                username: username,
+                ban_date: new Date().toISOString()
             });
+            // وبنغير حالته
+            database.ref('users/' + username).update({ status: 'banned' });
+            alert("تم حظر اللاعب وبصمة جهازه نهائياً! 🚫");
         }
+    });
+}
 
         // دالة فك الحظر فوري
         function unbanUser(targetUser = null) {
@@ -700,38 +622,34 @@
             });
         }
 
-        function handleLogin() {
-            const username = document.getElementById('login-username').value.trim().toLowerCase();
-            const password = document.getElementById('login-password').value.trim();
-            if (!username || !password) return alert("اكتب الاسم والباسورد! ⚠️");
+      // 2. تسجيل الدخول: بيشيك لو جهازه في القائمة السوداء
+function handleLogin() {
+    const username = document.getElementById('login-username').value.trim().toLowerCase();
+    const password = document.getElementById('login-password').value.trim();
+    const currentFp = getDeviceFingerprint();
 
-            database.ref('users/' + username).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    
-                    if (userData.status === 'banned' && username !== ADMIN_USERNAME) {
-                        localStorage.removeItem('saved_username');
-                        alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
-                        return false; 
-                    }
-
-                    if (userData.password === password || (username === ADMIN_USERNAME && password === "admin123")) {
-                        localStorage.setItem('saved_username', username);
-                        currentUser = username;
-                        setupPresence(username);
-
-                        if (username === ADMIN_USERNAME) {
-                            switchScreen('admin-screen'); document.getElementById('admin-table-box').style.display = 'block';
-                            injectGames('admin-crash-box', 'admin-apple-box'); loadAdminTable(); loadUserBalance(username);
-                        } else {
-                            switchScreen('user-screen'); document.getElementById('admin-table-box').style.display = 'none';
-                            injectGames('user-crash-box', 'user-apple-box'); document.getElementById('user-display-name').innerText = username; loadUserBalance(username);
-                        }
-                        setTimeout(() => { checkDailyReward(username); }, 800);
-                    } else { alert("الباسورد غلط! 🤫"); }
-                } else { alert("الحساب غير موجود! سجل أولاً ↩️"); }
-            });
+    // تشيك قبل ما يدخل أصلاً: هل الجهاز ده متبند؟
+    database.ref('banned_fingerprints/' + currentFp).once('value').then((snap) => {
+        if (snap.exists()) {
+            alert("هذا الجهاز محظور من دخول الموقع! 🚫");
+            return;
         }
+
+        database.ref('users/' + username).once('value').then((snapshot) => {
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                if (userData.status === 'banned') {
+                    alert("حسابك محظور! 🚫");
+                    return;
+                }
+                // لو دخل، بنحدث بصمته عشان نتأكد إنها متسجلة
+                database.ref('users/' + username).update({ device_fp: currentFp });
+                // ... كمل باقي كود الدخول بتاعك عادي
+                proceedLogin(username, userData, password);
+            }
+        });
+    });
+}
 
         function loadAdminTable() {
             database.ref('users').on('value', (snapshot) => {
@@ -826,9 +744,6 @@
             const savedUser = localStorage.getItem('saved_username');
             if (savedUser) { document.getElementById('login-username').value = savedUser; document.getElementById('login-username').disabled = true; }
         }
-    </script>
-</body>
-</html>]
     </script>
 </body>
 </html>
