@@ -536,43 +536,58 @@
             }
         }
 
-     // 2. دالة حظر الجهاز (تمنع دخول الجهاز المحظور)
-function banUser() {
-    const username = document.getElementById('friend-username').value.trim().toLowerCase();
-    if (!username) return alert("اكتب اسم اللاعب! ⚠️");
-    
-    database.ref('users/' + username).once('value').then((snapshot) => {
-        if (snapshot.exists()) {
-            const userData = snapshot.val();
-            const deviceFp = userData.device_fp || "unknown";
-            
-            // حظر الحساب وحظر بصمة الجهاز في نفس الوقت
-            database.ref('users/' + username).update({ status: 'banned' });
-            if(deviceFp !== "unknown") {
-                database.ref('blacklisted_devices/' + deviceFp).set({ 
-                    banned_username: username, 
-                    ban_date: new Date().toISOString() 
-                });
-            }
-            alert(`تم حظر اللاعب (${username}) وجهازه نهائياً! 🚫🔒`);
-        } else { alert("الحساب غير موجود! ❌"); }
-    });
-}
+        // 🔥 تعديل دالة حظر اللاعب لقفل جهازه نهائياً
+        function banUser() {
+            const username = document.getElementById('friend-username').value.trim().toLowerCase();
+            if (!username) return alert("اكتب اسم اللاعب اللي عاوز تحظره! ⚠️");
+            if (username === ADMIN_USERNAME) return alert("مش هتعرف تحظر نفسك يا حودة! 😂👑");
 
-      // 3. دالة فك الحظر
-function unbanUser(targetUser = null) {
-    let username = targetUser || document.getElementById('friend-username').value.trim().toLowerCase();
-    if (!username) return alert("اكتب اسم اللاعب! ⚠️");
-    
-    database.ref('users/' + username).once('value').then((snapshot) => {
-        if (snapshot.exists()) {
-            const deviceFp = snapshot.val().device_fp;
-            database.ref('users/' + username).update({ status: 'offline' });
-            if(deviceFp) database.ref('blacklisted_devices/' + deviceFp).remove();
-            alert(`تم فك الحظر عن (${username})! 🔓🟢`);
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    // قفش البصمة الفريدة المحفوظة في حسابه لما سجل أول مرة
+                    const deviceFp = userData.device_fp || "unknown";
+
+                    database.ref('users/' + username).update({ status: 'banned' }).then(() => {
+                        // وضع بصمة جهازه في القائمة السوداء الأبدية
+                        if(deviceFp !== "unknown") {
+                            database.ref('blacklisted_devices/' + deviceFp).set({
+                                banned_username: username,
+                                ban_date: new Date().toISOString()
+                            });
+                        }
+                        alert(`تم بنجاح حظر اللاعب (${username}) وحظر بصمة جهازه نهائياً! 🚫🔒`);
+                        document.getElementById('friend-username').value = "";
+                    });
+                } else { alert("اسم الحساب ده مش موجود أصلاً عشان تحظره! ❌"); }
+            });
         }
-    });
-}
+
+        // دالة فك الحظر فوري
+        function unbanUser(targetUser = null) {
+            let username = targetUser;
+            if (!username) {
+                username = document.getElementById('friend-username').value.trim().toLowerCase();
+            }
+            if (!username) return alert("اكتب اسم اللاعب اللي عاوز تفك حظره! ⚠️");
+
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const deviceFp = userData.device_fp || "unknown";
+
+                    database.ref('users/' + username).update({ status: 'offline' }).then(() => {
+                        // مسحه من القائمة السوداء للأجهزة
+                        if(deviceFp !== "unknown") {
+                            database.ref('blacklisted_devices/' + deviceFp).remove();
+                        }
+                        alert(`تم فك الحظر وجهاز اللاعب (${username}) بنجاح! 🔓🟢`);
+                        if (!targetUser) document.getElementById('friend-username').value = "";
+                    });
+                } else { alert("اسم الحساب ده مش موجود! ❌"); }
+            });
+        }
+
         // 🔥 تعديل إنشاء الحساب لمنع الأجهزة المحظورة تماماً
         function handleSignUp() {
             const currentFp = getDeviceFingerprint();
