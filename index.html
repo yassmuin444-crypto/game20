@@ -287,7 +287,6 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // فتح وقفل قائمة المحظورين
         function toggleBannedPanel() {
             const panel = document.getElementById('banned-users-panel');
             const arrow = document.getElementById('dropdown-arrow');
@@ -530,7 +529,7 @@
             });
         }
 
-        // دالة فك الحظر العامة والـ Fast Unban من القائمة الجديدة
+        // دالة فك الحظر
         function unbanUser(targetUser = null) {
             let username = targetUser;
             if (!username) {
@@ -548,7 +547,14 @@
             });
         }
 
+        // 🔥 تعديل ميزة إنشاء حساب واحد فقط لكل جهاز
         function handleSignUp() {
+            // فحص البصمة المسجلة في جهاز اللاعب لمنع الاحتيال
+            if (localStorage.getItem('has_created_account') === 'true') {
+                alert("عفواً، مسموح بإنشاء حساب واحد فقط لكل جهاز! 📱⚠️");
+                return false;
+            }
+
             const username = document.getElementById('signup-username').value.trim().toLowerCase();
             const password = document.getElementById('signup-password').value.trim();
             if (!username || !password) return alert("اكتب البيانات بالكامل! ⚠️");
@@ -561,8 +567,12 @@
                         username: username, password: password, balance: 15, status: 'offline',
                         dailyReward: { lastClaimDate: "", currentDay: 1 }
                     }).then(() => {
-                        alert("تم إنشاء حسابك اللذوذ! 🎉 أخدت 15 جنيه ترحيبية.");
-                        localStorage.setItem('saved_username', username); location.reload(); 
+                        // 🔒 هنا بنطبع البصمة فوراً في متصفحه أول ما حسابه يتنشئ بنجاح
+                        localStorage.setItem('has_created_account', 'true');
+                        localStorage.setItem('saved_username', username);
+                        
+                        alert("تم إنشاء حسابك اللذوذ بنجاح! 🎉 وأخذت 15 جنيه ترحيبية.");
+                        location.reload(); 
                     });
                 }
             });
@@ -601,7 +611,6 @@
             });
         }
 
-        // مستمع لايف شامل لجدول الحسابات وقائمة المحظورين الجديدة معاً
         function loadAdminTable() {
             database.ref('users').on('value', (snapshot) => {
                 const tbody = document.getElementById('users-list-tbody'); tbody.innerHTML = "";
@@ -617,7 +626,6 @@
                         if (user.status === 'online') { statusText = 'أونلاين 🟢'; statusClass = 'status-online'; }
                         else if (user.status === 'banned') { statusText = 'محظور 🚫🔒'; statusClass = 'status-banned'; }
                         
-                        // 1. بناء جدول الأدمن الرئيسي
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td style="font-weight: bold;">👤 ${user.username}</td>
@@ -627,7 +635,6 @@
                         `;
                         tbody.appendChild(tr);
 
-                        // 2. بناء قائمة المحظورين المنسدلة (لو الحالة banned)
                         if (user.status === 'banned') {
                             hasBanned = true;
                             const bannedItem = document.createElement('div');
