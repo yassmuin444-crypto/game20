@@ -8,16 +8,14 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        /* (نفس الستايل بتاعك كما هو) */
+        /* [نفس الستايل الأصلي بتاعك] */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { background: #1e293b; width: 100%; max-width: 550px; padding: 25px; border-radius: 15px; border: 1px solid #334155; margin-bottom: 20px; display: none; }
         .container.active { display: block; }
-        input { width: 100%; padding: 12px; border: 1px solid #334155; background: #0f172a; color: #fff; border-radius: 8px; font-size: 16px; text-align: center; margin-bottom: 15px; }
+        input { width: 100%; padding: 12px; border: 1px solid #334155; background: #0f172a; color: #fff; border-radius: 8px; font-size: 16px; text-align: center; }
         button { color: #fff; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; }
-        .btn-primary { background: linear-gradient(45deg, #38bdf8, #0284c7); }
-        .btn-ban { background: linear-gradient(45deg, #ea580c, #c2410c); }
-        .btn-unban { background: linear-gradient(45deg, #06b6d4, #0891b2); }
+        .banned-panel { display: none; } .banned-panel.open { display: block; }
     </style>
 </head>
 <body>
@@ -37,53 +35,800 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // 1. دالة بصمة الجهاز (الحماية الجديدة)
+        // 1. الدالة الوحيدة الجديدة للحماية
         function getDeviceFingerprint() {
             return "dev_" + btoa(window.navigator.userAgent + window.screen.width + window.screen.height);
         }
 
-        // 2. تعديل دالة حظر اللاعب (Ban)
+        // 2. تحديث دالة الـ Ban (داخل اللوجيك الخاص بيك)
         function banUser() {
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             database.ref('users/' + username).once('value').then((snap) => {
                 if (!snap.exists()) return alert("اللاعب غير موجود!");
-                const fp = snap.val().device_fp || "unknown";
+                const fp = snap.val().device_fp || getDeviceFingerprint();
                 database.ref('blacklisted_devices/' + fp).set({ username: username });
                 database.ref('users/' + username).update({ status: 'banned' });
-                alert("تم حظر اللاعب وجهازه نهائياً! 🚫");
+                alert("تم حظر اللاعب نهائياً!");
             });
         }
 
-        // 3. تعديل دالة فك الحظر (Unban)
-        function unbanUser() {
-            const username = document.getElementById('friend-username').value.trim().toLowerCase();
-            database.ref('users/' + username).once('value').then((snap) => {
-                if (!snap.exists()) return alert("اللاعب غير موجود!");
-                const fp = snap.val().device_fp;
-                database.ref('blacklisted_devices/' + fp).remove();
-                database.ref('users/' + username).update({ status: 'offline' });
-                alert("تم فك الحظر! 🔓");
-            });
-        }
-
-        // 4. تعديل تسجيل الدخول (لفحص الحظر)
+        // 3. تحديث دالة اللوجين (لفحص الباند)
         function handleLogin() {
             const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value.trim();
             const fp = getDeviceFingerprint();
 
             database.ref('blacklisted_devices/' + fp).once('value').then((snap) => {
                 if (snap.exists()) {
-                    alert("جهازك محظور نهائياً من الموقع! 🚫");
-                    return;
+                    return alert("جهازك محظور من دخول الموقع! 🚫");
                 }
-                // (هنا كمل باقي الكود الخاص بيك في تسجيل الدخول)
+                // [هنا كمل باقي الكود بتاعك اللي كان بيشيك على الباسورد واليوزر]
                 // تأكد أنك بتحدث الـ device_fp في الفايربيز عند كل دخول
                 database.ref('users/' + username).update({ device_fp: fp });
-                // ... (باقي منطق الدخول بتاعك)
+                // أكمل باقي دوالك هنا...
             });
         }
 
-        // (ضع هنا باقي دوال الألعاب والمنطق الخاص بك كما هي بالظبط)
+        // [<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحبا بك في موقعك اللذوذ 👑🚀</title>
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { color: #38bdf8; font-size: 28px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+        .header p { color: #94a3b8; font-size: 14px; margin-top: 5px; }
+
+        .container { background: #1e293b; width: 100%; max-width: 550px; padding: 25px; border-radius: 15px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; display: none; }
+        .container.active { display: block; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; color: #94a3b8; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 12px; border: 1px solid #334155; background: #0f172a; color: #fff; border-radius: 8px; font-size: 16px; text-align: center; }
+        input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
+        input:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border-color: #334155; }
+
+        .buttons-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        
+        button { color: #fff; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: linear-gradient(45deg, #38bdf8, #0284c7); width: 100%; }
+        .btn-success { background: linear-gradient(45deg, #10b981, #059669); width: 100%; }
+        .btn-add { background: linear-gradient(45deg, #10b981, #059669); width: 100%; }
+        .btn-deduct { background: linear-gradient(45deg, #ef4444, #dc2626); width: 100%; }
+        .btn-ban { background: linear-gradient(45deg, #ea580c, #c2410c); width: 100%; }
+        .btn-unban { background: linear-gradient(45deg, #06b6d4, #0891b2); width: 100%; }
+        .btn-fast-unban { background: #0284c7; padding: 5px 10px; font-size: 12px; border-radius: 5px; }
+        .btn-fast-unban:hover { background: #0369a1; }
+        button:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .toggle-link { text-align: center; margin-top: 15px; color: #38bdf8; cursor: pointer; font-size: 14px; text-decoration: underline; }
+
+        /* ستايل منسدلة قائمة المحظورين */
+        .banned-dropdown-btn { width: 100%; background: #1e293b; border: 1px solid #ea580c; color: #ea580c; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .banned-dropdown-btn:hover { background: rgba(234, 88, 12, 0.1); }
+        .banned-panel { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: none; }
+        .banned-panel.open { display: block; }
+        .banned-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid #1e293b; font-size: 14px; }
+        .banned-list-item:last-child { border-bottom: none; }
+
+        /* ✈️ ستايل الطيارة */
+        .crash-box { width: 100%; background: #0f172a; border-radius: 12px; border: 2px solid #334155; padding: 15px; margin-top: 20px; text-align: center; position: relative; overflow: hidden; }
+        .crash-canvas { width: 100%; height: 220px; background: #0b0f19; border-radius: 8px; display: block; }
+        .multiplier-display { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 42px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); font-family: monospace; }
+        .multiplier-display.crashed { color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+        
+        .game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn-start { background: linear-gradient(45deg, #e11d48, #be123c); width: 100%; }
+        .btn-cashout { background: linear-gradient(45deg, #eab308, #ca8a04); width: 100%; }
+
+        /* 🍏 ستايل التفاحة */
+        .apple-game-container { width: 100%; background: #0f172a; border-radius: 12px; border: 2px solid #10b981; padding: 15px; margin-top: 25px; text-align: center; }
+        .apple-board { display: flex; flex-direction: column-reverse; gap: 6px; margin: 15px 0; background: #0b0f19; padding: 10px; border-radius: 10px; }
+        .apple-row { display: grid; grid-template-columns: 50px repeat(4, 1fr); gap: 6px; align-items: center; opacity: 0.4; pointer-events: none; padding: 3px; border-radius: 6px; }
+        .apple-row.active { opacity: 1; pointer-events: auto; background: rgba(16, 185, 129, 0.1); border: 1px dashed #10b981; }
+        .apple-row.passed { opacity: 0.7; background: rgba(56, 189, 248, 0.05); }
+        .row-mult { font-size: 11px; color: #eab308; font-weight: bold; font-family: monospace; text-align: center; }
+        .apple-cell { background: #1e293b; border: 1px solid #334155; height: 35px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: 0.2s; color: #fff; }
+        .apple-row.active .apple-cell:hover { background: #334155; border-color: #10b981; }
+        .apple-cell.good { background: rgba(16, 185, 129, 0.3) !important; border-color: #10b981; }
+        .apple-cell.bad { background: rgba(239, 68, 68, 0.4) !important; border-color: #ef4444; }
+
+        /* ستايل المودال والكروت */
+        .user-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 15px; }
+        .user-card .name { font-size: 18px; color: #94a3b8; }
+        .user-card .balance { font-size: 28px; color: #10b981; font-weight: bold; margin-top: 5px; }
+
+        .daily-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .daily-modal.show { visibility: visible; opacity: 1; }
+        .daily-content { background: #1e293b; width: 90%; max-width: 500px; padding: 25px; border-radius: 20px; border: 2px solid #ec4899; box-shadow: 0 0 30px rgba(236, 72, 153, 0.4); text-align: center; transform: scale(0.8); transition: 0.3s; }
+        .daily-modal.show .daily-content { transform: scale(1); }
+        .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+        .day-box { background: #0f172a; border: 1px solid #334155; padding: 10px 5px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; opacity: 0.6; }
+        .day-box.active { border-color: #ec4899; background: linear-gradient(135deg, #25142b, #0f172a); opacity: 1; }
+        .day-box.claimed { border-color: #10b981; background: rgba(16, 185, 129, 0.1); opacity: 0.8; }
+        .day-box .day-title { font-size: 12px; color: #94a3b8; }
+        .day-box.active .day-title { color: #ec4899; font-weight: bold; }
+        .day-box .day-reward { font-size: 14px; color: #10b981; font-weight: bold; }
+        .btn-claim { background: linear-gradient(45deg, #ec4899, #be185d); font-size: 18px; margin-top: 10px; width: 100%; }
+        .btn-close-modal { background: #334155; margin-top: 10px; padding: 8px; font-size: 13px; width: 100%; }
+
+        .balance-box { width: 100%; max-width: 650px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 20px; display: none; margin-top: 20px; }
+        .balance-box h3 { color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 18px; }
+        .admin-table { width: 100%; border-collapse: collapse; text-align: center; background: #0f172a; font-size: 14px; }
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #1e293b; }
+        .admin-table th { background-color: #1e293b; color: #38bdf8; }
+        .status-online { color: #10b981; font-weight: bold; }
+        .status-offline { color: #64748b; }
+        .status-banned { color: #ef4444; font-weight: bold; }
+        .logout-btn { margin-top: 15px; background: #334155; padding: 8px; font-size: 13px; width: 100%; }
+        
+        .games-divider { margin: 25px 0; border: 0; height: 1px; background: linear-gradient(to right, transparent, #334155, transparent); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>مرحبا بك في موقعك اللذوذ 👑🚀</h1>
+        <p>توقع صعود الطيارة أو العب لعبة التفاحة واكسب فلوس حقيقية!</p>
+    </div>
+
+    <div id="daily-reward-modal" class="daily-modal">
+        <div class="daily-content">
+            <h2 style="color: #ec4899;">💰 تسجيل الدخول اليومي 💰</h2>
+            <div class="days-grid" id="modal-days-grid"></div>
+            <button class="btn-claim" id="claim-reward-btn" onclick="claimDailyReward()">استلام الهدية اليومية 🎁</button>
+            <button class="btn-close-modal" onclick="closeDailyModal()">إغلاق مؤقت</button>
+        </div>
+    </div>
+
+    <div id="login-screen" class="container active">
+        <h3 style="text-align: center; margin-bottom: 15px; color: #38bdf8;">تسجيل الدخول للعب</h3>
+        <div class="form-group">
+            <label>اسم المستخدم:</label>
+            <input type="text" id="login-username" placeholder="اكتب اسمك هنا...">
+        </div>
+        <div class="form-group">
+            <label>كلمة المرور:</label>
+            <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <button class="btn-primary" onclick="handleLogin()">دخول للموقع 🚀</button>
+        <div class="toggle-link" onclick="switchScreen('signup-screen')">عمل حساب جديد لأول مرة ✨</div>
+    </div>
+
+    <div id="signup-screen" class="container">
+        <h3 style="text-align: center; margin-bottom: 15px; color: #10b981;">إنشاء حساب ألعاب جديد</h3>
+        <div class="form-group">
+            <label>اسم مستخدم جديد (بدون مسافات):</label>
+            <input type="text" id="signup-username" placeholder="مثال: hossam_4">
+        </div>
+        <div class="form-group">
+            <label>كلمة مرور سريّة:</label>
+            <input type="password" id="signup-password" placeholder="اكتب باسورد">
+        </div>
+        <button class="btn-success" onclick="handleSignUp()">تسجيل وحفظ البيانات 🛠️</button>
+        <div class="toggle-link" onclick="switchScreen('login-screen')">عندك حساب? سجل دخولك</div>
+    </div>
+
+    <div id="admin-screen" class="container">
+        <h2 style="color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 18px;">👑 لوحة الإدارة والتحكم بالأرصدة 👑</h2>
+        <div class="form-group">
+            <label>اسم حساب اللاعب:</label>
+            <input type="text" id="friend-username" placeholder="مثال: hossam">
+        </div>
+        <div class="form-group">
+            <label>المبلغ (جنيه) [للشحن أو الخصم]:</label>
+            <input type="number" id="money-amount" placeholder="اكتب العدد هنا">
+        </div>
+        <div class="buttons-zone">
+            <button class="btn-add" onclick="addMoney()">إضافة رصيد ➕</button>
+            <button class="btn-deduct" onclick="deductMoney()">خصم رصيد ➖</button>
+        </div>
+        
+        <div class="buttons-zone">
+            <button class="btn-ban" onclick="banUser()">حظر لاعب 🚫</button>
+            <button class="btn-unban" onclick="unbanUser()">فك حظر لاعب 🔓</button>
+        </div>
+
+        <div class="banned-dropdown-btn" onclick="toggleBannedPanel()">
+            <span>🔒 قائمة الحسابات المحظورة</span>
+            <span id="dropdown-arrow">▼</span>
+        </div>
+        <div id="banned-users-panel" class="banned-panel">
+            <div id="banned-list-container">👉 لا يوجد حسابات محظورة حالياً.</div>
+        </div>
+        
+        <div id="admin-crash-box"></div>
+        <hr class="games-divider">
+        <div id="admin-apple-box"></div>
+
+        <button class="logout-btn" onclick="logout()">تسجيل الخروج ↩️</button>
+    </div>
+
+    <div id="user-screen" class="container">
+        <div class="user-card">
+            <div class="name">اللاعب: <span id="user-display-name" style="color: #38bdf8;"></span></div>
+            <div class="balance" id="user-display-balance">0 جنيه</div>
+        </div>
+
+        <div id="user-crash-box"></div>
+        <hr class="games-divider">
+        <div id="user-apple-box"></div>
+
+        <button class="logout-btn" onclick="logout()">تسجيل الخروج ↩️</button>
+    </div>
+
+    <div id="crash-game-template" style="display: none;">
+        <div class="crash-box">
+            <h3 style="color:#38bdf8; margin-bottom:10px; font-size:16px;">✈️ لعبة الطيارة (الحد الأدنى 8 ج)</h3>
+            <canvas class="crash-canvas" width="500" height="220"></canvas>
+            <div class="multiplier-display">1.00x</div>
+            <div class="game-controls">
+                <input type="number" class="bet-amount-input" placeholder="مبلغ الرهان" value="8" style="padding: 8px; font-size: 14px;">
+                <button class="btn-start" onclick="startCrashGame()">بدء الرحلة 🚀</button>
+            </div>
+            <button class="btn-cashout" onclick="cashoutCrashGame()" style="margin-top: 10px; display: none;">كاش أوت (سحب الأرباح) 💰</button>
+        </div>
+    </div>
+
+    <div id="apple-game-template" style="display: none;">
+        <div class="apple-game-container">
+            <h3 style="color:#10b981; margin-bottom:5px; font-size:16px;">🍏 لعبة التفاحة Apple of Fortune</h3>
+            <p style="color:#64748b; font-size:12px; margin-bottom:10px;">الحد الأدنى للعب 8 جنيه - اصعد لربح أعلى!</p>
+            
+            <div class="game-controls" style="grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <input type="number" class="apple-bet-input" placeholder="مبلغ الرهان" value="8" style="padding: 8px; font-size:14px;">
+                <button class="btn-success apple-start-btn" onclick="startAppleGame()">بدء اللعبة 🎮</button>
+            </div>
+            <div class="apple-board"></div>
+            <button class="btn-cashout apple-cashout-btn" onclick="cashoutAppleGame()" style="margin-top: 10px; display: none; background: linear-gradient(45deg, #eab308, #ca8a04);">سحب الأرباح التراكمية 💰</button>
+        </div>
+    </div>
+
+    <div id="admin-table-box" class="balance-box">
+        <h3>بيانات حسابات اللاعبين والمراقبة الحية 📊</h3>
+        <table class="admin-table">
+            <thead>
+                <tr><th>المستخدم</th><th>الباسورد</th><th>الرصيد الحالي</th><th>الحالة</th></tr>
+            </thead>
+            <tbody id="users-list-tbody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBlbW15S2V5X0R1bW15X01haG1vdWQyMDI2", 
+            authDomain: "game11-5dfa1.firebaseapp.com",
+            databaseURL: "https://game11-5dfa1-default-rtdb.firebaseio.com",
+            projectId: "game11-5dfa1",
+            storageBucket: "game11-5dfa1.appspot.com",
+            messagingSenderId: "5839201948", 
+            appId: "1:5839201948:web:73bdfa932e" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const ADMIN_USERNAME = "mahmoud"; 
+        let currentUser = "";
+        let userCurrentBalance = 0;
+
+        // دالة توليد بصمة فريدة جداً للجهاز بناءً على مواصفات الشاشة والمتصفح والويندوز لقفش المخادعين حتى لو مسحوا الكاش
+        function getDeviceFingerprint() {
+            const navigator_info = window.navigator.userAgent + window.navigator.language + window.screen.colorDepth + window.screen.width + window.screen.height;
+            let hash = 0;
+            for (let i = 0; i < navigator_info.length; i++) {
+                hash = (hash << 5) - hash + navigator_info.charCodeAt(i);
+                hash |= 0;
+            }
+            return "dev_" + Math.abs(hash);
+        }
+
+        // الطيارة
+        let crashInterval; let currentMultiplier = 1.00; let crashPoint = 0; let currentBet = 0; let gameRunning = false;
+        let activeCanvas, activeCtx, activeDisplay, activeStartBtn, activeCashoutBtn, activeBetInput;
+
+        // التفاحة
+        let appleGameActive = false; let appleBet = 0; let appleCurrentRow = 0; let appleBoardData = [];
+        let activeAppleContainer, activeAppleBoard, activeAppleStartBtn, activeAppleCashoutBtn, activeAppleBetInput;
+        const appleMultipliers = [1.23, 1.54, 1.93, 2.41, 3.02, 4.02, 5.37, 7.16, 9.55, 14.33, 24.22, 50.11];
+
+        // المكافأة
+        const rewardAmounts = { 1: 10, 2: 20, 3: 30, 4: 40, 5: 50, 6: 60, 7: 70 };
+        let currentStreakDay = 1;
+
+        window.onload = function() {
+            // أول ما يفتح الموقع بنشيك لو جهاز الزفت ده متبند في القائمة السوداء بالأي بي الفريد
+            const fp = getDeviceFingerprint();
+            database.ref('blacklisted_devices/' + fp).once('value').then((blackSnap) => {
+                if (blackSnap.exists()) {
+                    alert("عفواً، تم حظر جهازك نهائياً من اللعب وإنشاء أي حسابات جديدة! 🚫🔒");
+                    document.body.innerHTML = "<h1 style='color:#ef4444; text-align:center; margin-top:100px;'>هذا الجهاز محظور من دخول السيرفر! 🛑</h1>";
+                    return;
+                }
+
+                const savedUser = localStorage.getItem('saved_username');
+                if (savedUser) {
+                    database.ref('users/' + savedUser).once('value').then((snapshot) => {
+                        if (!snapshot.exists()) {
+                            localStorage.removeItem('saved_username');
+                        } else if (snapshot.val().status === 'banned' && savedUser !== ADMIN_USERNAME) {
+                            localStorage.removeItem('saved_username');
+                            alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
+                            location.reload();
+                        } else {
+                            document.getElementById('login-username').value = savedUser;
+                            document.getElementById('login-username').disabled = true;
+                            document.getElementById('login-password').focus();
+                        }
+                    });
+                }
+            });
+        };
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function toggleBannedPanel() {
+            const panel = document.getElementById('banned-users-panel');
+            const arrow = document.getElementById('dropdown-arrow');
+            panel.classList.toggle('open');
+            arrow.innerText = panel.classList.contains('open') ? "▲" : "▼";
+        }
+
+        // الهدية اليومية
+        function checkDailyReward(username) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            database.ref('users/' + username + '/dailyReward').once('value').then((snapshot) => {
+                let dailyData = snapshot.val() || { lastClaimDate: "", currentDay: 1 };
+                if (dailyData.lastClaimDate) {
+                    const lastDate = new Date(dailyData.lastClaimDate);
+                    const today = new Date(todayStr);
+                    const diffDays = Math.ceil(Math.abs(today - lastDate) / (1000 * 60 * 60 * 24));
+                    if (diffDays > 1 || dailyData.currentDay > 7) dailyData.currentDay = 1;
+                }
+                currentStreakDay = dailyData.currentDay || 1;
+                renderDailyGrid(currentStreakDay, dailyData.lastClaimDate === todayStr);
+                if (dailyData.lastClaimDate !== todayStr) {
+                    document.getElementById('daily-reward-modal').classList.add('show');
+                    document.getElementById('claim-reward-btn').disabled = false;
+                    document.getElementById('claim-reward-btn').innerText = `استلام الهدية اليومية (+${rewardAmounts[currentStreakDay]} ج) 🎁`;
+                }
+            });
+        }
+
+        function renderDailyGrid(activeDay, isTodayClaimed) {
+            const grid = document.getElementById('modal-days-grid'); grid.innerHTML = "";
+            const dayNames = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع"];
+            for (let i = 1; i <= 7; i++) {
+                const box = document.createElement('div'); box.className = 'day-box';
+                if (i < activeDay || (i === activeDay && isTodayClaimed)) box.className += ' claimed';
+                else if (i === activeDay && !isTodayClaimed) box.className += ' active';
+                box.innerHTML = `<span class="day-title">اليوم ${dayNames[i-1]}</span><span class="day-reward">${rewardAmounts[i]} ج</span>`;
+                grid.appendChild(box);
+            }
+        }
+
+        function claimDailyReward() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const reward = rewardAmounts[currentStreakDay];
+            document.getElementById('claim-reward-btn').disabled = true;
+            let nextDay = currentStreakDay + 1; if (nextDay > 7) nextDay = 1;
+            database.ref('users/' + currentUser).update({
+                balance: userCurrentBalance + reward, dailyReward: { lastClaimDate: todayStr, currentDay: nextDay }
+            }).then(() => { alert(`استلمت مكافأة اليوم بقيمة ${reward} جنيه! 💰`); closeDailyModal(); });
+        }
+        function closeDailyModal() { document.getElementById('daily-reward-modal').classList.remove('show'); }
+
+        // زرع الألعاب
+        function injectGames(crashTargetId, appleTargetId) {
+            document.getElementById(crashTargetId).innerHTML = document.getElementById('crash-game-template').innerHTML;
+            const cTarget = document.getElementById(crashTargetId);
+            activeCanvas = cTarget.querySelector('.crash-canvas'); activeCtx = activeCanvas.getContext('2d');
+            activeDisplay = cTarget.querySelector('.multiplier-display'); activeStartBtn = cTarget.querySelector('.btn-start');
+            activeCashoutBtn = cTarget.querySelector('.btn-cashout'); activeBetInput = cTarget.querySelector('.bet-amount-input');
+            resetCanvas();
+
+            document.getElementById(appleTargetId).innerHTML = document.getElementById('apple-game-template').innerHTML;
+            activeAppleContainer = document.getElementById(appleTargetId);
+            activeAppleBoard = activeAppleContainer.querySelector('.apple-board');
+            activeAppleStartBtn = activeAppleContainer.querySelector('.apple-start-btn');
+            activeAppleCashoutBtn = activeAppleContainer.querySelector('.apple-cashout-btn');
+            activeAppleBetInput = activeAppleContainer.querySelector('.apple-bet-input');
+            buildAppleBoardUI();
+        }
+
+        function buildAppleBoardUI() {
+            activeAppleBoard.innerHTML = "";
+            for (let r = 0; r < 12; r++) {
+                const rowDiv = document.createElement('div'); rowDiv.className = `apple-row row-${r}`;
+                const multSpan = document.createElement('span'); multSpan.className = 'row-mult'; multSpan.innerText = `${appleMultipliers[r]}x`;
+                rowDiv.appendChild(multSpan);
+                for (let c = 0; c < 4; c++) {
+                    const cell = document.createElement('div'); cell.className = `apple-cell cell-${c}`;
+                    cell.setAttribute('onclick', `clickAppleCell(${r}, ${c})`); cell.innerText = "❓";
+                    rowDiv.appendChild(cell);
+                }
+                activeAppleBoard.appendChild(rowDiv);
+            }
+        }
+
+        // محرك التفاحة
+        function startAppleGame() {
+            if(appleGameActive) return;
+            appleBet = parseFloat(activeAppleBetInput.value);
+            if(isNaN(appleBet) || appleBet < 8) return alert("الحد الأدنى للعب في أي لعبة هو 8 جنيه فقط! ⚠️");
+            if(userCurrentBalance < appleBet) return alert("رصيدك الحالي لا يكفي لبدء اللعبة! 💸❌");
+
+            appleGameActive = true; appleCurrentRow = 0; appleBoardData = [];
+            for (let r = 0; r < 12; r++) {
+                let rowItems = ["🍏", "🍏", "🍏", "🍏"];
+                if (r < 4) { let bombIndex = Math.floor(Math.random() * 4); rowItems[bombIndex] = "💣"; } 
+                else if (r < 8) { let indices = [0, 1, 2, 3].sort(() => Math.random() - 0.5); rowItems[indices[0]] = "💣"; rowItems[indices[1]] = "💣"; } 
+                else { rowItems = ["💣", "💣", "💣", "💣"]; let appleIndex = Math.floor(Math.random() * 4); rowItems[appleIndex] = "🍏"; }
+                appleBoardData.push(rowItems);
+            }
+
+            userCurrentBalance -= appleBet;
+            database.ref('users/' + currentUser).update({ balance: userCurrentBalance });
+            buildAppleBoardUI();
+            activeAppleStartBtn.disabled = true; activeAppleBetInput.disabled = true; activeAppleCashoutBtn.style.display = 'none';
+            activateAppleRow(0);
+        }
+
+        function activateAppleRow(rowIdx) {
+            activeAppleBoard.querySelectorAll('.apple-row').forEach(r => r.classList.remove('active'));
+            const targetRow = activeAppleBoard.querySelector(`.row-${rowIdx}`);
+            if(targetRow) targetRow.classList.add('active');
+        }
+
+        function clickAppleCell(row, col) {
+            if(!appleGameActive || row !== appleCurrentRow) return;
+            const currentRowEl = activeAppleBoard.querySelector(`.row-${row}`);
+            const cellEl = currentRowEl.querySelector(`.cell-${col}`);
+            const result = appleBoardData[row][col];
+
+            if (result === "🍏") {
+                cellEl.innerText = "🍏"; cellEl.classList.add('good'); currentRowEl.classList.add('passed');
+                let currentPossibleWinnings = Math.floor(appleBet * appleMultipliers[row]);
+                activeAppleCashoutBtn.style.display = 'block';
+                activeAppleCashoutBtn.innerText = `كاش أوت (سحب ${currentPossibleWinnings} جنيه) 💰`;
+
+                if (row === 11) {
+                    alert(`يا ربااااه! 🎉 كسبت اللعبة بالكامل ووصلت للسطر الـ 12! أرباحك: ${currentPossibleWinnings} جنيه! 👑💰`);
+                    cashoutAppleGame();
+                } else { appleCurrentRow++; activateAppleRow(appleCurrentRow); }
+            } else {
+                cellEl.innerText = "💣"; cellEl.classList.add('bad');
+                revealWholeAppleBoard();
+                alert(`للأسف فرقعت فيك القنبلة وخسرت الرهان! 💣💥 جرب تاني يسطا.`);
+                resetAppleGameCycle();
+            }
+        }
+
+        function cashoutAppleGame() {
+            if(!appleGameActive) return;
+            let finalReward = Math.floor(appleBet * appleMultipliers[appleCurrentRow === 0 ? 0 : appleCurrentRow - 1]);
+            if(appleBoardData[appleCurrentRow] && activeAppleBoard.querySelector(`.row-${appleCurrentRow} .good`)) { finalReward = Math.floor(appleBet * appleMultipliers[appleCurrentRow]); }
+            userCurrentBalance += finalReward;
+            database.ref('users/' + currentUser).update({ balance: userCurrentBalance }).then(() => {
+                alert(`تم سحب أرباح التفاحة بنجاح بقيمة ${finalReward} جنيه! 🍏💰💵`);
+                revealWholeAppleBoard(); resetAppleGameCycle();
+            });
+        }
+
+        function revealWholeAppleBoard() {
+            for(let r=0; r<12; r++) {
+                const rowEl = activeAppleBoard.querySelector(`.row-${r}`);
+                for(let c=0; c<4; c++) {
+                    const cell = rowEl.querySelector(`.cell-${c}`);
+                    if(cell.innerText === "❓") cell.innerText = appleBoardData[r][c];
+                }
+            }
+            activeAppleBoard.querySelectorAll('.apple-row').forEach(r => r.classList.remove('active'));
+        }
+        function resetAppleGameCycle() { appleGameActive = false; activeAppleStartBtn.disabled = false; activeAppleBetInput.disabled = false; activeAppleCashoutBtn.style.display = 'none'; }
+
+        // محرك الطيارة
+        function startCrashGame() {
+            if (gameRunning) return;
+            currentBet = parseFloat(activeBetInput.value);
+            if (isNaN(currentBet) || currentBet < 8) return alert("الحد الأدنى للعب في أي لعبة هو 8 جنيه فقط! ⚠️");
+            if (userCurrentBalance < currentBet) return alert("رصيدك مش كفاية! 💸❌");
+
+            gameRunning = true; activeStartBtn.disabled = true; activeBetInput.disabled = true;
+            activeCashoutBtn.style.display = 'block'; activeDisplay.classList.remove('crashed');
+            userCurrentBalance -= currentBet;
+            database.ref('users/' + currentUser).update({ balance: userCurrentBalance });
+
+            currentMultiplier = 1.00;
+            const rand = Math.random();
+            if (rand < 0.1) crashPoint = 1.00;
+            else crashPoint = parseFloat((1 + (Math.random() * 4) + (Math.random() > 0.85 ? Math.random() * 10 : 0)).toFixed(2));
+
+            resetCanvas(); let startTime = Date.now();
+            crashInterval = setInterval(() => {
+                let elapsed = (Date.now() - startTime) / 1000;
+                currentMultiplier = parseFloat((1.00 + Math.pow(elapsed, 1.3) * 0.15).toFixed(2));
+                activeDisplay.innerText = currentMultiplier.toFixed(2) + "x";
+                resetCanvas();
+                activeCtx.strokeStyle = '#38bdf8'; activeCtx.lineWidth = 4; activeCtx.beginPath(); activeCtx.moveTo(0, activeCanvas.height);
+                let x = Math.min((elapsed * 35), activeCanvas.width - 30); let y = Math.max(activeCanvas.height - (Math.pow(elapsed, 1.4) * 12), 30);
+                activeCtx.quadraticCurveTo(x / 2, activeCanvas.height, x, y); activeCtx.stroke();
+                activeCtx.fillStyle = '#ec4899'; activeCtx.beginPath(); activeCtx.arc(x, y, 8, 0, 2 * Math.PI); activeCtx.fill();
+
+                if (currentMultiplier >= crashPoint) {
+                    clearInterval(crashInterval); activeDisplay.innerText = "💥 انفجرت " + currentMultiplier.toFixed(2) + "x";
+                    activeDisplay.classList.add('crashed'); endGameCycle();
+                }
+            }, 80);
+        }
+
+        function cashoutCrashGame() {
+            if (!gameRunning) return;
+            clearInterval(crashInterval);
+            let winnings = Math.floor(currentBet * currentMultiplier); userCurrentBalance += winnings;
+            database.ref('users/' + currentUser).update({ balance: userCurrentBalance }).then(() => { alert(`كاش أوت ناجح! 🎉 كسبت ${winnings} جنيه! 💰`); endGameCycle(); });
+        }
+        function endGameCycle() { gameRunning = false; activeStartBtn.disabled = false; activeBetInput.disabled = false; activeCashoutBtn.style.display = 'none'; }
+        function resetCanvas() { if(!activeCtx) return; activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height); activeCtx.strokeStyle = '#1e293b'; activeCtx.lineWidth = 1; for(let i=0; i<activeCanvas.width; i+=40) { i=Math.floor(i); activeCtx.beginPath(); activeCtx.moveTo(i, 0); activeCtx.lineTo(i, activeCanvas.height); activeCtx.stroke(); } for(let j=0; j<activeCanvas.height; j+=40) { j=Math.floor(j); activeCtx.beginPath(); activeCtx.moveTo(0, j); activeCtx.lineTo(activeCanvas.width, j); activeCtx.stroke(); } }
+
+        // التواجد والمستمع لايف
+        function setupPresence(username) {
+            const userStatusRef = database.ref('users/' + username + '/status');
+            database.ref('.info/connected').on('value', (snapshot) => {
+                if (snapshot.val() == true) {
+                    database.ref('users/' + username + '/status').once('value').then((snap) => {
+                        if(snap.val() !== 'banned') { userStatusRef.onDisconnect().set('offline'); userStatusRef.set('online'); }
+                    });
+                }
+            });
+
+            if (username !== ADMIN_USERNAME) {
+                database.ref('users/' + username).on('value', (snapshot) => {
+                    if (snapshot.exists() && snapshot.val().status === 'banned') {
+                        localStorage.removeItem('saved_username');
+                        alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
+                        location.reload(); 
+                    }
+                });
+            }
+        }
+
+        // 🔥 تعديل دالة حظر اللاعب لقفل جهازه نهائياً
+        function banUser() {
+            const username = document.getElementById('friend-username').value.trim().toLowerCase();
+            if (!username) return alert("اكتب اسم اللاعب اللي عاوز تحظره! ⚠️");
+            if (username === ADMIN_USERNAME) return alert("مش هتعرف تحظر نفسك يا حودة! 😂👑");
+
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    // قفش البصمة الفريدة المحفوظة في حسابه لما سجل أول مرة
+                    const deviceFp = userData.device_fp || "unknown";
+
+                    database.ref('users/' + username).update({ status: 'banned' }).then(() => {
+                        // وضع بصمة جهازه في القائمة السوداء الأبدية
+                        if(deviceFp !== "unknown") {
+                            database.ref('blacklisted_devices/' + deviceFp).set({
+                                banned_username: username,
+                                ban_date: new Date().toISOString()
+                            });
+                        }
+                        alert(`تم بنجاح حظر اللاعب (${username}) وحظر بصمة جهازه نهائياً! 🚫🔒`);
+                        document.getElementById('friend-username').value = "";
+                    });
+                } else { alert("اسم الحساب ده مش موجود أصلاً عشان تحظره! ❌"); }
+            });
+        }
+
+        // دالة فك الحظر فوري
+        function unbanUser(targetUser = null) {
+            let username = targetUser;
+            if (!username) {
+                username = document.getElementById('friend-username').value.trim().toLowerCase();
+            }
+            if (!username) return alert("اكتب اسم اللاعب اللي عاوز تفك حظره! ⚠️");
+
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const deviceFp = userData.device_fp || "unknown";
+
+                    database.ref('users/' + username).update({ status: 'offline' }).then(() => {
+                        // مسحه من القائمة السوداء للأجهزة
+                        if(deviceFp !== "unknown") {
+                            database.ref('blacklisted_devices/' + deviceFp).remove();
+                        }
+                        alert(`تم فك الحظر وجهاز اللاعب (${username}) بنجاح! 🔓🟢`);
+                        if (!targetUser) document.getElementById('friend-username').value = "";
+                    });
+                } else { alert("اسم الحساب ده مش موجود! ❌"); }
+            });
+        }
+
+        // 🔥 تعديل إنشاء الحساب لمنع الأجهزة المحظورة تماماً
+        function handleSignUp() {
+            const currentFp = getDeviceFingerprint();
+
+            // الفحص الأول والقاتل: هل الجهاز ده متبند؟
+            database.ref('blacklisted_devices/' + currentFp).once('value').then((blackSnap) => {
+                if (blackSnap.exists()) {
+                    alert("عفواً، جهازك محظور نهائياً من إنشاء أي حسابات جديدة! 📱⚠️");
+                    return false;
+                }
+
+                if (localStorage.getItem('cleared_v1_account') === 'true') {
+                    alert("عفواً، مسموح بإنشاء حساب واحد فقط لكل جهاز! 📱⚠️");
+                    return false;
+                }
+
+                const username = document.getElementById('signup-username').value.trim().toLowerCase();
+                const password = document.getElementById('signup-password').value.trim();
+                if (!username || !password) return alert("اكتب البيانات بالكامل! ⚠️");
+                if (username.includes(" ")) return alert("الاسم ميبقاش فيه مسافات! ❌");
+
+                database.ref('users/' + username).once('value').then((snapshot) => {
+                    if (snapshot.exists()) { alert("اسم المستخدم مسجل بالفعل! ❌"); } 
+                    else {
+                        // حفظ الحساب مع دمغ البصمة الفريدة للجهاز جواه
+                        database.ref('users/' + username).set({
+                            username: username, password: password, balance: 15, status: 'offline',
+                            device_fp: currentFp,
+                            dailyReward: { lastClaimDate: "", currentDay: 1 }
+                        }).then(() => {
+                            localStorage.setItem('cleared_v1_account', 'true');
+                            localStorage.setItem('saved_username', username);
+                            
+                            alert("تم إنشاء حسابك بنجاح! 🎉 وأخذت 15 جنيه ترحيبية.");
+                            location.reload(); 
+                        });
+                    }
+                });
+            });
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value.trim();
+            if (!username || !password) return alert("اكتب الاسم والباسورد! ⚠️");
+
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    if (userData.status === 'banned' && username !== ADMIN_USERNAME) {
+                        localStorage.removeItem('saved_username');
+                        alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
+                        return false; 
+                    }
+
+                    if (userData.password === password || (username === ADMIN_USERNAME && password === "admin123")) {
+                        localStorage.setItem('saved_username', username);
+                        currentUser = username;
+                        setupPresence(username);
+
+                        if (username === ADMIN_USERNAME) {
+                            switchScreen('admin-screen'); document.getElementById('admin-table-box').style.display = 'block';
+                            injectGames('admin-crash-box', 'admin-apple-box'); loadAdminTable(); loadUserBalance(username);
+                        } else {
+                            switchScreen('user-screen'); document.getElementById('admin-table-box').style.display = 'none';
+                            injectGames('user-crash-box', 'user-apple-box'); document.getElementById('user-display-name').innerText = username; loadUserBalance(username);
+                        }
+                        setTimeout(() => { checkDailyReward(username); }, 800);
+                    } else { alert("الباسورد غلط! 🤫"); }
+                } else { alert("الحساب غير موجود! سجل أولاً ↩️"); }
+            });
+        }
+
+        function loadAdminTable() {
+            database.ref('users').on('value', (snapshot) => {
+                const tbody = document.getElementById('users-list-tbody'); tbody.innerHTML = "";
+                const bannedContainer = document.getElementById('banned-list-container'); bannedContainer.innerHTML = "";
+                
+                let hasBanned = false;
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for (let key in data) {
+                        const user = data[key]; 
+                        let statusText = 'أوفلاين ⚪'; let statusClass = 'status-offline';
+                        if (user.status === 'online') { statusText = 'أونلاين 🟢'; statusClass = 'status-online'; }
+                        else if (user.status === 'banned') { statusText = 'محظور 🚫🔒'; statusClass = 'status-banned'; }
+                        
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="font-weight: bold;">👤 ${user.username}</td>
+                            <td style="color: #f59e0b;">${user.password || '----'}</td>
+                            <td style="color: #10b981; font-weight: bold;">${user.balance || 0} ج</td>
+                            <td class="${statusClass}">${statusText}</td>
+                        `;
+                        tbody.appendChild(tr);
+
+                        if (user.status === 'banned') {
+                            hasBanned = true;
+                            const bannedItem = document.createElement('div');
+                            bannedItem.className = 'banned-list-item';
+                            bannedItem.innerHTML = `
+                                <span style="color: #ef4444; font-weight: bold;">🛑 ${user.username} (رصيده: ${user.balance || 0} ج)</span>
+                                <button class="btn-fast-unban" onclick="unbanUser('${user.username}')">فك الحظر فوري 🔓</button>
+                            `;
+                            bannedContainer.appendChild(bannedItem);
+                        }
+                    }
+                    
+                    if (!hasBanned) {
+                        bannedContainer.innerHTML = "👉 لا يوجد حسابات محظورة حالياً.";
+                    }
+                }
+            });
+        }
+
+        function loadUserBalance(username) {
+            database.ref('users/' + username).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    userCurrentBalance = snapshot.val().balance || 0;
+                    const balanceDisplay = document.getElementById('user-display-balance');
+                    if(balanceDisplay) balanceDisplay.innerText = userCurrentBalance + " جنيه";
+                }
+            });
+        }
+
+        function addMoney() {
+            const username = document.getElementById('friend-username').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('money-amount').value);
+            if (!username || isNaN(amount) || amount <= 0) return alert("بيانات خاطئة!");
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                let curBal = snapshot.exists() ? (snapshot.val().balance || 0) : 0;
+                let curPass = snapshot.exists() ? (snapshot.val().password || "1234") : "1234";
+                let status = snapshot.exists() ? (snapshot.val().status || 'offline') : 'offline';
+                let fp = snapshot.exists() ? (snapshot.val().device_fp || 'unknown') : 'unknown';
+                let daily = snapshot.exists() ? (snapshot.val().dailyReward || {lastClaimDate:"",currentDay:1}) : {lastClaimDate:"",currentDay:1};
+                database.ref('users/' + username).update({
+                    username: username, password: curPass, balance: curBal + amount, status: status, device_fp: fp, dailyReward: daily
+                }).then(() => { alert("تم الشحن! 🎉"); document.getElementById('money-amount').value = ""; });
+            });
+        }
+
+        function deductMoney() {
+            const username = document.getElementById('friend-username').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('money-amount').value);
+            if (!username || isNaN(amount) || amount <= 0) return alert("بيانات خاطئة!");
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const curBal = snapshot.val().balance || 0;
+                    database.ref('users/' + username).update({ balance: curBal - amount }).then(() => { alert("تم الخصم! 💸"); document.getElementById('money-amount').value = ""; });
+                }
+            });
+        }
+
+        function logout() {
+            if(currentUser) {
+                database.ref('users/' + currentUser + '/status').once('value').then((snap) => {
+                    if (snap.val() !== 'banned') database.ref('users/' + currentUser + '/status').set('offline');
+                });
+            }
+            clearInterval(crashInterval); gameRunning = false; appleGameActive = false;
+            document.getElementById('login-password').value = "";
+            document.getElementById('admin-table-box').style.display = 'none'; switchScreen('login-screen');
+            const savedUser = localStorage.getItem('saved_username');
+            if (savedUser) { document.getElementById('login-username').value = savedUser; document.getElementById('login-username').disabled = true; }
+        }
+    </script>
+</body>
+</html>]
     </script>
 </body>
 </html>
