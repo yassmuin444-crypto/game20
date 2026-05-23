@@ -3,148 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موقعك اللذوذ المربوط بالسيرفر</title>
+    <title>البنك المركزي - لوحة التحكم الشاملة 👑💰</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <script>
-        // 🚀 حركة صايعة: إجبار تليفون صاحبك على مسح الكاش القديم فوراً ودخول السيرفر
-        if (!localStorage.getItem('clear_cache_v3')) {
-            localStorage.clear(); 
-            localStorage.setItem('clear_cache_v3', 'true');
-            // إضافة رقم عشوائي للرابط عشان المتصفح يفتكره موقع جديد تماماً ويحمله طازة
-            window.location.href = window.location.pathname + '?refresh=' + Date.now();
-        }
-    </script>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js?v=3"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js?v=3"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: linear-gradient(135deg, #1e1e2f, #0f0f1a); color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
-        .star { position: absolute; top: -20px; color: #ffd700; font-size: 20px; pointer-events: none; animation: fall linear forwards; z-index: 999; }
-        @keyframes fall { to { transform: translateY(105vh) rotate(360deg); } }
-        #top-bar { position: absolute; top: 20px; right: 20px; left: 20px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
-        #balance-bar { background: rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 20px; backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); font-size: 18px; font-weight: bold; }
-        #balance-amount { color: #4caf50; }
-        .btn-logout { background: rgba(255, 65, 108, 0.2); color: #ff416c; border: 1px solid #ff416c; padding: 8px 15px; font-size: 14px; border-radius: 15px; cursor: pointer; transition: 0.3s; }
-        .btn-logout:hover { background: #ff416c; color: white; }
-        #secret-admin-btn { width: 25px; height: 25px; background: transparent; cursor: pointer; margin-right: 15px; }
-        .container { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; max-width: 500px; width: 90%; display: none; animation: fadeIn 0.3s ease-in-out; z-index: 10; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .container.active { display: block !important; }
-        h1, h2 { margin-bottom: 25px; line-height: 1.5; }
-        p { margin-bottom: 20px; font-size: 18px; }
-        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        button { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4); }
-        button:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6); }
-        .btn-secondary { background: linear-gradient(45deg, #4776e6, #8e54e9); box-shadow: 0 4px 15px rgba(71, 118, 230, 0.4); }
-        .btn-admin { background: linear-gradient(45deg, #11998e, #38ef7d); box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4); }
-        .form-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; margin-bottom: 8px; font-size: 14px; color: #ccc; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: white; font-size: 16px; text-align: center; }
-        input:focus { outline: none; border-color: #ff416c; }
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; margin-top: 20px; }
-        .game-card { background: rgba(255,255,255,0.1); padding: 25px 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
-        .game-card:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-5px); border-color: #ffd700; }
-        .game-icon { font-size: 40px; margin-bottom: 10px; }
-        #plane-game-area { background: #050510; border-radius: 10px; height: 200px; position: relative; overflow: hidden; margin-bottom: 20px; border: 2px solid #333; }
-        #plane { position: absolute; bottom: 10px; left: 10px; font-size: 35px; }
-        #multiplier { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 32px; font-weight: bold; color: #ffd700; }
-        #game-status { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: bold; color: #ff416c; display: none; }
+        body { background: #0f172a; color: #f8fafc; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { color: #38bdf8; font-size: 28px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+        .header p { color: #94a3b8; font-size: 14px; margin-top: 5px; }
+
+        .container { background: #1e293b; width: 100%; max-width: 500px; padding: 30px; border-radius: 15px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; display: none; }
+        .container.active { display: block; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; color: #94a3b8; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 12px; border: 1px solid #334155; background: #0f172a; color: #fff; border-radius: 8px; font-size: 16px; text-align: center; }
+        input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
+        input:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border-color: #334155; }
+
+        .buttons-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        button { width: 100%; color: #fff; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: linear-gradient(45deg, #38bdf8, #0284c7); }
+        .btn-success { background: linear-gradient(45deg, #10b981, #059669); }
+        .btn-add { background: linear-gradient(45deg, #10b981, #059669); }
+        .btn-deduct { background: linear-gradient(45deg, #ef4444, #dc2626); }
+        button:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .toggle-link { text-align: center; margin-top: 15px; color: #38bdf8; cursor: pointer; font-size: 14px; text-decoration: underline; }
+
+        /* كارت رصيد المستخدم العادي */
+        .user-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8; padding: 25px; border-radius: 15px; text-align: center; }
+        .user-card .name { font-size: 20px; color: #94a3b8; }
+        .user-card .balance { font-size: 36px; color: #10b981; font-weight: bold; margin-top: 10px; }
+
+        /* جدول عرض الحسابات الاحترافي للأدمن */
+        .balance-box { width: 100%; max-width: 650px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 20px; display: none; }
+        .balance-box h3 { color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 18px; }
+        
+        .admin-table { width: 100%; border-collapse: collapse; text-align: center; background: #0f172a; border-radius: 8px; overflow: hidden; font-size: 14px; }
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #1e293b; }
+        .admin-table th { background-color: #1e293b; color: #38bdf8; font-weight: bold; }
+        
+        /* ألوان الحالات أونلاين وأوفلاين */
+        .status-online { color: #10b981; font-weight: bold; text-shadow: 0 0 5px rgba(16,185,129,0.3); }
+        .status-offline { color: #64748b; }
+
+        .logout-btn { margin-top: 15px; background: #334155; padding: 8px; font-size: 13px; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div id="top-bar">
-        <button class="btn-logout" onclick="logout()">تسجيل خروج 🚪</button>
-        <div style="display: flex; align-items: center;">
-            <div id="secret-admin-btn" onclick="openAdminPanel()"></div>
-            <div id="balance-bar">رصيدك: <span id="balance-amount">0</span> جنيه</div>
-        </div>
+    <div class="header">
+        <h1>البنك المركزي 👑💰</h1>
+        <p>نظام الإدارة الشامل مع ميزة مراقبة المتصلين لايف</p>
     </div>
 
-    <div id="screen-welcome" class="container">
-        <h1>منور يسطا في موقعك اللذوذ ✨</h1>
-        <p>هتلعب ولا تضرب البوز؟ 🤔</p>
-        <div class="btn-group">
-            <button onclick="choosePlay()">هلعب 🎮</button>
-            <button class="btn-secondary" onclick="chooseBout()">هضرب البوز 😒</button>
-        </div>
-    </div>
-
-    <div id="screen-bout" class="container">
-        <h1>العب يسطا وهروق عليك 😉</h1>
-        <div class="btn-group">
-            <button onclick="goToLogin()">يلا بينا 🚀</button>
-        </div>
-    </div>
-
-    <div id="screen-login" class="container">
-        <h2 id="login-title">تسجيل الدخول / إنشاء حساب</h2>
-        <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">اكتب يوزرك وباسوردك، لو جديد هيتعملك حساب فوراً!</p>
+    <div id="login-screen" class="container active">
+        <h3 style="text-align: center; margin-bottom: 15px; color: #38bdf8;">تسجيل الدخول</h3>
         <div class="form-group">
-            <label>إسم المستخدم:</label>
-            <input type="text" id="username" placeholder="اكتب اسمك بدون مسافات">
+            <label>اسم المستخدم:</label>
+            <input type="text" id="login-username" placeholder="اكتب اسمك هنا...">
         </div>
         <div class="form-group">
-            <label>كلمة المرور:</label>
-            <input type="password" id="password" placeholder="******">
+            <label>كلمة المرور (الباسورد):</label>
+            <input type="password" id="login-password" placeholder="••••••••">
         </div>
-        <button style="width: 100%;" id="btn-auth" onclick="handleAuth()">دخول / تسجيل 🚀</button>
+        <button class="btn-primary" onclick="handleLogin()">دخول 🚀</button>
+        <div class="toggle-link" onclick="switchScreen('signup-screen')">إنشاء حساب جديد (لأول مرة) ✨</div>
     </div>
 
-    <div id="screen-games" class="container">
-        <h2>قائمة الألعاب اللذوذة 🕹️</h2>
-        <div class="games-grid">
-            <div class="game-card" onclick="openPlaneGame()">
-                <div class="game-icon">✈️</div>
-                <h3>لعبة الطيارة</h3>
-            </div>
-            <div class="game-card" style="opacity: 0.4; cursor: not-allowed;">
-                <div class="game-icon">🎰</div>
-                <h3>قريباً..</h3>
-            </div>
-        </div>
-    </div>
-
-    <div id="screen-plane-game" class="container" style="max-width: 600px;">
-        <h2>لعبة طيارة ون اسبت ✈️</h2>
-        <div id="plane-game-area">
-            <div id="multiplier">1.00x</div>
-            <div id="plane">✈️</div>
-            <div id="game-status">طارت الطيارة! 💥</div>
-        </div>
-        <div class="form-group" style="text-align: center;">
-            <label>قيمة الرهان (الحد الأدنى 8 جنيه):</label>
-            <input type="number" id="bet-amount" value="8" style="max-width: 200px; margin: 0 auto 10px;">
-        </div>
-        <div class="btn-group">
-            <button id="btn-start-game" onclick="startPlaneGame()">ابدأ الرهان 🚀</button>
-            <button id="btn-cashout" class="btn-secondary" onclick="cashout()" disabled>كاش آوت 💰</button>
-        </div>
-        <button style="margin-top: 20px; background: #333;" onclick="showGamesList()">رجوع للألعاب ⬅️</button>
-    </div>
-
-    <div id="screen-admin" class="container">
-        <h2>👑 لوحة تحكم الأدمن السري (عن بُعد) 👑</h2>
+    <div id="signup-screen" class="container">
+        <h3 style="text-align: center; margin-bottom: 15px; color: #10b981;">إنشاء حساب جديد</h3>
         <div class="form-group">
-            <label>إسم المستخدم المراد شحنه (بالظبط):</label>
-            <input type="text" id="admin-target-user" placeholder="اليوزر نيم">
+            <label>اختر اسم مستخدم (بدون مسافات):</label>
+            <input type="text" id="signup-username" placeholder="مثال: aboud_55">
         </div>
         <div class="form-group">
-            <label>المبلغ (بالجنيه):</label>
-            <input type="number" id="admin-amount-to-add" placeholder="مثال: 100">
+            <label>اختر كلمة مرور سريّة:</label>
+            <input type="password" id="signup-password" placeholder="اكتب باسورد قوي">
         </div>
-        <button class="btn-admin" style="width: 100%; margin-bottom: 15px;" onclick="addMoneyAsAdmin()">شحن الرصيد أونلاين 💸</button>
-        <button style="background: #333; width: 100%;" onclick="closeAdminPanelAndReturn()">رجوع ⬅️</button>
+        <button class="btn-success" onclick="handleSignUp()">تسجيل الحساب وحفظه 🛠️</button>
+        <div class="toggle-link" onclick="switchScreen('login-screen')">لديك حساب بالفعل؟ سجل دخولك</div>
+    </div>
+
+    <div id="admin-screen" class="container">
+        <h2 style="color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 20px;">👑 لوحة تحكم الإدارة العليا 👑</h2>
+        <div class="form-group">
+            <label>اسم حساب صاحبك المراد تعديله:</label>
+            <input type="text" id="friend-username" placeholder="مثال: hossam_10">
+        </div>
+        <div class="form-group">
+            <label>المبلغ (جنيه):</label>
+            <input type="number" id="money-amount" placeholder="اكتب العدد هنا">
+        </div>
+        <div class="buttons-zone">
+            <button class="btn-add" onclick="addMoney()">إضافة رصيد ➕</button>
+            <button class="btn-deduct" onclick="deductMoney()">خصم رصيد ➖</button>
+        </div>
+        <button class="logout-btn" onclick="logout()">تسجيل الخروج ↩️</button>
+    </div>
+
+    <div id="user-screen" class="container">
+        <div class="user-card">
+            <div class="name">أهلاً بك: <span id="display-name" style="color: #38bdf8;"></span></div>
+            <div class="balance" id="display-balance">0 جنيه</div>
+        </div>
+        <button class="logout-btn" onclick="logout()">تسجيل الخروج ↩️</button>
+    </div>
+
+    <div id="admin-table-box" class="balance-box">
+        <h3>بيانات الحسابات والمراقبة الحية 📊</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>المستخدم</th>
+                    <th>الباسورد</th>
+                    <th>الرصيد</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody id="users-list-tbody">
+                </tbody>
+        </table>
     </div>
 
     <script>
-        // بيانات الفايربيز المربوطة بمشروعك
+        // تكوين الـ Firebase الخاص بيك
         const firebaseConfig = {
             apiKey: "AIzaSyBlbW15S2V5X0R1bW15X01haG1vdWQyMDI2", 
             authDomain: "game11-5dfa1.firebaseapp.com",
@@ -154,191 +147,210 @@
             messagingSenderId: "5839201948", 
             appId: "1:5839201948:web:73bdfa932e" 
         };
-        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let currentUser = null;
-        let balance = 0;
-        let isGameRunning = false;
-        let gameInterval;
-        let currentMultiplier = 1.00;
-        let crashPoint = 0;
-        const ADMIN_PASSWORD = "admin123"; 
-        let previousScreen = "screen-games";
+        // اسم حساب الأدمن السري الخاص بك
+        const ADMIN_USERNAME = "mahmoud"; 
+        let currentUser = "";
 
+        // تفعيل ميزة حفظ الحساب تلقائياً في المتصفح عند التحميل
         window.onload = function() {
-            let starInterval = setInterval(() => {
-                const star = document.createElement('div');
-                star.classList.add('star'); star.innerText = '⭐';
-                star.style.left = Math.random() * 100 + 'vw';
-                star.style.animationDuration = Math.random() * 1.5 + 1.5 + 's';
-                document.body.appendChild(star);
-                setTimeout(() => { star.remove(); }, 3000);
-            }, 60);
-            setTimeout(() => { clearInterval(starInterval); }, 2000);
-
-            const savedUser = localStorage.getItem('chat_user');
-            if(savedUser) {
-                loginUser(savedUser);
-            } else {
-                showScreen('screen-welcome');
+            const savedUser = localStorage.getItem('saved_username');
+            if (savedUser) {
+                document.getElementById('login-username').value = savedUser;
+                document.getElementById('login-username').disabled = true;
+                document.getElementById('login-password').focus();
             }
         };
 
-        function showScreen(screenId) {
+        function switchScreen(screenId) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-            const target = document.getElementById(screenId);
-            if(target) target.classList.add('active');
+            document.getElementById(screenId).classList.add('active');
         }
 
-        function choosePlay() { showScreen('screen-login'); }
-        function chooseBout() { showScreen('screen-bout'); }
-        function goToLogin() { showScreen('screen-login'); }
+        // تحديث حالة الاتصال أونلاين وأوفلاين سحرياً
+        function setupPresence(username) {
+            const userStatusRef = database.ref('users/' + username + '/status');
+            
+            // أول ما الفايربيز يلقط اتصال، يغير الحالة لـ online
+            database.ref('.info/connected').on('value', (snapshot) => {
+                if (snapshot.val() == true) {
+                    // السطر ده بيقول للفايربيز: "أول ما المستخدم ده يقفل المتصفح أو يفصل نت، حول حالته لـ offline أوتوماتيك"
+                    userStatusRef.onDisconnect().set('offline');
+                    // حالياً هو فاتح، خليها online
+                    userStatusRef.set('online');
+                }
+            });
+        }
 
-        function handleAuth() {
-            const username = document.getElementById('username').value.trim().toLowerCase();
-            const passInp = document.getElementById('password').value.trim();
+        // إنشاء حساب جديد
+        function handleSignUp() {
+            const username = document.getElementById('signup-username').value.trim().toLowerCase();
+            const password = document.getElementById('signup-password').value.trim();
 
-            if(!username || !passInp) return alert("اكتب البيانات يسطا الأول! ⚠️");
+            if (!username || !password) return alert("اكتب الاسم والباسورد بتوعك الأول! ⚠️");
+            if (username.includes(" ")) return alert("اسم المستخدم ميبقاش فيه مسافات يسطا! ❌");
+
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert("اسم المستخدم مسجل بالفعل! ❌ اختار اسم تاني.");
+                } else {
+                    database.ref('users/' + username).set({
+                        username: username,
+                        password: password,
+                        balance: 0,
+                        status: 'offline'
+                    }).then(() => {
+                        alert("تم إنشاء حسابك بنجاح! 🎉 سجل دخولك الآن.");
+                        localStorage.setItem('saved_username', username);
+                        location.reload(); 
+                    });
+                }
+            });
+        }
+
+        // تسجيل الدخول
+        function handleLogin() {
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!username || !password) return alert("اكتب الاسم والباسورد عشان تدخل! ⚠️");
 
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     const userData = snapshot.val();
-                    if(userData.password === passInp) {
-                        loginUser(username);
-                        alert(`منور تاني يا صاحبي 🎉`);
+                    
+                    if (userData.password === password || (username === ADMIN_USERNAME && password === "admin123")) {
+                        
+                        localStorage.setItem('saved_username', username);
+                        currentUser = username;
+                        
+                        // تفعيل ميزة مراقبة حالة الاتصال للحساب اللي فتح
+                        setupPresence(username);
+
+                        if (username === ADMIN_USERNAME) {
+                            switchScreen('admin-screen');
+                            document.getElementById('admin-table-box').style.display = 'block';
+                            loadAdminTable();
+                        } else {
+                            switchScreen('user-screen');
+                            document.getElementById('admin-table-box').style.display = 'none';
+                            loadUserBalance(username);
+                        }
                     } else {
-                        alert("⚠️ الباسورد غلط يسطا ركز!");
+                        alert("الباسورد غلط يا معلم! 🤫");
                     }
                 } else {
-                    database.ref('users/' + username).set({
-                        username: username,
-                        password: passInp,
-                        balance: 10
-                    }).then(() => {
-                        loginUser(username);
-                        alert("تم إنشاء حسابك السحابي بنجاح وخدت 10 جنيه هدية! 🎁");
-                    });
+                    alert("الاسم ده مش مسجل عندنا اصلاً! ↩️");
                 }
             });
         }
 
-        function loginUser(username) {
-            currentUser = username;
-            localStorage.setItem('chat_user', username);
-            document.getElementById('top-bar').style.display = 'flex';
-            showScreen('screen-games');
+        // 📊 للأدمن: سحب كل معلومات الناس (الاسم، الباسورد، الرصيد، الحالة أونلاين/أوفلاين)
+        function loadAdminTable() {
+            database.ref('users').on('value', (snapshot) => {
+                const tbody = document.getElementById('users-list-tbody');
+                tbody.innerHTML = "";
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for (let key in data) {
+                        const user = data[key];
+                        
+                        // تحديد شكل وتكست الحالة أونلاين أو أوفلاين
+                        const isOnline = user.status === 'online';
+                        const statusClass = isOnline ? 'status-online' : 'status-offline';
+                        const statusText = isOnline ? 'متصل الآن 🟢' : 'غير متصل ⚪';
 
-            database.ref('users/' + username + '/balance').on('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    balance = parseFloat(snapshot.val());
-                    document.getElementById('balance-amount').innerText = balance.toFixed(2);
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="font-weight: bold;">👤 ${user.username}</td>
+                            <td style="color: #f59e0b; font-family: monospace;">${user.password || '----'}</td>
+                            <td style="color: #10b981; font-weight: bold;">${user.balance || 0} ج</td>
+                            <td class="${statusClass}">${statusText}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
                 }
             });
         }
 
-        function addMoneyAsAdmin() {
-            const targetUser = document.getElementById('admin-target-user').value.trim().toLowerCase();
-            const amountToAdd = parseFloat(document.getElementById('admin-amount-to-add').value);
+        // للمستخدم العادي
+        function loadUserBalance(username) {
+            document.getElementById('display-name').innerText = username;
+            database.ref('users/' + username).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    document.getElementById('display-balance').innerText = (snapshot.val().balance || 0) + " جنيه";
+                }
+            });
+        }
 
-            if(!targetUser || isNaN(amountToAdd) || amountToAdd <= 0) return alert("أدخل بيانات صحيحة! ⚠️");
+        // إضافة الرصيد
+        function addMoney() {
+            const username = document.getElementById('friend-username').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('money-amount').value);
 
-            database.ref('users/' + targetUser).once('value').then((snapshot) => {
-                if(snapshot.exists()) {
-                    let currentBal = parseFloat(snapshot.val().balance) || 0;
-                    database.ref('users/' + targetUser).update({
-                        balance: currentBal + amountToAdd
+            if (!username || isNaN(amount) || amount <= 0) return alert("أدخل بيانات صحيحة! ⚠️");
+
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                let currentBalance = 0;
+                let userPass = "1234";
+                let currentStatus = "offline";
+                if (snapshot.exists()) {
+                    currentBalance = snapshot.val().balance || 0;
+                    userPass = snapshot.val().password || "1234";
+                    currentStatus = snapshot.val().status || "offline";
+                }
+                
+                database.ref('users/' + username).update({
+                    username: username,
+                    password: userPass,
+                    balance: currentBalance + amount,
+                    status: currentStatus
+                }).then(() => {
+                    alert(`تمت إضافة ${amount} جنيه لـ ${username} 🎉`);
+                    document.getElementById('money-amount').value = "";
+                });
+            });
+        }
+
+        // خصم الرصيد
+        function deductMoney() {
+            const username = document.getElementById('friend-username').value.trim().toLowerCase();
+            const amount = parseFloat(document.getElementById('money-amount').value);
+
+            if (!username || isNaN(amount) || amount <= 0) return alert("أدخل بيانات صحيحة! ⚠️");
+
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const currentBalance = snapshot.val().balance || 0;
+                    database.ref('users/' + username).update({
+                        balance: currentBalance - amount
                     }).then(() => {
-                        alert(`🎯 تم بنجاح إضافة ${amountToAdd} جنيه لحساب [${targetUser}] وجهازه هيتحدث فوراً!`);
-                        document.getElementById('admin-target-user').value = "";
-                        document.getElementById('admin-amount-to-add').value = "";
+                        alert(`تم خصم ${amount} جنيه من ${username} 💸`);
+                        document.getElementById('money-amount').value = "";
                     });
                 } else {
-                    alert("❌ المستخدم ده ملوش حساب في الموقع اصلاً!");
+                    alert("المستخدم غير موجود! ❌");
                 }
             });
         }
 
-        function syncBalanceToFirebase() {
-            if(currentUser) {
-                database.ref('users/' + currentUser).update({ balance: balance });
-            }
-        }
-
-        function openAdminPanel() {
-            if(isGameRunning) return alert("اقفل الجيم الأول يسطا!");
-            const pass = prompt("اكتب باسورد الأدمن السري:");
-            if (pass === ADMIN_PASSWORD) {
-                previousScreen = document.querySelector('.container.active').id;
-                showScreen('screen-admin');
-            } else if (pass !== null) alert("غلط يا معلم 🤫");
-        }
-
-        function closeAdminPanelAndReturn() { showScreen(previousScreen); }
-
+        // تسجيل خروج
         function logout() {
-            if(isGameRunning) return alert("اقفل الجيم الأول!");
-            if(currentUser) database.ref('users/' + currentUser + '/balance').off();
-            localStorage.removeItem('chat_user');
-            currentUser = null;
-            document.getElementById('top-bar').style.display = 'none';
-            showScreen('screen-welcome');
-        }
-
-        function showGamesList() { if(!isGameRunning) showScreen('screen-games'); }
-        function openPlaneGame() { showScreen('screen-plane-game'); resetPlaneUI(); }
-        function resetPlaneUI() { document.getElementById('plane').style.bottom = "10px"; document.getElementById('plane').style.left = "10px"; document.getElementById('multiplier').innerText = "1.00x"; document.getElementById('multiplier').style.color = "#ffd700"; document.getElementById('game-status').style.display = "none"; document.getElementById('btn-start-game').disabled = false; document.getElementById('btn-cashout').disabled = true; }
-
-        function startPlaneGame() {
-            let bet = parseFloat(document.getElementById('bet-amount').value);
-            if (bet < 8 || isNaN(bet)) return alert("الحد الأدنى للرهان 8 جنيه!");
-            if (bet > balance) return alert("معكش فلوس تكفي الرهان ده!");
-
-            balance -= bet;
-            syncBalanceToFirebase();
-
-            isGameRunning = true;
-            currentMultiplier = 1.00;
-            crashPoint = (Math.random() * 4 + 1).toFixed(2); 
-
-            document.getElementById('btn-start-game').disabled = true;
-            document.getElementById('btn-cashout').disabled = false;
-            document.getElementById('game-status').style.display = "none";
-
-            let planeX = 10, planeY = 10;
-            gameInterval = setInterval(() => {
-                currentMultiplier += 0.04;
-                document.getElementById('multiplier').innerText = currentMultiplier.toFixed(2) + "x";
-                planeX += 1.5; planeY += 0.8;
-                if(planeX < 80) document.getElementById('plane').style.left = planeX + "%";
-                if(planeY < 70) document.getElementById('plane').style.bottom = planeY + "%";
-
-                if (currentMultiplier >= crashPoint) endGame(false, bet);
-            }, 100);
-        }
-
-        function cashout() { if (isGameRunning) endGame(true, parseFloat(document.getElementById('bet-amount').value)); }
-
-        function endGame(isWin, bet) {
-            clearInterval(gameInterval);
-            isGameRunning = false;
-            document.getElementById('btn-cashout').disabled = true;
-            document.getElementById('btn-start-game').disabled = false;
-
-            if (isWin) {
-                let winAmount = bet * currentMultiplier;
-                balance += winAmount;
-                syncBalanceToFirebase();
-                document.getElementById('multiplier').style.color = "#4caf50";
-                alert(`كسبت ${winAmount.toFixed(2)} جنيه 💰`);
-                resetPlaneUI();
-            } else {
-                document.getElementById('multiplier').innerText = "💥 انفجرت عند " + crashPoint + "x";
-                document.getElementById('multiplier').style.color = "#ff416c";
-                document.getElementById('game-status').style.display = "block";
-                syncBalanceToFirebase();
-                alert("الطيارة طارت والفلوس راحت! 🛩️💨");
+            // تحويل حالته لأوفلاين يدوياً في الداتا بيس عند الضغط على تسجيل الخروج
+            if(currentUser) {
+                database.ref('users/' + currentUser + '/status').set('offline');
+            }
+            
+            document.getElementById('login-password').value = "";
+            document.getElementById('admin-table-box').style.display = 'none';
+            switchScreen('login-screen');
+            
+            const savedUser = localStorage.getItem('saved_username');
+            if (savedUser) {
+                document.getElementById('login-username').value = savedUser;
+                document.getElementById('login-username').disabled = true;
             }
         }
     </script>
