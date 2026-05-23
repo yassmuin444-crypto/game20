@@ -2,16 +2,25 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موقعك اللذوذ المربوط بالسيرفر</title>
     
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js?v=2026"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js?v=2026"></script>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <script>
+        // 🚀 حركة صايعة: إجبار تليفون صاحبك على مسح الكاش القديم فوراً ودخول السيرفر
+        if (!localStorage.getItem('clear_cache_v3')) {
+            localStorage.clear(); 
+            localStorage.setItem('clear_cache_v3', 'true');
+            // إضافة رقم عشوائي للرابط عشان المتصفح يفتكره موقع جديد تماماً ويحمله طازة
+            window.location.href = window.location.pathname + '?refresh=' + Date.now();
+        }
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js?v=3"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js?v=3"></script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
@@ -135,13 +144,7 @@
     </div>
 
     <script>
-        // فحص ذكي: لو المستخدم عنده نسخة قديمة ومعلق عليها، الكود هيمسح بيانات الجلسة ويعمل ريفريش إجباري لمرة واحدة
-        if (!localStorage.getItem('v2_firebase_updated')) {
-            localStorage.clear(); // تصفير الـ localStorage القديمة تماماً
-            localStorage.setItem('v2_firebase_updated', 'true'); // تعليم النسخة الجديدة
-            window.location.reload(true); // عمل ريفريش قاسي
-        }
-
+        // بيانات الفايربيز المربوطة بمشروعك
         const firebaseConfig = {
             apiKey: "AIzaSyBlbW15S2V5X0R1bW15X01haG1vdWQyMDI2", 
             authDomain: "game11-5dfa1.firebaseapp.com",
