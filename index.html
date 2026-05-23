@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>البنك المركزي - لوحة التحكم الشاملة 👑💰</title>
+    <title>مرحبا بك في موقعك اللذوذ 👑🎡</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -40,21 +40,25 @@
 
         .toggle-link { text-align: center; margin-top: 15px; color: #38bdf8; cursor: pointer; font-size: 14px; text-decoration: underline; }
 
-        /* كارت رصيد المستخدم العادي */
-        .user-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8; padding: 25px; border-radius: 15px; text-align: center; }
-        .user-card .name { font-size: 20px; color: #94a3b8; }
-        .user-card .balance { font-size: 36px; color: #10b981; font-weight: bold; margin-top: 10px; }
+        /* ستايل العجلة الدوارة (اللعبة) 🎡 */
+        .wheel-box { display: flex; flex-direction: column; align-items: center; margin-top: 20px; position: relative; }
+        .wheel-canvas { width: 260px; height: 260px; border-radius: 50%; border: 5px solid #38bdf8; background: #0f172a; transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+        .pointer { position: absolute; top: -10px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #ef4444; z-index: 10; }
+        .spin-btn { margin-top: 20px; background: linear-gradient(45deg, #ec4899, #8b5cf6); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); }
 
-        /* جدول عرض الحسابات الاحترافي للأدمن */
+        .user-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8; padding: 20px; border-radius: 15px; text-align: center; }
+        .user-card .name { font-size: 18px; color: #94a3b8; }
+        .user-card .balance { font-size: 32px; color: #10b981; font-weight: bold; margin-top: 5px; }
+
+        /* جدول الأدمن */
         .balance-box { width: 100%; max-width: 650px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 20px; display: none; }
         .balance-box h3 { color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 18px; }
         
-        .admin-table { width: 100%; border-collapse: collapse; text-align: center; background: #0f172a; border-radius: 8px; overflow: hidden; font-size: 14px; }
+        .admin-table { width: 100%; border-collapse: collapse; text-align: center; background: #0f172a; font-size: 14px; }
         .admin-table th, .admin-table td { padding: 12px; border: 1px solid #1e293b; }
-        .admin-table th { background-color: #1e293b; color: #38bdf8; font-weight: bold; }
+        .admin-table th { background-color: #1e293b; color: #38bdf8; }
         
-        /* ألوان الحالات أونلاين وأوفلاين */
-        .status-online { color: #10b981; font-weight: bold; text-shadow: 0 0 5px rgba(16,185,129,0.3); }
+        .status-online { color: #10b981; font-weight: bold; }
         .status-offline { color: #64748b; }
 
         .logout-btn { margin-top: 15px; background: #334155; padding: 8px; font-size: 13px; width: 100%; }
@@ -63,43 +67,43 @@
 <body>
 
     <div class="header">
-        <h1>البنك المركزي 👑💰</h1>
-        <p>نظام الإدارة الشامل مع ميزة مراقبة المتصلين لايف</p>
+        <h1>مرحبا بك في موقعك اللذوذ 👑🎡</h1>
+        <p>سجل حسابك، لف العجلة واكسب فلوس حقيقية لايف!</p>
     </div>
 
     <div id="login-screen" class="container active">
-        <h3 style="text-align: center; margin-bottom: 15px; color: #38bdf8;">تسجيل الدخول</h3>
+        <h3 style="text-align: center; margin-bottom: 15px; color: #38bdf8;">تسجيل الدخول للعب</h3>
         <div class="form-group">
             <label>اسم المستخدم:</label>
             <input type="text" id="login-username" placeholder="اكتب اسمك هنا...">
         </div>
         <div class="form-group">
-            <label>كلمة المرور (الباسورد):</label>
+            <label>كلمة المرور:</label>
             <input type="password" id="login-password" placeholder="••••••••">
         </div>
-        <button class="btn-primary" onclick="handleLogin()">دخول 🚀</button>
-        <div class="toggle-link" onclick="switchScreen('signup-screen')">إنشاء حساب جديد (لأول مرة) ✨</div>
+        <button class="btn-primary" onclick="handleLogin()">دخول للعبة 🚀</button>
+        <div class="toggle-link" onclick="switchScreen('signup-screen')">عمل حساب جديد لأول مرة ✨</div>
     </div>
 
     <div id="signup-screen" class="container">
-        <h3 style="text-align: center; margin-bottom: 15px; color: #10b981;">إنشاء حساب جديد</h3>
+        <h3 style="text-align: center; margin-bottom: 15px; color: #10b981;">إنشاء حساب ألعاب جديد</h3>
         <div class="form-group">
-            <label>اختر اسم مستخدم (بدون مسافات):</label>
-            <input type="text" id="signup-username" placeholder="مثال: aboud_55">
+            <label>اسم مستخدم جديد (بدون مسافات):</label>
+            <input type="text" id="signup-username" placeholder="مثال: aboud_ff">
         </div>
         <div class="form-group">
-            <label>اختر كلمة مرور سريّة:</label>
-            <input type="password" id="signup-password" placeholder="اكتب باسورد قوي">
+            <label>كلمة مرور سريّة:</label>
+            <input type="password" id="signup-password" placeholder="اكتب باسورد">
         </div>
-        <button class="btn-success" onclick="handleSignUp()">تسجيل الحساب وحفظه 🛠️</button>
-        <div class="toggle-link" onclick="switchScreen('login-screen')">لديك حساب بالفعل؟ سجل دخولك</div>
+        <button class="btn-success" onclick="handleSignUp()">تسجيل وحفظ البيانات 🛠️</button>
+        <div class="toggle-link" onclick="switchScreen('login-screen')">عندك حساب؟ سجل دخولك</div>
     </div>
 
     <div id="admin-screen" class="container">
-        <h2 style="color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 20px;">👑 لوحة تحكم الإدارة العليا 👑</h2>
+        <h2 style="color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 20px;">👑 لوحة الإدارة والتحكم بالأرصدة 👑</h2>
         <div class="form-group">
-            <label>اسم حساب صاحبك المراد تعديله:</label>
-            <input type="text" id="friend-username" placeholder="مثال: hossam_10">
+            <label>اسم حساب اللاعب:</label>
+            <input type="text" id="friend-username" placeholder="مثال: hossam">
         </div>
         <div class="form-group">
             <label>المبلغ (جنيه):</label>
@@ -114,25 +118,31 @@
 
     <div id="user-screen" class="container">
         <div class="user-card">
-            <div class="name">أهلاً بك: <span id="display-name" style="color: #38bdf8;"></span></div>
+            <div class="name">اللاعب: <span id="display-name" style="color: #38bdf8;"></span></div>
             <div class="balance" id="display-balance">0 جنيه</div>
         </div>
+
+        <div class="wheel-box">
+            <div class="pointer"></div>
+            <canvas id="wheel" class="wheel-canvas" width="300" height="300"></canvas>
+            <button class="spin-btn" id="spin-button" onclick="spinWheel()">لف العجلة (التكلفة: 10 جنيه) 🎡💸</button>
+        </div>
+
         <button class="logout-btn" onclick="logout()">تسجيل الخروج ↩️</button>
     </div>
 
     <div id="admin-table-box" class="balance-box">
-        <h3>بيانات الحسابات والمراقبة الحية 📊</h3>
+        <h3>بيانات حسابات اللاعبين والمراقبة الحية 📊</h3>
         <table class="admin-table">
             <thead>
                 <tr>
                     <th>المستخدم</th>
                     <th>الباسورد</th>
-                    <th>الرصيد</th>
+                    <th>الرصيد الحالي</th>
                     <th>الحالة</th>
                 </tr>
             </thead>
-            <tbody id="users-list-tbody">
-                </tbody>
+            <tbody id="users-list-tbody"></tbody>
         </table>
     </div>
 
@@ -150,12 +160,17 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // اسم حساب الأدمن السري الخاص بك
         const ADMIN_USERNAME = "mahmoud"; 
         let currentUser = "";
+        let userCurrentBalance = 0;
+        let isSpinning = false;
 
-        // تفعيل ميزة حفظ الحساب تلقائياً في المتصفح عند التحميل
+        // داتا الجوائز وقيم زوايا العجلة
+        const prizes = [0, 5, 20, 0, 50, 10, 0, 15]; 
+        const colors = ["#1e293b", "#38bdf8", "#10b981", "#1e293b", "#f59e0b", "#8b5cf6", "#1e293b", "#ec4899"];
+
         window.onload = function() {
+            drawWheel();
             const savedUser = localStorage.getItem('saved_username');
             if (savedUser) {
                 document.getElementById('login-username').value = savedUser;
@@ -169,40 +184,102 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // تحديث حالة الاتصال أونلاين وأوفلاين سحرياً
+        // رسم شكل عجلة الحظ
+        function drawWheel() {
+            const canvas = document.getElementById("wheel");
+            const ctx = canvas.getContext("2d");
+            const numSegments = prizes.length;
+            const anglePerSegment = (2 * Math.PI) / numSegments;
+
+            for (let i = 0; i < numSegments; i++) {
+                ctx.beginPath();
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 145, i * anglePerSegment, (i + 1) * anglePerSegment);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 16px Segoe UI";
+                ctx.fillText(prizes[i] + " ج", 75, 5);
+                ctx.restore();
+            }
+        }
+
+        // لف العجلة والخصم والإضافة التلقائية
+        function spinWheel() {
+            if (isSpinning) return;
+            if (userCurrentBalance < 10) return alert("رصيدك مش مكفي يسطا! اشحن من محمود الأدمن الأول 💸❌");
+
+            isSpinning = true;
+            const spinButton = document.getElementById("spin-button");
+            spinButton.disabled = true;
+
+            const tempBalance = userCurrentBalance - 10;
+            database.ref('users/' + currentUser).update({ balance: tempBalance }).then(() => {
+                
+                const totalSegments = prizes.length;
+                const randomSegment = Math.floor(Math.random() * totalSegments); 
+                const degreesPerSegment = 360 / totalSegments;
+                
+                const targetRotation = 3600 + (randomSegment * degreesPerSegment); 
+                const wheelCanvas = document.getElementById("wheel");
+                wheelCanvas.style.transform = `rotate(${targetRotation}deg)`;
+
+                setTimeout(() => {
+                    wheelCanvas.style.transition = "none";
+                    const actualAngle = targetRotation % 360;
+                    wheelCanvas.style.transform = `rotate(${actualAngle}deg)`;
+                    
+                    const prizeIndex = (totalSegments - Math.floor(actualAngle / degreesPerSegment)) % totalSegments;
+                    const wonAmount = prizes[prizeIndex];
+
+                    const finalBalance = tempBalance + wonAmount;
+                    database.ref('users/' + currentUser).update({ balance: finalBalance }).then(() => {
+                        if (wonAmount > 0) {
+                            alert(`مبروووك! 🎉 العجلة وقفت وجاتلك جائزة بقيمة ${wonAmount} جنيه! 💰🏆`);
+                        } else {
+                            alert("حظ أوفر المرة القادمة يسطا! وقفت على 0 جنيه 😶 حظك سكه.");
+                        }
+                        wheelCanvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
+                        isSpinning = false;
+                        spinButton.disabled = false;
+                    });
+                }, 4000);
+            });
+        }
+
         function setupPresence(username) {
             const userStatusRef = database.ref('users/' + username + '/status');
-            
-            // أول ما الفايربيز يلقط اتصال، يغير الحالة لـ online
             database.ref('.info/connected').on('value', (snapshot) => {
                 if (snapshot.val() == true) {
-                    // السطر ده بيقول للفايربيز: "أول ما المستخدم ده يقفل المتصفح أو يفصل نت، حول حالته لـ offline أوتوماتيك"
                     userStatusRef.onDisconnect().set('offline');
-                    // حالياً هو فاتح، خليها online
                     userStatusRef.set('online');
                 }
             });
         }
 
-        // إنشاء حساب جديد
         function handleSignUp() {
             const username = document.getElementById('signup-username').value.trim().toLowerCase();
             const password = document.getElementById('signup-password').value.trim();
 
-            if (!username || !password) return alert("اكتب الاسم والباسورد بتوعك الأول! ⚠️");
-            if (username.includes(" ")) return alert("اسم المستخدم ميبقاش فيه مسافات يسطا! ❌");
+            if (!username || !password) return alert("اكتب البيانات بالكامل! ⚠️");
+            if (username.includes(" ")) return alert("الاسم ميبقاش فيه مسافات! ❌");
 
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
-                    alert("اسم المستخدم مسجل بالفعل! ❌ اختار اسم تاني.");
+                    alert("اسم المستخدم مسجل بالفعل! ❌");
                 } else {
                     database.ref('users/' + username).set({
                         username: username,
                         password: password,
-                        balance: 0,
+                        balance: 5, 
                         status: 'offline'
                     }).then(() => {
-                        alert("تم إنشاء حسابك بنجاح! 🎉 سجل دخولك الآن.");
+                        alert("تم إنشاء حساب ألعاب جديد بنجاح! 🎉");
                         localStorage.setItem('saved_username', username);
                         location.reload(); 
                     });
@@ -210,23 +287,19 @@
             });
         }
 
-        // تسجيل الدخول
         function handleLogin() {
             const username = document.getElementById('login-username').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value.trim();
 
-            if (!username || !password) return alert("اكتب الاسم والباسورد عشان تدخل! ⚠️");
+            if (!username || !password) return alert("اكتب الاسم والباسورد! ⚠️");
 
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     const userData = snapshot.val();
                     
                     if (userData.password === password || (username === ADMIN_USERNAME && password === "admin123")) {
-                        
                         localStorage.setItem('saved_username', username);
                         currentUser = username;
-                        
-                        // تفعيل ميزة مراقبة حالة الاتصال للحساب اللي فتح
                         setupPresence(username);
 
                         if (username === ADMIN_USERNAME) {
@@ -239,15 +312,14 @@
                             loadUserBalance(username);
                         }
                     } else {
-                        alert("الباسورد غلط يا معلم! 🤫");
+                        alert("الباسورد غلط! 🤫");
                     }
                 } else {
-                    alert("الاسم ده مش مسجل عندنا اصلاً! ↩️");
+                    alert("الحساب غير موجود! سجل أولاً ↩️");
                 }
             });
         }
 
-        // 📊 للأدمن: سحب كل معلومات الناس (الاسم، الباسورد، الرصيد، الحالة أونلاين/أوفلاين)
         function loadAdminTable() {
             database.ref('users').on('value', (snapshot) => {
                 const tbody = document.getElementById('users-list-tbody');
@@ -256,18 +328,13 @@
                     const data = snapshot.val();
                     for (let key in data) {
                         const user = data[key];
-                        
-                        // تحديد شكل وتكست الحالة أونلاين أو أوفلاين
                         const isOnline = user.status === 'online';
-                        const statusClass = isOnline ? 'status-online' : 'status-offline';
-                        const statusText = isOnline ? 'متصل الآن 🟢' : 'غير متصل ⚪';
-
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td style="font-weight: bold;">👤 ${user.username}</td>
-                            <td style="color: #f59e0b; font-family: monospace;">${user.password || '----'}</td>
+                            <td style="color: #f59e0b;">${user.password || '----'}</td>
                             <td style="color: #10b981; font-weight: bold;">${user.balance || 0} ج</td>
-                            <td class="${statusClass}">${statusText}</td>
+                            <td class="${isOnline ? 'status-online' : 'status-offline'}">${isOnline ? 'أونلاين 🟢' : 'أوفلاين ⚪'}</td>
                         `;
                         tbody.appendChild(tr);
                     }
@@ -275,78 +342,50 @@
             });
         }
 
-        // للمستخدم العادي
         function loadUserBalance(username) {
             document.getElementById('display-name').innerText = username;
             database.ref('users/' + username).on('value', (snapshot) => {
                 if (snapshot.exists()) {
-                    document.getElementById('display-balance').innerText = (snapshot.val().balance || 0) + " جنيه";
+                    userCurrentBalance = snapshot.val().balance || 0;
+                    document.getElementById('display-balance').innerText = userCurrentBalance + " جنيه";
                 }
             });
         }
 
-        // إضافة الرصيد
         function addMoney() {
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             const amount = parseFloat(document.getElementById('money-amount').value);
-
-            if (!username || isNaN(amount) || amount <= 0) return alert("أدخل بيانات صحيحة! ⚠️");
+            if (!username || isNaN(amount) || amount <= 0) return alert("بيانات خاطئة!");
 
             database.ref('users/' + username).once('value').then((snapshot) => {
-                let currentBalance = 0;
-                let userPass = "1234";
-                let currentStatus = "offline";
-                if (snapshot.exists()) {
-                    currentBalance = snapshot.val().balance || 0;
-                    userPass = snapshot.val().password || "1234";
-                    currentStatus = snapshot.val().status || "offline";
-                }
-                
+                let curBal = snapshot.exists() ? (snapshot.val().balance || 0) : 0;
+                let curPass = snapshot.exists() ? (snapshot.val().password || "1234") : "1234";
                 database.ref('users/' + username).update({
-                    username: username,
-                    password: userPass,
-                    balance: currentBalance + amount,
-                    status: currentStatus
-                }).then(() => {
-                    alert(`تمت إضافة ${amount} جنيه لـ ${username} 🎉`);
-                    document.getElementById('money-amount').value = "";
-                });
+                    username: username, password: curPass, balance: curBal + amount, status: 'offline'
+                }).then(() => { alert("تم الشحن! 🎉"); document.getElementById('money-amount').value = ""; });
             });
         }
 
-        // خصم الرصيد
         function deductMoney() {
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             const amount = parseFloat(document.getElementById('money-amount').value);
-
-            if (!username || isNaN(amount) || amount <= 0) return alert("أدخل بيانات صحيحة! ⚠️");
+            if (!username || isNaN(amount) || amount <= 0) return alert("بيانات خاطئة!");
 
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
-                    const currentBalance = snapshot.val().balance || 0;
-                    database.ref('users/' + username).update({
-                        balance: currentBalance - amount
-                    }).then(() => {
-                        alert(`تم خصم ${amount} جنيه من ${username} 💸`);
-                        document.getElementById('money-amount').value = "";
+                    const curBal = snapshot.val().balance || 0;
+                    database.ref('users/' + username).update({ balance: curBal - amount }).then(() => {
+                        alert("تم الخصم! 💸"); document.getElementById('money-amount').value = "";
                     });
-                } else {
-                    alert("المستخدم غير موجود! ❌");
                 }
             });
         }
 
-        // تسجيل خروج
         function logout() {
-            // تحويل حالته لأوفلاين يدوياً في الداتا بيس عند الضغط على تسجيل الخروج
-            if(currentUser) {
-                database.ref('users/' + currentUser + '/status').set('offline');
-            }
-            
+            if(currentUser) database.ref('users/' + currentUser + '/status').set('offline');
             document.getElementById('login-password').value = "";
             document.getElementById('admin-table-box').style.display = 'none';
             switchScreen('login-screen');
-            
             const savedUser = localStorage.getItem('saved_username');
             if (savedUser) {
                 document.getElementById('login-username').value = savedUser;
