@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مرحبا بك في موقعك اللذوذ 👑🎡</title>
+    <title>مرحبا بك في موقعك اللذوذ 👑🚀</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -20,7 +20,7 @@
         .header h1 { color: #38bdf8; font-size: 28px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
         .header p { color: #94a3b8; font-size: 14px; margin-top: 5px; }
 
-        .container { background: #1e293b; width: 100%; max-width: 500px; padding: 30px; border-radius: 15px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; display: none; }
+        .container { background: #1e293b; width: 100%; max-width: 550px; padding: 25px; border-radius: 15px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; display: none; }
         .container.active { display: block; }
 
         .form-group { margin-bottom: 15px; }
@@ -40,35 +40,69 @@
 
         .toggle-link { text-align: center; margin-top: 15px; color: #38bdf8; cursor: pointer; font-size: 14px; text-decoration: underline; }
 
-        /* ستايل العجلة الدوارة (اللعبة) 🎡 */
-        .wheel-box { display: flex; flex-direction: column; align-items: center; margin-top: 20px; position: relative; }
-        .wheel-canvas { width: 260px; height: 260px; border-radius: 50%; border: 5px solid #38bdf8; background: #0f172a; transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
-        .pointer { position: absolute; top: -10px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #ef4444; z-index: 10; }
-        .spin-btn { margin-top: 20px; background: linear-gradient(45deg, #ec4899, #8b5cf6); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); }
+        /* ✈️ ستايل لعبة الطيارة */
+        .crash-box { width: 100%; background: #0f172a; border-radius: 12px; border: 2px solid #334155; padding: 15px; margin-top: 20px; text-align: center; position: relative; overflow: hidden; }
+        .crash-canvas { width: 100%; height: 220px; background: #0b0f19; border-radius: 8px; display: block; }
+        .multiplier-display { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 42px; font-weight: bold; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); font-family: monospace; }
+        .multiplier-display.crashed { color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+        
+        .game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn-start { background: linear-gradient(45deg, #e11d48, #be123c); }
+        .btn-cashout { background: linear-gradient(45deg, #eab308, #ca8a04); }
 
-        .user-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8; padding: 20px; border-radius: 15px; text-align: center; }
+        .user-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 2px solid #38bdf8; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 15px; }
         .user-card .name { font-size: 18px; color: #94a3b8; }
-        .user-card .balance { font-size: 32px; color: #10b981; font-weight: bold; margin-top: 5px; }
+        .user-card .balance { font-size: 28px; color: #10b981; font-weight: bold; margin-top: 5px; }
+
+        /* 🎁 ستايل مربع الهدية اليومية Popup */
+        .daily-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.3s; }
+        .daily-modal.show { visibility: visible; opacity: 1; }
+        .daily-content { background: #1e293b; width: 90%; max-width: 500px; padding: 25px; border-radius: 20px; border: 2px solid #ec4899; box-shadow: 0 0 30px rgba(236, 72, 153, 0.4); text-align: center; transform: scale(0.8); transition: 0.3s; }
+        .daily-modal.show .daily-content { transform: scale(1); }
+        
+        .days-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+        @media (max-width: 400px) { .days-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        .day-box { background: #0f172a; border: 1px solid #334155; padding: 10px 5px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; opacity: 0.6; }
+        .day-box.active { border-color: #ec4899; background: linear-gradient(135deg, #25142b, #0f172a); opacity: 1; box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
+        .day-box.claimed { border-color: #10b981; background: rgba(16, 185, 129, 0.1); opacity: 0.8; }
+        .day-box .day-title { font-size: 12px; color: #94a3b8; }
+        .day-box.active .day-title { color: #ec4899; font-weight: bold; }
+        .day-box .day-reward { font-size: 14px; color: #10b981; font-weight: bold; }
+        .day-box.claimed .day-reward { color: #64748b; text-decoration: line-through; }
+        
+        .btn-claim { background: linear-gradient(45deg, #ec4899, #be185d); font-size: 18px; margin-top: 10px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); }
+        .btn-close-modal { background: #334155; margin-top: 10px; padding: 8px; font-size: 13px; }
 
         /* جدول الأدمن */
         .balance-box { width: 100%; max-width: 650px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 20px; display: none; }
         .balance-box h3 { color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 18px; }
-        
         .admin-table { width: 100%; border-collapse: collapse; text-align: center; background: #0f172a; font-size: 14px; }
         .admin-table th, .admin-table td { padding: 12px; border: 1px solid #1e293b; }
         .admin-table th { background-color: #1e293b; color: #38bdf8; }
-        
         .status-online { color: #10b981; font-weight: bold; }
         .status-offline { color: #64748b; }
-
         .logout-btn { margin-top: 15px; background: #334155; padding: 8px; font-size: 13px; width: 100%; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>مرحبا بك في موقعك اللذوذ 👑🎡</h1>
-        <p>سجل حسابك، لف العجلة واكسب فلوس حقيقية لايف!</p>
+        <h1>مرحبا بك في موقعك اللذوذ 👑🚀</h1>
+        <p>توقع صعود الطيارة، اسحب أرباحك في الوقت المناسب قبل الانفجار!</p>
+    </div>
+
+    <div id="daily-reward-modal" class="daily-modal">
+        <div class="daily-content">
+            <h2 style="color: #ec4899; text-shadow: 0 0 10px rgba(236,72,153,0.2);">💰 تسجيل الدخول اليومي 💰</h2>
+            <p style="color: #94a3b8; font-size: 13px; margin-top: 5px;">ادخل كل يوم عشان تستلم هديتك المتزايدة!</p>
+            
+            <div class="days-grid" id="modal-days-grid">
+                </div>
+
+            <button class="btn-claim" id="claim-reward-btn" onclick="claimDailyReward()">استلام الهدية اليومية 🎁</button>
+            <button class="btn-close-modal" onclick="closeDailyModal()">إغلاق مؤقت</button>
+        </div>
     </div>
 
     <div id="login-screen" class="container active">
@@ -81,7 +115,7 @@
             <label>كلمة المرور:</label>
             <input type="password" id="login-password" placeholder="••••••••">
         </div>
-        <button class="btn-primary" onclick="handleLogin()">دخول للعبة 🚀</button>
+        <button class="btn-primary" onclick="handleLogin()">دخول للموقع 🚀</button>
         <div class="toggle-link" onclick="switchScreen('signup-screen')">عمل حساب جديد لأول مرة ✨</div>
     </div>
 
@@ -89,7 +123,7 @@
         <h3 style="text-align: center; margin-bottom: 15px; color: #10b981;">إنشاء حساب ألعاب جديد</h3>
         <div class="form-group">
             <label>اسم مستخدم جديد (بدون مسافات):</label>
-            <input type="text" id="signup-username" placeholder="مثال: aboud_ff">
+            <input type="text" id="signup-username" placeholder="مثال: hossam_4">
         </div>
         <div class="form-group">
             <label>كلمة مرور سريّة:</label>
@@ -100,7 +134,7 @@
     </div>
 
     <div id="admin-screen" class="container">
-        <h2 style="color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 20px;">👑 لوحة الإدارة والتحكم بالأرصدة 👑</h2>
+        <h2 style="color: #38bdf8; text-align: center; margin-bottom: 15px; font-size: 18px;">👑 لوحة الإدارة والتحكم بالأرصدة 👑</h2>
         <div class="form-group">
             <label>اسم حساب اللاعب:</label>
             <input type="text" id="friend-username" placeholder="مثال: hossam">
@@ -113,22 +147,33 @@
             <button class="btn-add" onclick="addMoney()">إضافة رصيد ➕</button>
             <button class="btn-deduct" onclick="deductMoney()">خصم رصيد ➖</button>
         </div>
+        
+        <div id="admin-game-box"></div>
+
         <button class="logout-btn" onclick="logout()">تسجيل الخروج ↩️</button>
     </div>
 
     <div id="user-screen" class="container">
         <div class="user-card">
-            <div class="name">اللاعب: <span id="display-name" style="color: #38bdf8;"></span></div>
-            <div class="balance" id="display-balance">0 جنيه</div>
+            <div class="name">اللاعب: <span id="user-display-name" style="color: #38bdf8;"></span></div>
+            <div class="balance" id="user-display-balance">0 جنيه</div>
         </div>
 
-        <div class="wheel-box">
-            <div class="pointer"></div>
-            <canvas id="wheel" class="wheel-canvas" width="300" height="300"></canvas>
-            <button class="spin-btn" id="spin-button" onclick="spinWheel()">لف العجلة (التكلفة: 10 جنيه) 🎡💸</button>
-        </div>
+        <div id="user-game-box"></div>
 
         <button class="logout-btn" onclick="logout()">تسجيل الخروج ↩️</button>
+    </div>
+
+    <div id="crash-game-template" style="display: none;">
+        <div class="crash-box">
+            <canvas class="crash-canvas" width="500" height="220"></canvas>
+            <div class="multiplier-display">1.00x</div>
+            <div class="game-controls">
+                <input type="number" class="bet-amount-input" placeholder="مبلغ الرهان" value="10" style="padding: 8px; font-size: 14px;">
+                <button class="btn-start" onclick="startCrashGame()">بدء الرحلة 🚀</button>
+            </div>
+            <button class="btn-cashout" onclick="cashoutCrashGame()" style="margin-top: 10px; display: none;">كاش أوت (سحب الأرباح) 💰</button>
+        </div>
     </div>
 
     <div id="admin-table-box" class="balance-box">
@@ -147,7 +192,6 @@
     </div>
 
     <script>
-        // تكوين الـ Firebase الخاص بيك
         const firebaseConfig = {
             apiKey: "AIzaSyBlbW15S2V5X0R1bW15X01haG1vdWQyMDI2", 
             authDomain: "game11-5dfa1.firebaseapp.com",
@@ -163,14 +207,16 @@
         const ADMIN_USERNAME = "mahmoud"; 
         let currentUser = "";
         let userCurrentBalance = 0;
-        let isSpinning = false;
 
-        // داتا الجوائز وقيم زوايا العجلة
-        const prizes = [0, 5, 20, 0, 50, 10, 0, 15]; 
-        const colors = ["#1e293b", "#38bdf8", "#10b981", "#1e293b", "#f59e0b", "#8b5cf6", "#1e293b", "#ec4899"];
+        // متغيرات الطيارة
+        let crashInterval; let currentMultiplier = 1.00; let crashPoint = 0; let currentBet = 0; let gameRunning = false;
+        let activeCanvas, activeCtx, activeDisplay, activeStartBtn, activeCashoutBtn, activeBetInput;
+
+        // متغيرات السيستم اليومي الاحترافي
+        const rewardAmounts = { 1: 10, 2: 20, 3: 30, 4: 40, 5: 50, 6: 60, 7: 70 };
+        let currentStreakDay = 1;
 
         window.onload = function() {
-            drawWheel();
             const savedUser = localStorage.getItem('saved_username');
             if (savedUser) {
                 document.getElementById('login-username').value = savedUser;
@@ -184,102 +230,191 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // رسم شكل عجلة الحظ
-        function drawWheel() {
-            const canvas = document.getElementById("wheel");
-            const ctx = canvas.getContext("2d");
-            const numSegments = prizes.length;
-            const anglePerSegment = (2 * Math.PI) / numSegments;
+        // 🔥 فحص ميزة تسجيل الدخول اليومي وعرض الـ Popup
+        function checkDailyReward(username) {
+            const todayStr = new Date().toISOString().split('T')[0]; // صيغة التاريخ: YYYY-MM-DD
+            
+            database.ref('users/' + username + '/dailyReward').once('value').then((snapshot) => {
+                let dailyData = snapshot.val() || { lastClaimDate: "", currentDay: 1 };
+                
+                // لو عدى أكتر من يومين ومسجلش دخول، أو خلص اليوم السابع بنصفر العداد للتجديد التلقائي
+                if (dailyData.lastClaimDate) {
+                    const lastDate = new Date(dailyData.lastClaimDate);
+                    const today = new Date(todayStr);
+                    const diffTime = Math.abs(today - lastDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays > 1 || dailyData.currentDay > 7) {
+                        dailyData.currentDay = 1; // تصفير وتجديد أوتوماتيكي
+                    }
+                }
+                
+                currentStreakDay = dailyData.currentDay || 1;
 
-            for (let i = 0; i < numSegments; i++) {
-                ctx.beginPath();
-                ctx.moveTo(150, 150);
-                ctx.arc(150, 150, 145, i * anglePerSegment, (i + 1) * anglePerSegment);
-                ctx.fillStyle = colors[i];
-                ctx.fill();
-                ctx.stroke();
+                // رسم شكل الأيام السبعة جوه المودال
+                renderDailyGrid(currentStreakDay, dailyData.lastClaimDate === todayStr);
 
-                ctx.save();
-                ctx.translate(150, 150);
-                ctx.rotate(i * anglePerSegment + anglePerSegment / 2);
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 16px Segoe UI";
-                ctx.fillText(prizes[i] + " ج", 75, 5);
-                ctx.restore();
+                // لو مأخدش المكافأة النهاردة.. افتح الـ Popup في وشه فوراً!
+                if (dailyData.lastClaimDate !== todayStr) {
+                    document.getElementById('daily-reward-modal').classList.add('show');
+                    document.getElementById('claim-reward-btn').disabled = false;
+                    document.getElementById('claim-reward-btn').innerText = `استلام الهدية اليومية (+${rewardAmounts[currentStreakDay]} ج) 🎁`;
+                }
+            });
+        }
+
+        function renderDailyGrid(activeDay, isTodayClaimed) {
+            const grid = document.getElementById('modal-days-grid');
+            grid.innerHTML = "";
+            
+            const dayNames = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع"];
+            
+            for (let i = 1; i <= 7; i++) {
+                const box = document.createElement('div');
+                box.className = 'day-box';
+                
+                if (i < activeDay || (i === activeDay && isTodayClaimed)) {
+                    box.className += ' claimed';
+                } else if (i === activeDay && !isTodayClaimed) {
+                    box.className += ' active';
+                }
+                
+                box.innerHTML = `
+                    <span class="day-title">اليوم ${dayNames[i-1]}</span>
+                    <span class="day-reward">${rewardAmounts[i]} ج</span>
+                `;
+                grid.appendChild(box);
             }
         }
 
-        // لف العجلة والخصم والإضافة التلقائية
-        function spinWheel() {
-            if (isSpinning) return;
-            if (userCurrentBalance < 10) return alert("رصيدك مش مكفي يسطا! اشحن من محمود الأدمن الأول 💸❌");
+        // زرار استلام المكافأة
+        function claimDailyReward() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const reward = rewardAmounts[currentStreakDay];
 
-            isSpinning = true;
-            const spinButton = document.getElementById("spin-button");
-            spinButton.disabled = true;
+            document.getElementById('claim-reward-btn').disabled = true;
 
-            const tempBalance = userCurrentBalance - 10;
-            database.ref('users/' + currentUser).update({ balance: tempBalance }).then(() => {
-                
-                const totalSegments = prizes.length;
-                const randomSegment = Math.floor(Math.random() * totalSegments); 
-                const degreesPerSegment = 360 / totalSegments;
-                
-                const targetRotation = 3600 + (randomSegment * degreesPerSegment); 
-                const wheelCanvas = document.getElementById("wheel");
-                wheelCanvas.style.transform = `rotate(${targetRotation}deg)`;
-
-                setTimeout(() => {
-                    wheelCanvas.style.transition = "none";
-                    const actualAngle = targetRotation % 360;
-                    wheelCanvas.style.transform = `rotate(${actualAngle}deg)`;
-                    
-                    const prizeIndex = (totalSegments - Math.floor(actualAngle / degreesPerSegment)) % totalSegments;
-                    const wonAmount = prizes[prizeIndex];
-
-                    const finalBalance = tempBalance + wonAmount;
-                    database.ref('users/' + currentUser).update({ balance: finalBalance }).then(() => {
-                        if (wonAmount > 0) {
-                            alert(`مبروووك! 🎉 العجلة وقفت وجاتلك جائزة بقيمة ${wonAmount} جنيه! 💰🏆`);
-                        } else {
-                            alert("حظ أوفر المرة القادمة يسطا! وقفت على 0 جنيه 😶 حظك سكه.");
-                        }
-                        wheelCanvas.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
-                        isSpinning = false;
-                        spinButton.disabled = false;
-                    });
-                }, 4000);
+            // 1. تحديث الرصيد الحالي لللاعب في الداتا بيس
+            const updatedBalance = userCurrentBalance + reward;
+            
+            database.ref('users/' + currentUser).update({
+                balance: updatedBalance,
+                dailyReward: {
+                    lastClaimDate: todayStr,
+                    currentDay: currentStreakDay + 1 // يجهز اليوم اللي بعده للمرة الجاية
+                }
+            }).then(() => {
+                alert(`يا لوز اللذوذ! 🎉 استلمت مكافأة اليوم المادية بقيمة ${reward} جنيه! 💰💵`);
+                closeDailyModal();
             });
         }
+
+        function closeDailyModal() {
+            document.getElementById('daily-reward-modal').classList.remove('show');
+        }
+
+        function injectGame(targetId) {
+            const template = document.getElementById('crash-game-template').innerHTML;
+            const target = document.getElementById(targetId);
+            target.innerHTML = template;
+
+            activeCanvas = target.querySelector('.crash-canvas');
+            activeCtx = activeCanvas.getContext('2d');
+            activeDisplay = target.querySelector('.multiplier-display');
+            activeStartBtn = target.querySelector('.btn-start');
+            activeCashoutBtn = target.querySelector('.btn-cashout');
+            activeBetInput = target.querySelector('.bet-amount-input');
+            resetCanvas();
+        }
+
+        function resetCanvas() {
+            if(!activeCtx) return;
+            activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
+            activeCtx.strokeStyle = '#1e293b'; activeCtx.lineWidth = 1;
+            for(let i=0; i<activeCanvas.width; i+=40) {
+                activeCtx.beginPath(); activeCtx.moveTo(i, 0); activeCtx.lineTo(i, activeCanvas.height); activeCtx.stroke();
+            }
+            for(let j=0; j<activeCanvas.height; j+=40) {
+                activeCtx.beginPath(); activeCtx.moveTo(0, j); activeCtx.lineTo(activeCanvas.width, j); activeCtx.stroke();
+            }
+        }
+
+        function startCrashGame() {
+            if (gameRunning) return;
+            currentBet = parseFloat(activeBetInput.value);
+            if (isNaN(currentBet) || currentBet <= 0) return alert("اكتب مبلغ رهان مظبوط! ⚠️");
+            if (userCurrentBalance < currentBet) return alert("رصيدك مش كفاية! 💸❌");
+
+            gameRunning = true; activeStartBtn.disabled = true; activeBetInput.disabled = true;
+            activeCashoutBtn.style.display = 'block'; activeDisplay.classList.remove('crashed');
+
+            userCurrentBalance -= currentBet;
+            database.ref('users/' + currentUser).update({ balance: userCurrentBalance });
+
+            currentMultiplier = 1.00;
+            const rand = Math.random();
+            if (rand < 0.1) crashPoint = 1.00;
+            else crashPoint = parseFloat((1 + (Math.random() * 4) + (Math.random() > 0.85 ? Math.random() * 10 : 0)).toFixed(2));
+
+            resetCanvas();
+            let startTime = Date.now();
+
+            crashInterval = setInterval(() => {
+                let elapsed = (Date.now() - startTime) / 1000;
+                currentMultiplier = parseFloat((1.00 + Math.pow(elapsed, 1.3) * 0.15).toFixed(2));
+                activeDisplay.innerText = currentMultiplier.toFixed(2) + "x";
+
+                resetCanvas();
+                activeCtx.strokeStyle = '#38bdf8'; activeCtx.lineWidth = 4; activeCtx.beginPath(); activeCtx.moveTo(0, activeCanvas.height);
+                let x = Math.min((elapsed * 35), activeCanvas.width - 30);
+                let y = Math.max(activeCanvas.height - (Math.pow(elapsed, 1.4) * 12), 30);
+                activeCtx.quadraticCurveTo(x / 2, activeCanvas.height, x, y); activeCtx.stroke();
+
+                activeCtx.fillStyle = '#ec4899'; activeCtx.beginPath(); activeCtx.arc(x, y, 8, 0, 2 * Math.PI); activeCtx.fill();
+
+                if (currentMultiplier >= crashPoint) {
+                    clearInterval(crashInterval);
+                    activeDisplay.innerText = "💥 انفجرت " + currentMultiplier.toFixed(2) + "x";
+                    activeDisplay.classList.add('crashed');
+                    endGameCycle();
+                }
+            }, 80);
+        }
+
+        function cashoutCrashGame() {
+            if (!gameRunning) return;
+            clearInterval(crashInterval);
+            let winnings = Math.floor(currentBet * currentMultiplier);
+            userCurrentBalance += winnings;
+            database.ref('users/' + currentUser).update({ balance: userCurrentBalance }).then(() => {
+                alert(`كاش أوت ناجح! 🎉 كسبت ${winnings} جنيه! 💰`);
+                endGameCycle();
+            });
+        }
+
+        function endGameCycle() { gameRunning = false; activeStartBtn.disabled = false; activeBetInput.disabled = false; activeCashoutBtn.style.display = 'none'; }
 
         function setupPresence(username) {
             const userStatusRef = database.ref('users/' + username + '/status');
             database.ref('.info/connected').on('value', (snapshot) => {
-                if (snapshot.val() == true) {
-                    userStatusRef.onDisconnect().set('offline');
-                    userStatusRef.set('online');
-                }
+                if (snapshot.val() == true) { userStatusRef.onDisconnect().set('offline'); userStatusRef.set('online'); }
             });
         }
 
         function handleSignUp() {
             const username = document.getElementById('signup-username').value.trim().toLowerCase();
             const password = document.getElementById('signup-password').value.trim();
-
             if (!username || !password) return alert("اكتب البيانات بالكامل! ⚠️");
             if (username.includes(" ")) return alert("الاسم ميبقاش فيه مسافات! ❌");
 
             database.ref('users/' + username).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    alert("اسم المستخدم مسجل بالفعل! ❌");
-                } else {
+                if (snapshot.exists()) { alert("اسم المستخدم مسجل بالفعل! ❌"); } 
+                else {
                     database.ref('users/' + username).set({
-                        username: username,
-                        password: password,
-                        balance: 5, 
-                        status: 'offline'
+                        username: username, password: password, balance: 0, status: 'offline',
+                        dailyReward: { lastClaimDate: "", currentDay: 1 }
                     }).then(() => {
-                        alert("تم إنشاء حساب ألعاب جديد بنجاح! 🎉");
+                        alert("تم إنشاء حسابك اللذوذ! 🎉");
                         localStorage.setItem('saved_username', username);
                         location.reload(); 
                     });
@@ -290,13 +425,11 @@
         function handleLogin() {
             const username = document.getElementById('login-username').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value.trim();
-
             if (!username || !password) return alert("اكتب الاسم والباسورد! ⚠️");
 
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     const userData = snapshot.val();
-                    
                     if (userData.password === password || (username === ADMIN_USERNAME && password === "admin123")) {
                         localStorage.setItem('saved_username', username);
                         currentUser = username;
@@ -305,30 +438,32 @@
                         if (username === ADMIN_USERNAME) {
                             switchScreen('admin-screen');
                             document.getElementById('admin-table-box').style.display = 'block';
+                            injectGame('admin-game-box');
                             loadAdminTable();
+                            loadUserBalance(username);
                         } else {
                             switchScreen('user-screen');
                             document.getElementById('admin-table-box').style.display = 'none';
+                            injectGame('user-game-box');
+                            document.getElementById('user-display-name').innerText = username;
                             loadUserBalance(username);
                         }
-                    } else {
-                        alert("الباسورد غلط! 🤫");
-                    }
-                } else {
-                    alert("الحساب غير موجود! سجل أولاً ↩️");
-                }
+                        
+                        // التشيك على المكافأة اليومية فور تسجيل الدخول بنجاح!
+                        setTimeout(() => { checkDailyReward(username); }, 800);
+
+                    } else { alert("الباسورد غلط! 🤫"); }
+                } else { alert("الحساب غير موجود! سجل أولاً ↩️"); }
             });
         }
 
         function loadAdminTable() {
             database.ref('users').on('value', (snapshot) => {
-                const tbody = document.getElementById('users-list-tbody');
-                tbody.innerHTML = "";
+                const tbody = document.getElementById('users-list-tbody'); tbody.innerHTML = "";
                 if (snapshot.exists()) {
                     const data = snapshot.val();
                     for (let key in data) {
-                        const user = data[key];
-                        const isOnline = user.status === 'online';
+                        const user = data[key]; const isOnline = user.status === 'online';
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td style="font-weight: bold;">👤 ${user.username}</td>
@@ -343,11 +478,11 @@
         }
 
         function loadUserBalance(username) {
-            document.getElementById('display-name').innerText = username;
             database.ref('users/' + username).on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     userCurrentBalance = snapshot.val().balance || 0;
-                    document.getElementById('display-balance').innerText = userCurrentBalance + " جنيه";
+                    const balanceDisplay = document.getElementById('user-display-balance');
+                    if(balanceDisplay) balanceDisplay.innerText = userCurrentBalance + " جنيه";
                 }
             });
         }
@@ -356,12 +491,12 @@
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             const amount = parseFloat(document.getElementById('money-amount').value);
             if (!username || isNaN(amount) || amount <= 0) return alert("بيانات خاطئة!");
-
             database.ref('users/' + username).once('value').then((snapshot) => {
                 let curBal = snapshot.exists() ? (snapshot.val().balance || 0) : 0;
                 let curPass = snapshot.exists() ? (snapshot.val().password || "1234") : "1234";
+                let daily = snapshot.exists() ? (snapshot.val().dailyReward || {lastClaimDate:"",currentDay:1}) : {lastClaimDate:"",currentDay:1};
                 database.ref('users/' + username).update({
-                    username: username, password: curPass, balance: curBal + amount, status: 'offline'
+                    username: username, password: curPass, balance: curBal + amount, status: 'offline', dailyReward: daily
                 }).then(() => { alert("تم الشحن! 🎉"); document.getElementById('money-amount').value = ""; });
             });
         }
@@ -370,28 +505,14 @@
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             const amount = parseFloat(document.getElementById('money-amount').value);
             if (!username || isNaN(amount) || amount <= 0) return alert("بيانات خاطئة!");
-
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     const curBal = snapshot.val().balance || 0;
-                    database.ref('users/' + username).update({ balance: curBal - amount }).then(() => {
-                        alert("تم الخصم! 💸"); document.getElementById('money-amount').value = "";
-                    });
+                    database.ref('users/' + username).update({ balance: curBal - amount }).then(() => { alert("تم الخصم! 💸"); document.getElementById('money-amount').value = ""; });
                 }
             });
         }
 
         function logout() {
             if(currentUser) database.ref('users/' + currentUser + '/status').set('offline');
-            document.getElementById('login-password').value = "";
-            document.getElementById('admin-table-box').style.display = 'none';
-            switchScreen('login-screen');
-            const savedUser = localStorage.getItem('saved_username');
-            if (savedUser) {
-                document.getElementById('login-username').value = savedUser;
-                document.getElementById('login-username').disabled = true;
-            }
-        }
-    </script>
-</body>
-</html>
+            clearInterval(crashInterval); gameRunning
