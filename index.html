@@ -130,7 +130,7 @@
             <input type="password" id="signup-password" placeholder="اكتب باسورد">
         </div>
         <button class="btn-success" onclick="handleSignUp()">تسجيل وحفظ البيانات 🛠️</button>
-        <div class="toggle-link" onclick="switchScreen('login-screen')">عندك حساب؟ سجل دخولك</div>
+        <div class="toggle-link" onclick="switchScreen('login-screen')">عندك حساب? سجل دخولك</div>
     </div>
 
     <div id="admin-screen" class="container">
@@ -212,7 +212,7 @@
         let crashInterval; let currentMultiplier = 1.00; let crashPoint = 0; let currentBet = 0; let gameRunning = false;
         let activeCanvas, activeCtx, activeDisplay, activeStartBtn, activeCashoutBtn, activeBetInput;
 
-        // متغيرات السيستم اليومي الاحترافي
+        // متغيرات السيستم اليومي
         const rewardAmounts = { 1: 10, 2: 20, 3: 30, 4: 40, 5: 50, 6: 60, 7: 70 };
         let currentStreakDay = 1;
 
@@ -230,14 +230,13 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // 🔥 فحص ميزة تسجيل الدخول اليومي وعرض الـ Popup
+        // 🔥 فحص ميزة تسجيل الدخول اليومي وعرض الـ Popup بدون أخطاء تعريفية
         function checkDailyReward(username) {
-            const todayStr = new Date().toISOString().split('T')[0]; // صيغة التاريخ: YYYY-MM-DD
+            const todayStr = new Date().toISOString().split('T')[0];
             
             database.ref('users/' + username + '/dailyReward').once('value').then((snapshot) => {
                 let dailyData = snapshot.val() || { lastClaimDate: "", currentDay: 1 };
                 
-                // لو عدى أكتر من يومين ومسجلش دخول، أو خلص اليوم السابع بنصفر العداد للتجديد التلقائي
                 if (dailyData.lastClaimDate) {
                     const lastDate = new Date(dailyData.lastClaimDate);
                     const today = new Date(todayStr);
@@ -245,16 +244,14 @@
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     
                     if (diffDays > 1 || dailyData.currentDay > 7) {
-                        dailyData.currentDay = 1; // تصفير وتجديد أوتوماتيكي
+                        dailyData.currentDay = 1; 
                     }
                 }
                 
                 currentStreakDay = dailyData.currentDay || 1;
 
-                // رسم شكل الأيام السبعة جوه المودال
                 renderDailyGrid(currentStreakDay, dailyData.lastClaimDate === todayStr);
 
-                // لو مأخدش المكافأة النهاردة.. افتح الـ Popup في وشه فوراً!
                 if (dailyData.lastClaimDate !== todayStr) {
                     document.getElementById('daily-reward-modal').classList.add('show');
                     document.getElementById('claim-reward-btn').disabled = false;
@@ -266,7 +263,6 @@
         function renderDailyGrid(activeDay, isTodayClaimed) {
             const grid = document.getElementById('modal-days-grid');
             grid.innerHTML = "";
-            
             const dayNames = ["الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع"];
             
             for (let i = 1; i <= 7; i++) {
@@ -287,24 +283,23 @@
             }
         }
 
-        // زرار استلام المكافأة
         function claimDailyReward() {
             const todayStr = new Date().toISOString().split('T')[0];
             const reward = rewardAmounts[currentStreakDay];
-
             document.getElementById('claim-reward-btn').disabled = true;
 
-            // 1. تحديث الرصيد الحالي لللاعب في الداتا بيس
             const updatedBalance = userCurrentBalance + reward;
-            
+            let nextDay = currentStreakDay + 1;
+            if (nextDay > 7) nextDay = 1; // يصفر ويرجع لليوم الأول تلقائياً بعد انتهاء الأسبوع
+
             database.ref('users/' + currentUser).update({
                 balance: updatedBalance,
                 dailyReward: {
                     lastClaimDate: todayStr,
-                    currentDay: currentStreakDay + 1 // يجهز اليوم اللي بعده للمرة الجاية
+                    currentDay: nextDay
                 }
             }).then(() => {
-                alert(`يا لوز اللذوذ! 🎉 استلمت مكافأة اليوم المادية بقيمة ${reward} جنيه! 💰💵`);
+                alert(`يا لوز اللذوذ! 🎉 استلمت مكافأة اليوم بقيمة ${reward} جنيه! 💰💵`);
                 closeDailyModal();
             });
         }
@@ -449,7 +444,6 @@
                             loadUserBalance(username);
                         }
                         
-                        // التشيك على المكافأة اليومية فور تسجيل الدخول بنجاح!
                         setTimeout(() => { checkDailyReward(username); }, 800);
 
                     } else { alert("الباسورد غلط! 🤫"); }
@@ -515,4 +509,13 @@
 
         function logout() {
             if(currentUser) database.ref('users/' + currentUser + '/status').set('offline');
-            clearInterval(crashInterval); gameRunning
+            clearInterval(crashInterval); gameRunning = false;
+            document.getElementById('login-password').value = "";
+            document.getElementById('admin-table-box').style.display = 'none';
+            switchScreen('login-screen');
+            const savedUser = localStorage.getItem('saved_username');
+            if (savedUser) { document.getElementById('login-username').value = savedUser; document.getElementById('login-username').disabled = true; }
+        }
+    </script>
+</body>
+</html>
