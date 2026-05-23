@@ -147,7 +147,7 @@
             <input type="password" id="signup-password" placeholder="اكتب باسورد">
         </div>
         <button class="btn-success" onclick="handleSignUp()">تسجيل وحفظ البيانات 🛠️</button>
-        <div class="toggle-link" onclick="switchScreen('login-screen')">عندك حساب؟ سجل دخولك</div>
+        <div class="toggle-link" onclick="switchScreen('login-screen')">عندك حساب? سجل دخولك</div>
     </div>
 
     <div id="admin-screen" class="container">
@@ -252,6 +252,17 @@
         let currentUser = "";
         let userCurrentBalance = 0;
 
+        // دالة توليد بصمة فريدة جداً للجهاز بناءً على مواصفات الشاشة والمتصفح والويندوز لقفش المخادعين حتى لو مسحوا الكاش
+        function getDeviceFingerprint() {
+            const navigator_info = window.navigator.userAgent + window.navigator.language + window.screen.colorDepth + window.screen.width + window.screen.height;
+            let hash = 0;
+            for (let i = 0; i < navigator_info.length; i++) {
+                hash = (hash << 5) - hash + navigator_info.charCodeAt(i);
+                hash |= 0;
+            }
+            return "dev_" + Math.abs(hash);
+        }
+
         // الطيارة
         let crashInterval; let currentMultiplier = 1.00; let crashPoint = 0; let currentBet = 0; let gameRunning = false;
         let activeCanvas, activeCtx, activeDisplay, activeStartBtn, activeCashoutBtn, activeBetInput;
@@ -266,23 +277,32 @@
         let currentStreakDay = 1;
 
         window.onload = function() {
-            // تنظيف التذكر القديم إذا كان الحساب غير موجود في الفايربيز بعد الحذف
-            const savedUser = localStorage.getItem('saved_username');
-            if (savedUser) {
-                database.ref('users/' + savedUser).once('value').then((snapshot) => {
-                    if (!snapshot.exists()) {
-                        localStorage.removeItem('saved_username');
-                    } else if (snapshot.val().status === 'banned' && savedUser !== ADMIN_USERNAME) {
-                        localStorage.removeItem('saved_username');
-                        alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
-                        location.reload();
-                    } else {
-                        document.getElementById('login-username').value = savedUser;
-                        document.getElementById('login-username').disabled = true;
-                        document.getElementById('login-password').focus();
-                    }
-                });
-            }
+            // أول ما يفتح الموقع بنشيك لو جهاز الزفت ده متبند في القائمة السوداء بالأي بي الفريد
+            const fp = getDeviceFingerprint();
+            database.ref('blacklisted_devices/' + fp).once('value').then((blackSnap) => {
+                if (blackSnap.exists()) {
+                    alert("عفواً، تم حظر جهازك نهائياً من اللعب وإنشاء أي حسابات جديدة! 🚫🔒");
+                    document.body.innerHTML = "<h1 style='color:#ef4444; text-align:center; margin-top:100px;'>هذا الجهاز محظور من دخول السيرفر! 🛑</h1>";
+                    return;
+                }
+
+                const savedUser = localStorage.getItem('saved_username');
+                if (savedUser) {
+                    database.ref('users/' + savedUser).once('value').then((snapshot) => {
+                        if (!snapshot.exists()) {
+                            localStorage.removeItem('saved_username');
+                        } else if (snapshot.val().status === 'banned' && savedUser !== ADMIN_USERNAME) {
+                            localStorage.removeItem('saved_username');
+                            alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
+                            location.reload();
+                        } else {
+                            document.getElementById('login-username').value = savedUser;
+                            document.getElementById('login-username').disabled = true;
+                            document.getElementById('login-password').focus();
+                        }
+                    });
+                }
+            });
         };
 
         function switchScreen(screenId) {
@@ -506,8 +526,8 @@
             });
 
             if (username !== ADMIN_USERNAME) {
-                database.ref('users/' + username + '/status').on('value', (snapshot) => {
-                    if (snapshot.val() === 'banned') {
+                database.ref('users/' + username).on('value', (snapshot) => {
+                    if (snapshot.exists() && snapshot.val().status === 'banned') {
                         localStorage.removeItem('saved_username');
                         alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
                         location.reload(); 
@@ -516,7 +536,7 @@
             }
         }
 
-        // دالة حظر اللاعب
+        // 🔥 تعديل دالة حظر اللاعب لقفل جهازه نهائياً
         function banUser() {
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             if (!username) return alert("اكتب اسم اللاعب اللي عاوز تحظره! ⚠️");
@@ -524,15 +544,26 @@
 
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    // قفش البصمة الفريدة المحفوظة في حسابه لما سجل أول مرة
+                    const deviceFp = userData.device_fp || "unknown";
+
                     database.ref('users/' + username).update({ status: 'banned' }).then(() => {
-                        alert(`تم بنجاح حظر اللاعب (${username}) من دخول الموقع! 🚫🔒`);
+                        // وضع بصمة جهازه في القائمة السوداء الأبدية
+                        if(deviceFp !== "unknown") {
+                            database.ref('blacklisted_devices/' + deviceFp).set({
+                                banned_username: username,
+                                ban_date: new Date().toISOString()
+                            });
+                        }
+                        alert(`تم بنجاح حظر اللاعب (${username}) وحظر بصمة جهازه نهائياً! 🚫🔒`);
                         document.getElementById('friend-username').value = "";
                     });
                 } else { alert("اسم الحساب ده مش موجود أصلاً عشان تحظره! ❌"); }
             });
         }
 
-        // دالة فك الحظر
+        // دالة فك الحظر فوري
         function unbanUser(targetUser = null) {
             let username = targetUser;
             if (!username) {
@@ -542,42 +573,59 @@
 
             database.ref('users/' + username).once('value').then((snapshot) => {
                 if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const deviceFp = userData.device_fp || "unknown";
+
                     database.ref('users/' + username).update({ status: 'offline' }).then(() => {
-                        alert(`تم فك الحظر عن اللاعب (${username}) بنجاح، ويقدر يدخل يلعب دلوقتي! 🔓🟢`);
+                        // مسحه من القائمة السوداء للأجهزة
+                        if(deviceFp !== "unknown") {
+                            database.ref('blacklisted_devices/' + deviceFp).remove();
+                        }
+                        alert(`تم فك الحظر وجهاز اللاعب (${username}) بنجاح! 🔓🟢`);
                         if (!targetUser) document.getElementById('friend-username').value = "";
                     });
                 } else { alert("اسم الحساب ده مش موجود! ❌"); }
             });
         }
 
-        // إنشاء الحساب النظيف بعد تصفير الـ LocalStorage برمجياً
+        // 🔥 تعديل إنشاء الحساب لمنع الأجهزة المحظورة تماماً
         function handleSignUp() {
-            // استخدام اسم مفتاح جديد تماماً (cleared_v1_account) لتجاوز البصمة القديمة والسماح للجميع بالبدء من جديد
-            if (localStorage.getItem('cleared_v1_account') === 'true') {
-                alert("عفواً، مسموح بإنشاء حساب واحد فقط لكل جهاز في الموسم الجديد! 📱⚠️");
-                return false;
-            }
+            const currentFp = getDeviceFingerprint();
 
-            const username = document.getElementById('signup-username').value.trim().toLowerCase();
-            const password = document.getElementById('signup-password').value.trim();
-            if (!username || !password) return alert("اكتب البيانات بالكامل! ⚠️");
-            if (username.includes(" ")) return alert("الاسم ميبقاش فيه مسافات! ❌");
-
-            database.ref('users/' + username).once('value').then((snapshot) => {
-                if (snapshot.exists()) { alert("اسم المستخدم مسجل بالفعل! ❌"); } 
-                else {
-                    database.ref('users/' + username).set({
-                        username: username, password: password, balance: 15, status: 'offline',
-                        dailyReward: { lastClaimDate: "", currentDay: 1 }
-                    }).then(() => {
-                        // طباعة البصمة الجديدة للموسم الجديد
-                        localStorage.setItem('cleared_v1_account', 'true');
-                        localStorage.setItem('saved_username', username);
-                        
-                        alert("تم إنشاء حسابك اللذوذ بنجاح في البداية الجديدة! 🎉 وأخذت 15 جنيه ترحيبية.");
-                        location.reload(); 
-                    });
+            // الفحص الأول والقاتل: هل الجهاز ده متبند؟
+            database.ref('blacklisted_devices/' + currentFp).once('value').then((blackSnap) => {
+                if (blackSnap.exists()) {
+                    alert("عفواً، جهازك محظور نهائياً من إنشاء أي حسابات جديدة! 📱⚠️");
+                    return false;
                 }
+
+                if (localStorage.getItem('cleared_v1_account') === 'true') {
+                    alert("عفواً، مسموح بإنشاء حساب واحد فقط لكل جهاز! 📱⚠️");
+                    return false;
+                }
+
+                const username = document.getElementById('signup-username').value.trim().toLowerCase();
+                const password = document.getElementById('signup-password').value.trim();
+                if (!username || !password) return alert("اكتب البيانات بالكامل! ⚠️");
+                if (username.includes(" ")) return alert("الاسم ميبقاش فيه مسافات! ❌");
+
+                database.ref('users/' + username).once('value').then((snapshot) => {
+                    if (snapshot.exists()) { alert("اسم المستخدم مسجل بالفعل! ❌"); } 
+                    else {
+                        // حفظ الحساب مع دمغ البصمة الفريدة للجهاز جواه
+                        database.ref('users/' + username).set({
+                            username: username, password: password, balance: 15, status: 'offline',
+                            device_fp: currentFp,
+                            dailyReward: { lastClaimDate: "", currentDay: 1 }
+                        }).then(() => {
+                            localStorage.setItem('cleared_v1_account', 'true');
+                            localStorage.setItem('saved_username', username);
+                            
+                            alert("تم إنشاء حسابك بنجاح! 🎉 وأخذت 15 جنيه ترحيبية.");
+                            location.reload(); 
+                        });
+                    }
+                });
             });
         }
 
@@ -675,9 +723,10 @@
                 let curBal = snapshot.exists() ? (snapshot.val().balance || 0) : 0;
                 let curPass = snapshot.exists() ? (snapshot.val().password || "1234") : "1234";
                 let status = snapshot.exists() ? (snapshot.val().status || 'offline') : 'offline';
+                let fp = snapshot.exists() ? (snapshot.val().device_fp || 'unknown') : 'unknown';
                 let daily = snapshot.exists() ? (snapshot.val().dailyReward || {lastClaimDate:"",currentDay:1}) : {lastClaimDate:"",currentDay:1};
                 database.ref('users/' + username).update({
-                    username: username, password: curPass, balance: curBal + amount, status: status, dailyReward: daily
+                    username: username, password: curPass, balance: curBal + amount, status: status, device_fp: fp, dailyReward: daily
                 }).then(() => { alert("تم الشحن! 🎉"); document.getElementById('money-amount').value = ""; });
             });
         }
