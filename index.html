@@ -536,51 +536,43 @@
             }
         }
 
-      // 1. حظر اللاعب: بيربط اسمه ببصمة جهازه في قاعدة البيانات
+     // 2. دالة حظر الجهاز (تمنع دخول الجهاز المحظور)
 function banUser() {
     const username = document.getElementById('friend-username').value.trim().toLowerCase();
-    if (!username) return alert("اكتب اسم اللاعب!");
+    if (!username) return alert("اكتب اسم اللاعب! ⚠️");
     
     database.ref('users/' + username).once('value').then((snapshot) => {
         if (snapshot.exists()) {
             const userData = snapshot.val();
-            // هنا بنسجل البصمة بتاعته في قائمة الحظر المركزية
-            database.ref('banned_fingerprints/' + userData.device_fp).set({
-                username: username,
-                ban_date: new Date().toISOString()
-            });
-            // وبنغير حالته
+            const deviceFp = userData.device_fp || "unknown";
+            
+            // حظر الحساب وحظر بصمة الجهاز في نفس الوقت
             database.ref('users/' + username).update({ status: 'banned' });
-            alert("تم حظر اللاعب وبصمة جهازه نهائياً! 🚫");
-        }
+            if(deviceFp !== "unknown") {
+                database.ref('blacklisted_devices/' + deviceFp).set({ 
+                    banned_username: username, 
+                    ban_date: new Date().toISOString() 
+                });
+            }
+            alert(`تم حظر اللاعب (${username}) وجهازه نهائياً! 🚫🔒`);
+        } else { alert("الحساب غير موجود! ❌"); }
     });
 }
 
-        // دالة فك الحظر فوري
-        function unbanUser(targetUser = null) {
-            let username = targetUser;
-            if (!username) {
-                username = document.getElementById('friend-username').value.trim().toLowerCase();
-            }
-            if (!username) return alert("اكتب اسم اللاعب اللي عاوز تفك حظره! ⚠️");
-
-            database.ref('users/' + username).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    const deviceFp = userData.device_fp || "unknown";
-
-                    database.ref('users/' + username).update({ status: 'offline' }).then(() => {
-                        // مسحه من القائمة السوداء للأجهزة
-                        if(deviceFp !== "unknown") {
-                            database.ref('blacklisted_devices/' + deviceFp).remove();
-                        }
-                        alert(`تم فك الحظر وجهاز اللاعب (${username}) بنجاح! 🔓🟢`);
-                        if (!targetUser) document.getElementById('friend-username').value = "";
-                    });
-                } else { alert("اسم الحساب ده مش موجود! ❌"); }
-            });
+      // 3. دالة فك الحظر
+function unbanUser(targetUser = null) {
+    let username = targetUser || document.getElementById('friend-username').value.trim().toLowerCase();
+    if (!username) return alert("اكتب اسم اللاعب! ⚠️");
+    
+    database.ref('users/' + username).once('value').then((snapshot) => {
+        if (snapshot.exists()) {
+            const deviceFp = snapshot.val().device_fp;
+            database.ref('users/' + username).update({ status: 'offline' });
+            if(deviceFp) database.ref('blacklisted_devices/' + deviceFp).remove();
+            alert(`تم فك الحظر عن (${username})! 🔓🟢`);
         }
-
+    });
+}
         // 🔥 تعديل إنشاء الحساب لمنع الأجهزة المحظورة تماماً
         function handleSignUp() {
             const currentFp = getDeviceFingerprint();
@@ -622,34 +614,38 @@ function banUser() {
             });
         }
 
-      // 2. تسجيل الدخول: بيشيك لو جهازه في القائمة السوداء
-function handleLogin() {
-    const username = document.getElementById('login-username').value.trim().toLowerCase();
-    const password = document.getElementById('login-password').value.trim();
-    const currentFp = getDeviceFingerprint();
+        function handleLogin() {
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value.trim();
+            if (!username || !password) return alert("اكتب الاسم والباسورد! ⚠️");
 
-    // تشيك قبل ما يدخل أصلاً: هل الجهاز ده متبند؟
-    database.ref('banned_fingerprints/' + currentFp).once('value').then((snap) => {
-        if (snap.exists()) {
-            alert("هذا الجهاز محظور من دخول الموقع! 🚫");
-            return;
+            database.ref('users/' + username).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    if (userData.status === 'banned' && username !== ADMIN_USERNAME) {
+                        localStorage.removeItem('saved_username');
+                        alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
+                        return false; 
+                    }
+
+                    if (userData.password === password || (username === ADMIN_USERNAME && password === "admin123")) {
+                        localStorage.setItem('saved_username', username);
+                        currentUser = username;
+                        setupPresence(username);
+
+                        if (username === ADMIN_USERNAME) {
+                            switchScreen('admin-screen'); document.getElementById('admin-table-box').style.display = 'block';
+                            injectGames('admin-crash-box', 'admin-apple-box'); loadAdminTable(); loadUserBalance(username);
+                        } else {
+                            switchScreen('user-screen'); document.getElementById('admin-table-box').style.display = 'none';
+                            injectGames('user-crash-box', 'user-apple-box'); document.getElementById('user-display-name').innerText = username; loadUserBalance(username);
+                        }
+                        setTimeout(() => { checkDailyReward(username); }, 800);
+                    } else { alert("الباسورد غلط! 🤫"); }
+                } else { alert("الحساب غير موجود! سجل أولاً ↩️"); }
+            });
         }
-
-        database.ref('users/' + username).once('value').then((snapshot) => {
-            if (snapshot.exists()) {
-                const userData = snapshot.val();
-                if (userData.status === 'banned') {
-                    alert("حسابك محظور! 🚫");
-                    return;
-                }
-                // لو دخل، بنحدث بصمته عشان نتأكد إنها متسجلة
-                database.ref('users/' + username).update({ device_fp: currentFp });
-                // ... كمل باقي كود الدخول بتاعك عادي
-                proceedLogin(username, userData, password);
-            }
-        });
-    });
-}
 
         function loadAdminTable() {
             database.ref('users').on('value', (snapshot) => {
