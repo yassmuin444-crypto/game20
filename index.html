@@ -234,16 +234,16 @@
         let currentUser = "";
         let userCurrentBalance = 0;
 
-        // متغيرات الطيارة
+        // الطيارة
         let crashInterval; let currentMultiplier = 1.00; let crashPoint = 0; let currentBet = 0; let gameRunning = false;
         let activeCanvas, activeCtx, activeDisplay, activeStartBtn, activeCashoutBtn, activeBetInput;
 
-        // متغيرات لعبة التفاحة
+        // التفاحة
         let appleGameActive = false; let appleBet = 0; let appleCurrentRow = 0; let appleBoardData = [];
         let activeAppleContainer, activeAppleBoard, activeAppleStartBtn, activeAppleCashoutBtn, activeAppleBetInput;
         const appleMultipliers = [1.23, 1.54, 1.93, 2.41, 3.02, 4.02, 5.37, 7.16, 9.55, 14.33, 24.22, 50.11];
 
-        // متغيرات السيستم اليومي
+        // المكافأة
         const rewardAmounts = { 1: 10, 2: 20, 3: 30, 4: 40, 5: 50, 6: 60, 7: 70 };
         let currentStreakDay = 1;
 
@@ -261,7 +261,7 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // 🎁 الهدية اليومية
+        // الهدية اليومية
         function checkDailyReward(username) {
             const todayStr = new Date().toISOString().split('T')[0];
             database.ref('users/' + username + '/dailyReward').once('value').then((snapshot) => {
@@ -305,7 +305,7 @@
         }
         function closeDailyModal() { document.getElementById('daily-reward-modal').classList.remove('show'); }
 
-        // 🛠️ زرع الألعاب
+        // زرع الألعاب
         function injectGames(crashTargetId, appleTargetId) {
             document.getElementById(crashTargetId).innerHTML = document.getElementById('crash-game-template').innerHTML;
             const cTarget = document.getElementById(crashTargetId);
@@ -338,7 +338,7 @@
             }
         }
 
-        // 🍏 محرك التفاحة
+        // محرك التفاحة
         function startAppleGame() {
             if(appleGameActive) return;
             appleBet = parseFloat(activeAppleBetInput.value);
@@ -414,7 +414,7 @@
         }
         function resetAppleGameCycle() { appleGameActive = false; activeAppleStartBtn.disabled = false; activeAppleBetInput.disabled = false; activeAppleCashoutBtn.style.display = 'none'; }
 
-        // 🚀 محرك الطيارة
+        // محرك الطيارة
         function startCrashGame() {
             if (gameRunning) return;
             currentBet = parseFloat(activeBetInput.value);
@@ -458,6 +458,7 @@
         function endGameCycle() { gameRunning = false; activeStartBtn.disabled = false; activeBetInput.disabled = false; activeCashoutBtn.style.display = 'none'; }
         function resetCanvas() { if(!activeCtx) return; activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height); activeCtx.strokeStyle = '#1e293b'; activeCtx.lineWidth = 1; for(let i=0; i<activeCanvas.width; i+=40) { activeCtx.beginPath(); activeCtx.moveTo(i, 0); activeCtx.lineTo(i, activeCanvas.height); activeCtx.stroke(); } for(let j=0; j<activeCanvas.height; j+=40) { activeCtx.beginPath(); activeCtx.moveTo(0, j); activeCtx.lineTo(activeCanvas.width, j); activeCtx.stroke(); } }
 
+        // المراقبة المستمرة للحسابات والـ Ban
         function setupPresence(username) {
             const userStatusRef = database.ref('users/' + username + '/status');
             database.ref('.info/connected').on('value', (snapshot) => {
@@ -467,9 +468,19 @@
                     });
                 }
             });
+
+            // 🚨 مستمع حي: لو اللاعب فاتح وأنت حظرته يطرده فوراً لايف!
+            if (username !== ADMIN_USERNAME) {
+                database.ref('users/' + username + '/status').on('value', (snapshot) => {
+                    if (snapshot.val() === 'banned') {
+                        alert("عفواً، تم حظر حسابك من دخول الموقع! 🚫");
+                        location.reload(); // إعادة تحميل تطرده لبره شاشة تسجيل الدخول
+                    }
+                });
+            }
         }
 
-        // 🚫 دالة حظر اللاعب (تغير حالته لـ banned)
+        // دالة حظر اللاعب
         function banUser() {
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             if (!username) return alert("اكتب اسم اللاعب اللي عاوز تحظره! ⚠️");
@@ -485,7 +496,7 @@
             });
         }
 
-        // 🔓 دالة فك حظر اللاعب (ترجعه offline لكي يسجل براحته)
+        // دالة فك حظر اللاعب
         function unbanUser() {
             const username = document.getElementById('friend-username').value.trim().toLowerCase();
             if (!username) return alert("اكتب اسم اللاعب اللي عاوز تفك حظره! ⚠️");
@@ -520,6 +531,7 @@
             });
         }
 
+        // 🔥 الدالة المعدلة بالكامل لفحص الحظر بشكل صارم وإيقاف الدخول
         function handleLogin() {
             const username = document.getElementById('login-username').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value.trim();
@@ -529,9 +541,10 @@
                 if (snapshot.exists()) {
                     const userData = snapshot.val();
                     
-                    // 🚨 فحص الحظر قبل أي حاجة
+                    // 🚨 الفحص الصارم للحظر (لو محظور، نرفض تماماً ونوقف تنفيذ الكود)
                     if (userData.status === 'banned' && username !== ADMIN_USERNAME) {
-                        return alert("تم حظر حسابك من دخول الموقع! 🚫 تواصل مع الأدمن لفك الحظر.");
+                        alert("تم حظر حسابك من دخول الموقع! 🚫 تواصل مع الأدمن لفك الحظر.");
+                        return; // خروج فوري من الدالة
                     }
 
                     if (userData.password === password || (username === ADMIN_USERNAME && password === "admin123")) {
