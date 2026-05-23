@@ -40,7 +40,7 @@
             }
         }
 
-        /* شريط الرصيد العلوي مع زر تسجيل الخروج */
+        /* الشريط العلوي للرصيد */
         #top-bar {
             position: absolute;
             top: 20px;
@@ -83,6 +83,19 @@
         .btn-logout:hover {
             background: #ff416c;
             color: white;
+        }
+
+        /* زر الأدمن السري المخفي */
+        #secret-admin-btn {
+            position: absolute;
+            top: 25px;
+            left: 150px;
+            width: 15px;
+            height: 15px;
+            background: transparent;
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 110;
         }
 
         /* الحاويات والشاشات */
@@ -148,6 +161,11 @@
         .btn-secondary {
             background: linear-gradient(45deg, #4776e6, #8e54e9);
             box-shadow: 0 4px 15px rgba(71, 118, 230, 0.4);
+        }
+
+        .btn-admin {
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
         }
 
         /* الفورم والقوائم */
@@ -253,6 +271,8 @@
     <!-- الشريط العلوي للرصيد -->
     <div id="top-bar">
         <button class="btn-logout" onclick="logout()">تسجيل خروج 🚪</button>
+        <!-- الزرار السري المخفي هنا، يضغط عليه الأدمن لفتح لوحة شحن الرصيد -->
+        <div id="secret-admin-btn" onclick="openAdminPanel()" title="لوحة الأدمن السرية"></div>
         <div id="balance-bar">رصيدك: <span id="balance-amount">0</span> جنيه</div>
     </div>
 
@@ -325,6 +345,24 @@
         <button style="margin-top: 20px; background: #333;" onclick="showGamesList()">رجوع للألعاب ⬅️</button>
     </div>
 
+    <!-- 6. لوحة تحكم الأدمن السرية لتزويد الفلوس -->
+    <div id="screen-admin" class="container">
+        <h2>👑 لوحة تحكم الأدمن السري 👑</h2>
+        <p style="font-size: 14px; color: #38ef7d;">تقدر تضيف رصيد لأي يوزر نيم مسجل</p>
+        
+        <div class="form-group">
+            <label>إسم مستخدم الشخص (اليوزر نيم):</label>
+            <input type="text" id="admin-target-user" placeholder="اكتب اسم المستخدم بالظبط">
+        </div>
+        <div class="form-group">
+            <label>المبلغ المراد إضافته (بالجنيه):</label>
+            <input type="number" id="admin-amount-to-add" placeholder="مثال: 50">
+        </div>
+        
+        <button class="btn-admin" style="width: 100%; margin-bottom: 15px;" onclick="addMoneyAsAdmin()">إضافة الرصيد فوراً 💸</button>
+        <button style="background: #333; width: 100%;" onclick="closeAdminPanelAndReturn()">رجوع للخلف ⬅️</button>
+    </div>
+
     <script>
         // المتغيرات العامة
         let balance = 0;
@@ -332,6 +370,11 @@
         let gameInterval;
         let currentMultiplier = 1.00;
         let crashPoint = 0;
+        
+        // باسورد الأدمن السري (تقدر تغيره من هنا براحتك)
+        const ADMIN_PASSWORD = "admin123"; 
+        // لحفظ اسم الشاشة التي كان عليها الأدمن قبل فتح لوحة التحكم للرجوع إليها
+        let previousScreen = "screen-games";
 
         // تأثير النجوم المتساقطة عند فتح الموقع
         window.onload = function() {
@@ -353,25 +396,23 @@
             setTimeout(() => { star.remove(); }, 3000);
         }
 
-        // فحص الجلسة: هل المستخدم مسجل دخول حالياً؟
+        // فحص الجلسة عند الدخول للموقع
         function checkUserSession() {
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             const registeredUser = localStorage.getItem('registeredUser');
 
             if (isLoggedIn === 'true' && registeredUser) {
-                // لو كان مسجل دخول ومقفلش الحساب، يدخل علطول على الألعاب
                 const savedData = JSON.parse(registeredUser);
                 balance = savedData.balance;
                 updateBalanceDisplay();
                 document.getElementById('top-bar').style.display = 'flex';
                 showScreen('screen-games');
             } else {
-                // لو مش مسجل دخول، بنشوف هل عنده حساب قديم عشان نظبط واجهة الدخول
                 if (registeredUser) {
                     document.getElementById('login-title').innerText = "تسجيل الدخول للحساب";
                     document.getElementById('btn-auth').innerText = "دخول";
                 }
-                showScreen('screen-welcome'); // نظهر الشاشة الافتتاحية العادية
+                showScreen('screen-welcome');
             }
         }
 
@@ -400,14 +441,12 @@
             const existingUser = localStorage.getItem('registeredUser');
 
             if (!existingUser) {
-                // إنشاء الحساب الأول والوحيد
                 const userData = { username: userInp, password: passInp, balance: 10 };
                 localStorage.setItem('registeredUser', JSON.stringify(userData));
                 localStorage.setItem('isLoggedIn', 'true');
                 balance = 10;
                 alert("مبروك الحساب الجديد وخدت 10 جنيه هدية! 🎉");
             } else {
-                // محاولة تسجيل دخول للحساب القديم
                 const savedData = JSON.parse(existingUser);
                 if (savedData.username === userInp && savedData.password === passInp) {
                     balance = savedData.balance;
@@ -434,16 +473,74 @@
             }
         }
 
+        // 👑 ميزات الأدمن السري 👑
+        function openAdminPanel() {
+            if(isGameRunning) return alert("إقفل الجيم الشغال الأول يسطا!");
+            
+            // طلب الباسورد السري للأدمن
+            const pass = prompt("اكتب الباسورد السري للأدمن عشان تفتح اللوحة:");
+            if (pass === ADMIN_PASSWORD) {
+                // حفظ الشاشة الحالية عشان نرجعلها بعدين
+                const activeContainer = document.querySelector('.container.active');
+                if(activeContainer) {
+                    previousScreen = activeContainer.id;
+                }
+                showScreen('screen-admin');
+            } else if (pass !== null) {
+                alert("الباسورد غلط يا صاحبي، ابعد عن هنا! 🤫");
+            }
+        }
+
+        function addMoneyAsAdmin() {
+            const targetUser = document.getElementById('admin-target-user').value.trim();
+            const amountToAdd = parseFloat(document.getElementById('admin-amount-to-add').value);
+
+            if(!targetUser || isNaN(amountToAdd) || amountToAdd <= 0) {
+                alert("أدخل اسم يوزر ومبلغ صحيح يسطا الأدمين! ⚠️");
+                return;
+            }
+
+            const existingUser = localStorage.getItem('registeredUser');
+            if(!existingUser) {
+                alert("مفيش أي حسابات مسجلة في الموقع حالياً! ❌");
+                return;
+            }
+
+            let userData = JSON.parse(existingUser);
+            
+            // التحقق من أن اسم المستخدم مطابق للشخص المسجل
+            if(userData.username === targetUser) {
+                userData.balance = (userData.balance || 0) + amountToAdd;
+                localStorage.setItem('registeredUser', JSON.stringify(userData));
+                
+                // لو الأدمن هو نفسه صاحب الحساب المفتوح حالياً، نحدث رصيده على الشاشة فوراً
+                const currentSessionUser = JSON.parse(localStorage.getItem('registeredUser'));
+                if(currentSessionUser) {
+                    balance = currentSessionUser.balance;
+                    updateBalanceDisplay();
+                }
+                
+                alert(`🎯 تم بنجاح إضافة ${amountToAdd} جنيه لحساب المستخدم [${targetUser}]!`);
+                // تصفير خانات الأدمن بعد الإضافة
+                document.getElementById('admin-target-user').value = "";
+                document.getElementById('admin-amount-to-add').value = "";
+            } else {
+                alert(`❌ خطأ: مفيش مستخدم مسجل بالاسم ده [${targetUser}]، اتأكد من الحروف!`);
+            }
+        }
+
+        function closeAdminPanelAndReturn() {
+            showScreen(previousScreen);
+        }
+
         // تسجيل الخروج
         function logout() {
             if(isGameRunning) return alert("إقفل الجيم الأول يسطا!");
-            localStorage.setItem('isLoggedIn', 'false'); // حفظ إن الشخص خرج
+            localStorage.setItem('isLoggedIn', 'false'); 
             document.getElementById('top-bar').style.display = 'none';
-            // إعادة تصفير الخانات
             document.getElementById('username').value = "";
             document.getElementById('password').value = "";
             
-            // تحديث العناوين لتصبح تسجيل دخول بما ان الحساب موجود فعلياً
             document.getElementById('login-title').innerText = "تسجيل الدخول للحساب";
             document.getElementById('btn-auth').innerText = "دخول";
             
@@ -455,7 +552,7 @@
             showScreen('screen-games');
         }
 
-        // لعبة الطيارة بنفس الحسابات والذكاء
+        // لعبة الطيارة
         function openPlaneGame() {
             showScreen('screen-plane-game');
             resetPlaneUI();
