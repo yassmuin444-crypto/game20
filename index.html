@@ -2,10 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موقعك اللذوذ المربوط بالسيرفر</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js?v=2026"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js?v=2026"></script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
@@ -129,7 +135,13 @@
     </div>
 
     <script>
-        // 📥 تم ربط بيانات الـ Firebase الخاصة بمشروعك تلقائياً هنا:
+        // فحص ذكي: لو المستخدم عنده نسخة قديمة ومعلق عليها، الكود هيمسح بيانات الجلسة ويعمل ريفريش إجباري لمرة واحدة
+        if (!localStorage.getItem('v2_firebase_updated')) {
+            localStorage.clear(); // تصفير الـ localStorage القديمة تماماً
+            localStorage.setItem('v2_firebase_updated', 'true'); // تعليم النسخة الجديدة
+            window.location.reload(true); // عمل ريفريش قاسي
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyBlbW15S2V5X0R1bW15X01haG1vdWQyMDI2", 
             authDomain: "game11-5dfa1.firebaseapp.com",
@@ -140,7 +152,6 @@
             appId: "1:5839201948:web:73bdfa932e" 
         };
         
-        // تشغيل الفايربيز
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
@@ -164,7 +175,6 @@
             }, 60);
             setTimeout(() => { clearInterval(starInterval); }, 2000);
 
-            // فحص الجلسة المحلية القديمة
             const savedUser = localStorage.getItem('chat_user');
             if(savedUser) {
                 loginUser(savedUser);
@@ -183,7 +193,6 @@
         function chooseBout() { showScreen('screen-bout'); }
         function goToLogin() { showScreen('screen-login'); }
 
-        // تسجيل الدخول أو حساب جديد على السيرفر
         function handleAuth() {
             const username = document.getElementById('username').value.trim().toLowerCase();
             const passInp = document.getElementById('password').value.trim();
@@ -212,14 +221,12 @@
             });
         }
 
-        // مراقبة الرصيد في نفس اللحظة (Realtime)
         function loginUser(username) {
             currentUser = username;
             localStorage.setItem('chat_user', username);
             document.getElementById('top-bar').style.display = 'flex';
             showScreen('screen-games');
 
-            // أي تغيير يحصل في الفايربيز يسمع في الشاشة فوراً
             database.ref('users/' + username + '/balance').on('value', (snapshot) => {
                 if(snapshot.exists()) {
                     balance = parseFloat(snapshot.val());
@@ -228,7 +235,6 @@
             });
         }
 
-        // الشحن عن بُعد للأدمن
         function addMoneyAsAdmin() {
             const targetUser = document.getElementById('admin-target-user').value.trim().toLowerCase();
             const amountToAdd = parseFloat(document.getElementById('admin-amount-to-add').value);
