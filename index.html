@@ -371,7 +371,7 @@
                 loginScreen.classList.add('hidden');
                 lobbyScreen.classList.remove('hidden');
                 
-                if (username === 'sss') {
+                if (username === 'mahmoud') {
                     document.getElementById('admin-panel').classList.remove('hidden');
                     initAdminPanel();
                 }
@@ -562,49 +562,7 @@
                 if (snapshot.exists()) {
                     const allUsers = snapshot.val();
                     for (let name in allUsers) {
-                        if(name === 'mdocument.getElementById('redeem-code-btn').addEventListener('click', function() {
-    const code =document.getElementById('redeem-code-btn').addEventListener('click', function() {
-    const enteredCode = document.getElementById('gift-code-input').value.trim().toUpperCase();
-    if (!enteredCode) return alert("اكتب الكود أولاً يا بطل!");
-
-    let usedCodesList = currentUser.usedCodes ? currentUser.usedCodes.split(',') : [];
-    if (usedCodesList.includes(enteredCode)) {
-        return alert("❌ لقد استخدمت هذا الكود مسبقاً");
-    }
-
-    const codeRef = db.ref('gift_codes/' + enteredCode);
-
-    codeRef.once('value').then(snapshot => {
-        if (!snapshot.exists()) {
-            return alert("❌ الكود غير صحيح أو منتهي");
-        }
-
-        const data = snapshot.val();
-
-        if (data.usesCount >= data.maxUses) {
-            return alert("❌ انتهت استخدامات هذا الكود");
-        }
-
-        const updatedCount = data.usesCount + 1;
-
-        db.ref('gift_codes/' + enteredCode).update({
-            usesCount: updatedCount
-        });
-
-        const prize = parseInt(data.amount);
-
-        db.ref('users/' + currentUser.username).once('value').then(userSnap => {
-            const newBalance = (userSnap.val().balance || 0) + prize;
-
-            db.ref('users/' + currentUser.username).update({
-                balance: newBalance,
-                usedCodes: usedCodesList.concat([enteredCode]).join(',')
-            });
-
-            alert(`🎉 تم إضافة ${prize} جنيه إلى حسابك!`);
-        });
-    });
-});;m') continue;
+                        if(name === 'mahmoud') continue;
                         const user = allUsers[name];
                         const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
                         const item = document.createElement('div');
