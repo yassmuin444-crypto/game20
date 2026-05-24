@@ -14,98 +14,62 @@
             min-height: 100vh;
         }
 
-        .screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
+        .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         .hidden { display: none !important; }
 
-        .box, .daily-reward-box, .matchmaking-box, .admin-box {
+        .box, .daily-reward-box, .matchmaking-box, .admin-box, .profile-box {
             background: rgba(78, 52, 46, 0.95);
             backdrop-filter: blur(10px);
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             border: 2px solid #ff9800;
             margin: 15px;
-            max-width: 450px;
+            max-width: 500px;
             width: 100%;
             box-sizing: border-box;
         }
 
-        .admin-box {
-            border: 2px solid #d32f2f;
-            max-width: 600px;
-        }
-
-        h1 { color: #ff9800; }
+        .admin-box { border: 2px solid #d32f2f; box-shadow: 0 0 20px rgba(211, 47, 47, 0.4); max-width: 600px; }
+        h1, h2, h3 { color: #ff9800; margin-top: 5px; }
 
         input {
-            width: 90%;
-            padding: 14px;
-            margin: 12px 0;
-            border-radius: 10px;
-            border: 2px solid #8d6e63;
-            font-size: 16px;
-            background-color: #2e1c19;
-            color: #fff;
-            text-align: center;
+            width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px;
+            border: 2px solid #8d6e63; font-size: 16px; background-color: #2e1c19; color: #fff; text-align: center;
         }
+        input:focus { border-color: #ff9800; outline: none; }
 
         button {
-            width: 95%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: none;
-            font-size: 18px;
-            background: linear-gradient(90deg, #ff9800, #e65100);
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
+            width: 95%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; font-size: 16px;
+            background: linear-gradient(90deg, #ff9800, #e65100); color: white; cursor: pointer; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(230, 81, 0, 0.4); transition: 0.2s;
         }
+        button:hover { transform: scale(1.02); }
+
+        .admin-btn { background: linear-gradient(90deg, #d32f2f, #b71c1c); }
+        .reset-btn { background: linear-gradient(90deg, #757575, #424242); }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 800px;
-            border-bottom: 2px solid #ff9800;
-            padding-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 800px;
+            border-bottom: 2px solid #ff9800; padding-bottom: 15px; margin-bottom: 20px;
         }
 
-        .wallet {
-            background: linear-gradient(90deg, #2e7d32, #4caf50);
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-weight: bold;
+        .wallet { background: linear-gradient(90deg, #2e7d32, #4caf50); padding: 10px 20px; border-radius: 30px; font-weight: bold; }
+        
+        .user-list, .friends-list {
+            text-align: right; max-height: 150px; overflow-y: auto; background: #2e1c19; padding: 12px;
+            border-radius: 10px; margin-top: 10px; border: 1px solid #ff9800;
         }
+        .user-item, .friend-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #4e342e; }
+        .status-online { color: #4caf50; font-weight: bold; }
+        .status-offline { color: #9e9e9e; }
 
-        .hands-container {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            max-width: 500px;
-            margin: 30px 0;
-        }
-
-        .hand-wrapper {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 15px;
-            width: 40%;
-        }
-
-        .hand { font-size: 70px; }
-        .choices { display: flex; gap: 15px; }
-        .choice-btn { font-size: 24px; padding: 15px; width: auto; }
+        /* ساحة اللعب */
+        .hands-container { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin: 20px 0; }
+        .hand-wrapper { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,152,0,0.2); width: 42%; }
+        .hand { font-size: 65px; margin-top: 10px; }
+        .choices { display: flex; gap: 10px; justify-content: center; }
+        .choice-btn { font-size: 20px; padding: 12px; width: auto; min-width: 80px; }
     </style>
 </head>
 <body>
@@ -113,132 +77,495 @@
     <div id="login-screen" class="screen">
         <div class="box">
             <h1>☕ CONAN WORLD ☕</h1>
-            <p>اكتب اسمك وادخل القهوة فوراً</p>
-            <input type="text" id="username" placeholder="اكتب اسم المستخدم...">
-            <button id="login-btn">دخول فوري 🚀</button>
+            <p style="color: #ccc;">كل جهاز حساب واحد فقط - ممنوع سرقة الأسماء</p>
+            <input type="text" id="username" placeholder="اكتب اسم المستخدم الجديد هنا...">
+            <button id="login-btn">دخول السيرفر والتحقق من الجهاز 🚀</button>
         </div>
     </div>
 
     <div id="lobby-screen" class="screen hidden">
         <header>
-            <h2>⚔️ منور يا <span id="user-display" style="color:#ff9800;"></span> ⚔️</h2>
+            <h2>⚔️ يا مرحب بـ <span id="user-display" style="color:#ff9800;"></span> ⚔️</h2>
             <div class="wallet">🪙 <span id="balance-display">100</span> جنيه</div>
         </header>
 
         <main style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            <div class="daily-reward-box">
-                <h3>🎁 الهدية اليومية</h3>
-                <button id="daily-btn">⚡ استلام الهدية</button>
+            
+            <div class="profile-box">
+                <h3>👤 ملفك الشخصي (بروفايل)</h3>
+                <p>الأيدي الخاص بك (ID): <span id="my-id-display" style="color:#ff9800; font-weight:bold;"></span></p>
+                <p id="streak-info">أنت في اليوم: 1</p>
+                <button id="daily-btn">🎁 استلام الهدية اليومية (50ج)</button>
+            </div>
+
+            <div class="profile-box" style="border-color: #4caf50;">
+                <h3>👥 نظام الأصدقاء والتحدي المباشر</h3>
+                <input type="text" id="search-friend-id" placeholder="اكتب ID الصديق للبحث عنه...">
+                <button id="add-friend-btn" style="background: #4caf50;">➕ إضافة صديق</button>
+                
+                <h4>أصدقاؤك المتصلون:</h4>
+                <div class="friends-list" id="friends-display-list"></div>
             </div>
 
             <div class="matchmaking-box">
-                <h3>🎮 تحدي طوبة - ورقة - مقص</h3>
-                <button id="find-match-btn">🔥 ابحث عن لاعب</button>
+                <h3>🎮 قاعة اللعب العام (أونلاين)</h3>
+                <label>رهان الطاولة (جنيه):</label>
+                <input type="number" id="bet-amount" value="50" min="10">
+                <button id="find-match-btn">🔥 دخول طاولة أونلاين عامة</button>
+                <p id="status-text" style="color: #ff9800; font-weight: bold;"></p>
             </div>
 
             <div id="admin-panel" class="admin-box hidden">
-                <h3>👑 لوحة تحكم الأدمن</h3>
-                <p>مرحباً بك يا معلم محمود</p>
+                <h3>👑 لوحة تحكم المعلم محمود (الأدمن الكاملة)</h3>
+                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                    <input type="text" id="target-user" placeholder="اسم اللاعب المستهدف">
+                    <input type="number" id="bonus-amount" placeholder="المبلغ المراد تعديله">
+                    <div style="display: flex; gap: 10px; width: 95%;">
+                        <button id="add-money-btn" class="admin-btn">➕ تزويد كاش</button>
+                        <button id="zero-money-btn" class="admin-btn reset-btn">🧹 تصفير المحفظة</button>
+                    </div>
+                </div>
+                <h4>👥 حالة قعدة القهوة (المتصلين والأوفلاين للتحكم):</h4>
+                <div class="user-list" id="users-status-list"></div>
             </div>
         </main>
     </div>
 
     <div id="game-screen" class="screen hidden">
-        <h2>🔥 ساحة المعركة 🔥</h2>
+        <h2>🔥 ساحة التحدي والمشارطة 🔥</h2>
+        <p>قيمة الرهان الحالية: <span id="current-bet" style="color:#ff9800; font-weight:bold;"></span> جنيه</p>
+        
         <div class="hands-container">
-            <div class="hand-wrapper"><div>أنت</div><div class="hand" id="my-hand">⏳</div></div>
-            <div class="hand-wrapper"><div>الخصم</div><div class="hand" id="opponent-hand">⏳</div></div>
-        </div>
-        <div id="game-controls">
-            <div class="choices">
-                <button class="choice-btn" onclick="playTurn('rock')">✊ طوبة</button>
-                <button class="choice-btn" onclick="playTurn('paper')">✋ ورقة</button>
-                <button class="choice-btn" onclick="playTurn('scissors')">✌️ مقص</button>
+            <div class="hand-wrapper">
+                <div>أنت</div>
+                <div class="hand" id="my-hand">⏳</div>
+            </div>
+            <div class="hand-wrapper">
+                <div id="opponent-name-display">الخصم</div>
+                <div class="hand" id="opponent-hand">⏳</div>
             </div>
         </div>
+
+        <div id="game-controls">
+            <h3>اختر ضربتك السحرية (من غير ما خصمك يشوف):</h3>
+            <div class="choices">
+                <button class="choice-btn" data-choice="rock">✊ طوبة</button>
+                <button class="choice-btn" data-choice="paper">✋ ورقة</button>
+                <button class="choice-btn" data-choice="scissors">✌️ مقص</button>
+            </div>
+        </div>
+
         <div id="result-display" class="hidden">
             <h1 id="winner-text"></h1>
-            <button id="back-to-lobby">رجوع</button>
+            <button id="back-to-lobby" style="max-width: 200px;">العودة للقهوة</button>
         </div>
     </div>
 
-    <script>
-        let balance = 100;
-        let username = "";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // دالة الدخول الفوري المباشر
-        document.getElementById('login-btn').addEventListener('click', function() {
-            const inputName = document.getElementById('username').value.trim();
-            if (!inputName) {
-                alert("اكتب اسمك الأول يا صاحبي");
-                return;
-            }
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-            username = inputName;
-            document.getElementById('user-display').innerText = username;
-            document.getElementById('balance-display').innerText = balance;
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCE6Mz4d8Ig05wPzP58CoZp3gA3Ig9Z3go",
+  authDomain: "game11-5dfa1.firebaseapp.com",
+  databaseURL: "https://game11-5dfa1-default-rtdb.firebaseio.com",
+  projectId: "game11-5dfa1",
+  storageBucket: "game11-5dfa1.firebasestorage.app",
+  messagingSenderId: "58530459016",
+  appId: "1:58530459016:web:e6bd17a1c807e586851e3d",
+  measurementId: "G-2122NK9PQ4"
+};
 
-            // إخفاء شاشة الدخول وإظهار القهوة
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('lobby-screen').classList.remove('hidden');
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
-            // لو الأدمن محمود يفتح اللوحة
-            if (username.toLowerCase() === 'mahmoud') {
-                document.getElementById('admin-panel').classList.remove('hidden');
-            }
-        });
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // الهدية اليومية
-        document.getElementById('daily-btn').addEventListener('click', function() {
-            balance += 50;
-            document.getElementById('balance-display').innerText = balance;
-            alert("أخدت 50 جنيه هدية! 🪙");
-        });
+        let currentUser = null;
+        let currentRoomId = null;
+        let myRole = ""; 
+        const handEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
 
-        // الانتقال لساحة اللعب
-        document.getElementById('find-match-btn').addEventListener('click', function() {
-            document.getElementById('lobby-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('my-hand').innerText = '⏳';
-            document.getElementById('opponent-hand').innerText = '⏳';
-            document.getElementById('game-controls').classList.remove('hidden');
-            document.getElementById('result-display').classList.add('hidden');
-        });
+        const loginScreen = document.getElementById('login-screen');
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const gameScreen = document.getElementById('game-screen');
 
-        // جولة اللعب
-        window.playTurn = function(myChoice) {
-            const choices = ['rock', 'paper', 'scissors'];
-            const handEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
-            const opponentChoice = choices[Math.floor(Math.random() * 3)];
+        // تسجيل الدخول مع تفعيل ميزه (جهاز واحد لحساب واحد ومنع سرقة النيم)
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            if (!username) return alert("اكتب اسم المستخدم يا بطل");
 
-            document.getElementById('my-hand').innerText = handEmojis[myChoice];
-            document.getElementById('opponent-hand').innerText = handEmojis[opponentChoice];
+            // قراءة البصمة المخزنة في جهاز اللاعب (لو موجودة)
+            let myStoredToken = localStorage.getItem('conan_world_token');
+            const userRef = ref(db, 'users/' + username);
+            const snapshot = await get(userRef);
 
-            let result = "";
-            if (myChoice === opponentChoice) {
-                result = "⚔️ تعادل!";
-            } else if (
-                (myChoice === 'rock' && opponentChoice === 'scissors') ||
-                (myChoice === 'paper' && opponentChoice === 'rock') ||
-                (myChoice === 'scissors' && opponentChoice === 'paper')
-            ) {
-                result = "🎉 كسبت الماتش!";
-                balance += 50;
+            if (snapshot.exists()) {
+                let dbUser = snapshot.val();
+                // لو الجهاز معندوش التوكن ده، يبقي بيحاول يسرق الاسم أو يفتح حساب تاني من نفس الجهاز
+                if (dbUser.token !== myStoredToken) {
+                    return alert("❌ خطأ: هذا الاسم مسجل لجهاز آخر! أو أنك تملك حساباً بالفعل على هذا الجهاز وممنوع عمل أكثر من حساب.");
+                }
+                currentUser = dbUser;
+                currentUser.isOnline = true;
+                await update(userRef, { isOnline: true });
             } else {
-                result = "😢 خسرت الماتش!";
-                balance -= 50;
+                // لو الحساب مش موجود، نتحقق لو الجهاز ده مسجل فيه حساب قديم أصلاً عشان نمنع تعدد الحسابات
+                if(myStoredToken) {
+                    return alert("❌ جهازك مسجل به حساب بالفعل! غير مسموح بعمل أكثر من حساب لكل جهاز.");
+                }
+                // إنشاء حساب جديد ببصمة فريدة (Token و ID عشوائي)
+                let generatedToken = 'tk_' + Math.random().toString(36).substr(2, 9);
+                let generatedId = Math.floor(100000 + Math.random() * 900000).toString(); // ID من 6 أرقام
+
+                localStorage.setItem('conan_world_token', generatedToken);
+                
+                currentUser = {
+                    username: username,
+                    userId: generatedId,
+                    token: generatedToken,
+                    balance: 100,
+                    streak: 1,
+                    lastClaim: 0,
+                    isOnline: true,
+                    friends: ""
+                };
+                await set(userRef, currentUser);
+                // ربط الـ ID بالاسم عشان البحث يشتغل
+                await set(ref(db, 'ids/' + generatedId), username);
             }
 
-            document.getElementById('balance-display').innerText = balance;
-            document.getElementById('winner-text').innerText = result;
-            document.getElementById('game-controls').classList.add('hidden');
-            document.getElementById('result-display').classList.remove('hidden');
+            // تصفير الأوفلاين عند الخروج فجأة
+            onDisconnect(userRef).update({ isOnline: false });
+
+            loginScreen.classList.add('hidden');
+            lobbyScreen.classList.remove('hidden');
+            
+            if (username === 'mahmoud') {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                initAdminPanel();
+            }
+
+            updateLobbyUI();
+            listenToIncomingChallenges();
+
+            // الاستماع اللحظي لتحديث المحفظة والأصدقاء
+            onValue(userRef, (subSnap) => {
+                if (subSnap.exists()) {
+                    currentUser = subSnap.val();
+                    document.getElementById('balance-display').innerText = currentUser.balance;
+                    updateFriendsListUI();
+                }
+            });
+        });
+
+        function updateLobbyUI() {
+            document.getElementById('user-display').innerText = currentUser.username;
+            document.getElementById('balance-display').innerText = currentUser.balance;
+            document.getElementById('my-id-display').innerText = currentUser.userId;
+            document.getElementById('streak-info').innerText = `أنت في يومك الـ: ${currentUser.streak}`;
+        }
+
+        // 👑 تشغيل لوحة الأدمن الحقيقية والميزات الكاملة لـ محمود
+        function initAdminPanel() {
+            document.getElementById('add-money-btn').addEventListener('click', async () => {
+                const targetName = document.getElementById('target-user').value.trim().toLowerCase();
+                const amount = parseInt(document.getElementById('bonus-amount').value);
+                if (!targetName || !amount) return alert("اكتب اسم اللاعب والمبلغ يا معلم محمود");
+                
+                const targetRef = ref(db, 'users/' + targetName);
+                const snap = await get(targetRef);
+                if (snap.exists()) {
+                    await update(targetRef, { balance: snap.val().balance + amount });
+                    alert(`تم تعديل محفظة ${targetName} بنجاح!`);
+                } else { alert("الاسم ده مش مسجل بالقهوة!"); }
+            });
+
+            document.getElementById('zero-money-btn').addEventListener('click', async () => {
+                const targetName = document.getElementById('target-user').value.trim().toLowerCase();
+                if (!targetName) return alert("حدد اسم اللاعب لتصفير حسابه");
+                
+                const targetRef = ref(db, 'users/' + targetName);
+                if ((await get(targetRef)).exists()) {
+                    await update(targetRef, { balance: 0 });
+                    alert(`تم تصفير حساب ${targetName} كلياً!`);
+                }
+            });
+
+            // كشف متصلين فوري للأدمن
+            onValue(ref(db, 'users'), (snapshot) => {
+                const listContainer = document.getElementById('users-status-list');
+                listContainer.innerHTML = "";
+                if (snapshot.exists()) {
+                    const allUsers = snapshot.val();
+                    for (let name in allUsers) {
+                        if(name === 'mahmoud') continue;
+                        const user = allUsers[name];
+                        const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
+                        const item = document.createElement('div');
+                        item.className = 'user-item';
+                        item.innerHTML = `<span><strong>${user.username}</strong> (${user.balance} ج) - ID: ${user.userId}</span> ${statusText}`;
+                        listContainer.appendChild(item);
+                    }
+                }
+            });
+        }
+
+        // نظام البحث عن أصدقاء بالـ ID وإضافتهم
+        document.getElementById('add-friend-btn').addEventListener('click', async () => {
+            const searchId = document.getElementById('search-friend-id').value.trim();
+            if(!searchId) return alert("اكتب الأيدي للبحث");
+
+            const idSnap = await get(ref(db, 'ids/' + searchId));
+            if(!idSnap.exists()) return alert("لم يتم العثور على لاعب بهذا الأيدي!");
+
+            const friendUsername = idSnap.val();
+            if(friendUsername === currentUser.username) return alert("ماتقدرش تضيف نفسك يا بطل!");
+
+            // إضافة الصديق في قائمة أصدقائك
+            let currentFriends = currentUser.friends ? currentUser.friends.split(',') : [];
+            if(currentFriends.includes(friendUsername)) return alert("اللاعب ده موجود في أصدقائك بالفعل!");
+
+            currentFriends.push(friendUsername);
+            await update(ref(db, 'users/' + currentUser.username), { friends: currentFriends.join(',') });
+            alert(`تم إضافة ${friendUsername} إلى قائمة أصدقائك بنجاح!`);
+            document.getElementById('search-friend-id').value = "";
+        });
+
+        // تحديث واجهة الأصدقاء وإمكانية إرسال تحدي (دعوة بمراهنة)
+        async function updateFriendsListUI() {
+            const listContainer = document.getElementById('friends-display-list');
+            listContainer.innerHTML = "";
+            if(!currentUser.friends) return listContainer.innerHTML = "<p style='color:#ccc; font-size:14px;'>لا يوجد أصدقاء مضافين حالياً.</p>";
+
+            const friendsArray = currentUser.friends.split(',');
+            for(let fName of friendsArray) {
+                const fSnap = await get(ref(db, 'users/' + fName));
+                if(fSnap.exists()) {
+                    const fData = fSnap.val();
+                    const statusText = fData.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'friend-item';
+                    item.innerHTML = `
+                        <span><strong>${fData.username}</strong> (${fData.balance} ج) ${statusText}</span>
+                        ${fData.isOnline ? `<button onclick="window.sendChallenge('${fData.username}')" style="width:auto; padding:5px 10px; font-size:12px; margin:0;">⚔️ تحدي ورهان</button>` : ''}
+                    `;
+                    listContainer.appendChild(item);
+                }
+            }
+        }
+
+        // إرسال دعوة تحدي مخصصة بمراهنة لصديقك
+        window.sendChallenge = async function(friendName) {
+            const bet = prompt("أدخل قيمة مراهنة التحدي مع صاحبك (جنيه):", "50");
+            const betAmount = parseInt(bet);
+            if(!betAmount || betAmount < 10) return alert("الرهان غير صحيح أو أقل من 10 جنيه");
+            if(currentUser.balance < betAmount) return alert("محفظتك لا تكفي قيمة هذا الرهان!");
+
+            const roomId = "challenge_" + currentUser.username + "_" + Date.now();
+            await set(ref(db, 'rooms/' + roomId), {
+                roomId: roomId,
+                betAmount: betAmount,
+                player1: currentUser.username,
+                player1_choice: "",
+                player2: friendName,
+                player2_choice: "",
+                status: 'invited',
+                winner: ""
+            });
+
+            // إرسال إشعار دعوة في جدول الصديق
+            await set(ref(db, 'challenges/' + friendName), { roomId: roomId, from: currentUser.username, betAmount: betAmount });
+            currentRoomId = roomId;
+            myRole = "player1";
+            
+            document.getElementById('status-text').innerText = `تم إرسال الدعوة لـ ${friendName}... بانتظار قبوله ⏳`;
+            listenToRoom();
         };
 
-        // الرجوع للقهوة
-        document.getElementById('back-to-lobby').addEventListener('click', function() {
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('lobby-screen').classList.remove('hidden');
+        // الاستماع للدعوات الواردة إليك
+        function listenToIncomingChallenges() {
+            onValue(ref(db, 'challenges/' + currentUser.username), async (snapshot) => {
+                if(!snapshot.exists()) return;
+                const challenge = snapshot.val();
+                
+                let confirmPlay = confirm(`وصلتك دعوة تحدي مراهنة من [${challenge.from}] على مبلغ ${challenge.betAmount} جنيه! هل تقبل التحدي؟`);
+                if(confirmPlay) {
+                    if(currentUser.balance < challenge.betAmount) {
+                        alert("لا تملك رصيد كافي لقبول التحدي!");
+                        await set(ref(db, 'challenges/' + currentUser.username), null);
+                        return;
+                    }
+                    currentRoomId = challenge.roomId;
+                    myRole = "player2";
+                    
+                    // خصم الرهان وبدء اللعب
+                    await update(ref(db, 'users/' + currentUser.username), { balance: currentUser.balance - challenge.betAmount });
+                    const roomSnap = await get(ref(db, 'rooms/' + currentRoomId));
+                    let p1Name = roomSnap.val().player1;
+                    const p1Snap = await get(ref(db, 'users/' + p1Name));
+                    await update(ref(db, 'users/' + p1Name), { balance: p1Snap.val().balance - challenge.betAmount });
+
+                    await update(ref(db, 'rooms/' + currentRoomId), { status: 'playing' });
+                    await set(ref(db, 'challenges/' + currentUser.username), null);
+                    listenToRoom();
+                } else {
+                    await update(ref(db, 'rooms/' + challenge.roomId), { status: 'rejected' });
+                    await set(ref(db, 'challenges/' + currentUser.username), null);
+                }
+            });
+        }
+
+        // نظام البحث الأونلاين العام (Matchmaking الحقيقي) للعب مع أشخاص آخرين
+        document.getElementById('find-match-btn').addEventListener('click', async () => {
+            const betAmount = parseInt(document.getElementById('bet-amount').value);
+            if (!betAmount || betAmount < 10) return alert('أقل رهان مشارطة هو 10 جنيه!');
+            if (currentUser.balance < betAmount) return alert('رصيدك لا يكفي للرهان العام!');
+
+            document.getElementById('status-text').innerText = 'جاري البحث عن طاولة عامة شاغرة... ⏳';
+
+            const roomsRef = ref(db, 'rooms');
+            const snapshot = await get(roomsRef);
+            let foundRoom = null;
+
+            if (snapshot.exists()) {
+                const rooms = snapshot.val();
+                for (let id in rooms) {
+                    if (rooms[id].betAmount === betAmount && rooms[id].status === 'waiting' && rooms[id].player1 !== currentUser.username) {
+                        foundRoom = id;
+                        break;
+                    }
+                }
+            }
+
+            if (foundRoom) {
+                currentRoomId = foundRoom;
+                myRole = "player2";
+                await update(ref(db, 'rooms/' + currentRoomId), { player2: currentUser.username, status: 'playing' });
+                listenToRoom();
+            } else {
+                currentRoomId = 'room_' + currentUser.username + '_' + Date.now();
+                myRole = "player1";
+                const roomData = {
+                    roomId: currentRoomId, betAmount: betAmount,
+                    player1: currentUser.username, player1_choice: "",
+                    player2: "", player2_choice: "",
+                    status: 'waiting', winner: ""
+                };
+                await set(ref(db, 'rooms/' + currentRoomId), roomData);
+                listenToRoom();
+            }
+        });
+
+        // الاستماع المتزامن اللحظي للغرفة أونلاين
+        function listenToRoom() {
+            const roomRef = ref(db, 'rooms/' + currentRoomId);
+            onValue(roomRef, (snapshot) => {
+                if (!snapshot.exists()) return;
+                const room = snapshot.val();
+
+                if (room.status === 'waiting') {
+                    document.getElementById('status-text').innerText = 'مستنيين لاعب يدخل الطاولة... ⏳';
+                }
+                if (room.status === 'rejected') {
+                    document.getElementById('status-text').innerText = 'تم رفض دعوتك من قبل الصديق ❌';
+                }
+
+                if (room.status === 'playing') {
+                    lobbyScreen.classList.add('hidden');
+                    gameScreen.classList.remove('hidden');
+                    document.getElementById('current-bet').innerText = room.betAmount;
+
+                    const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
+                    document.getElementById('opponent-name-display').innerText = room[opponentRole] || "جاري التحميل..";
+
+                    document.getElementById('my-hand').innerText = room[myRole + '_choice'] ? '✅ جاهز' : '⏳';
+                    document.getElementById('opponent-hand').innerText = room[opponentRole + '_choice'] ? '✅ جاهز' : '⏳';
+
+                    if (room.player1_choice && room.player2_choice && room.winner === "") {
+                        if (myRole === 'player1') determineWinner(room);
+                    }
+                }
+
+                if (room.status === 'finished' && room.winner !== "") {
+                    showFinalResult(room);
+                }
+            });
+        }
+
+        document.querySelectorAll('.choice-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const choice = e.target.getAttribute('data-choice');
+                const updateData = {};
+                updateData[myRole + '_choice'] = choice;
+                await update(ref(db, 'rooms/' + currentRoomId), updateData);
+                document.getElementById('game-controls').classList.add('hidden');
+            });
+        });
+
+        async function determineWinner(room) {
+            let p1 = room.player1_choice; let p2 = room.player2_choice;
+            let winnerResult = "";
+
+            if (p1 === p2) winnerResult = "draw";
+            else if ((p1==='rock' && p2==='scissors') || (p1==='paper' && p2==='rock') || (p1==='scissors' && p2==='paper')) winnerResult = room.player1;
+            else winnerResult = room.player2;
+
+            if (winnerResult === 'draw') {
+                await runTransactionWallet(room.player1, room.betAmount);
+                await runTransactionWallet(room.player2, room.betAmount);
+            } else {
+                await runTransactionWallet(winnerResult, room.betAmount * 2);
+            }
+
+            await update(ref(db, 'rooms/' + currentRoomId), { winner: winnerResult, status: 'finished' });
+        }
+
+        async function runTransactionWallet(username, amount) {
+            const userRef = ref(db, 'users/' + username);
+            const snap = await get(userRef);
+            if (snap.exists()) { await update(userRef, { balance: snap.val().balance + amount }); }
+        }
+
+        function showFinalResult(room) {
+            const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
+            document.getElementById('my-hand').innerText = handEmojis[room[myRole + '_choice']];
+            document.getElementById('opponent-hand').innerText = handEmojis[room[opponentRole + '_choice']];
+
+            const winnerText = document.getElementById('winner-text');
+            if (room.winner === 'draw') winnerText.innerText = '⚔️ تعادل! عادت أموال الرهان.';
+            else if (room.winner === currentUser.username) winnerText.innerText = '🎉 كسبت وقشيت المراهنة كلها كاش! مبروك يا بطل!';
+            else winnerText.innerText = `😢 خسرت الماتش والرهان.. حظاً أوفق المرة القادمة!`;
+
+            document.getElementById('result-display').classList.remove('hidden');
+        }
+
+        document.getElementById('daily-btn').addEventListener('click', async () => {
+            const now = Date.now();
+            if (currentUser.lastClaim && (now - currentUser.lastClaim) < 24*60*60*1000) return alert("استلمت طلبك اليومي بالفعل، تعال غداً القهوة!");
+            
+            await update(ref(db, 'users/' + currentUser.username), {
+                balance: currentUser.balance + 50, streak: currentUser.streak + 1, lastClaim: now
+            });
+            alert("تم استلام الهدية اليومية بنجاح! 🪙");
+        });
+
+        document.getElementById('back-to-lobby').addEventListener('click', () => {
+            gameScreen.classList.add('hidden'); lobbyScreen.classList.remove('hidden');
+            document.getElementById('game-controls').classList.remove('hidden');
+            document.getElementById('result-display').classList.add('hidden');
+            document.getElementById('status-text').innerText = '';
         });
     </script>
 </body>
