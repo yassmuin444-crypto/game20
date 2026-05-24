@@ -17,7 +17,6 @@
             min-height: 100vh;
         }
 
-        /* 📢 شريط الإعلانات العلوى للمعلم محمود */
         #admin-announcement-bar {
             background: linear-gradient(90deg, #b71c1c, #e65100);
             color: #fff;
@@ -34,10 +33,7 @@
         }
 
         .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
-        
-        /* إضافة padding علوي للشاشات عشان الشريط ميتغطاش */
         #lobby-screen, #game-screen { padding-top: 60px; }
-        
         .hidden { display: none !important; }
 
         .box, .daily-reward-box, .matchmaking-box, .admin-box, .profile-box, .chat-box {
@@ -405,77 +401,94 @@
             location.reload();
         }
 
-        // 🎁 ميكانيكا تفعيل واستبدال الكود للاعبين (معدلة بالـ Transaction لحساب الليميت صح)
+        // ✅ كود استبدال القسيمة - مصلح بالكامل
         document.getElementById('redeem-code-btn').addEventListener('click', function() {
             const enteredCode = document.getElementById('gift-code-input').value.trim().toUpperCase();
-            if(!enteredCode) return alert("اكتب الكود أولاً يا بطل!");
+            if (!enteredCode) return alert("اكتب الكود أولاً يا بطل!");
 
-            // التأكد أن اللاعب مستخدموش قبل كده من عنده
-            let usedCodesList = currentUser.usedCodes ? currentUser.usedCodes.split(',') : [];
-            if(usedCodesList.includes(enteredCode)) {
-                return alert("❌ خطأ: لقد قمت باستبدال هذا الكود مسبقاً! غير مسموح بالتكرار.");
+            // خطوة 1: نشيك إن اللاعب مستخدمش الكود ده قبل كده
+            let usedCodesList = currentUser.usedCodes ? currentUser.usedCodes.split(',').filter(c => c !== '') : [];
+            if (usedCodesList.includes(enteredCode)) {
+                return alert("❌ لقد قمت باستبدال هذا الكود مسبقاً! غير مسموح بالتكرار.");
             }
 
             const codeRef = db.ref('gift_codes/' + enteredCode);
 
-            // استخدام transaction للتأكد من العدد بدون مشاكل تزامن لو كذا لاعب داس في نفس اللحظة
-            codeRef.transaction(function(codeData) {
-                if (codeData === null) {
-                    return undefined; // الكود مش موجود أصلاً
+            // خطوة 2: نجيب بيانات الكود الأول
+            codeRef.once('value').then(function(snapshot) {
+                // لو الكود مش موجود خالص
+                if (!snapshot.exists()) {
+                    return alert("❌ هذا الكود غير صحيح أو غير موجود!");
                 }
+
+                const codeData = snapshot.val();
+
+                // لو الكود وصل الحد الأقصى بتاعه
                 if (codeData.usesCount >= codeData.maxUses) {
-                    return codeData; // الكود خلص ليميت، متعدلش فيه حاجة
+                    return alert("❌ خسارة! وصل هذا الكود إلى الحد الأقصى المسموح به من الاستخدامات.");
                 }
-                
-                // لو كله تمام زود عداد الاستخدام 1
-                codeData.usesCount = codeData.usesCount + 1;
-                return codeData;
-            }, function(error, committed, snapshot) {
-                if (error) {
-                    alert("حدث خطأ غير متوقع أثناء تفعيل الكود.");
-                } else if (!committed || !snapshot.exists()) {
-                    alert("❌ هذا الكود غير صحيح أو انتهت صلاحيته!");
-                } else {
-                    const finalData = snapshot.val();
-                    
-                    // لو العداد الجديد كان أكبر من الحد الأقصى قبل ما ندوس، يبقى هو خلص خلاص
-                    // (بنطرح 1 عشان نعرف الرقم قبل خطوتنا الحالية)
-                    if ((finalData.usesCount - 1) >= finalData.maxUses) {
-                        alert("❌ خسارة! وصل هذا الكود إلى الحد الأقصى المسموح به من الاستخدامات.");
-                        // نرجع العداد زي ما كان عشان الحسابات تبقا دقيقة
-                        codeRef.child('usesCount').set(finalData.maxUses);
-                        return;
+
+                // خطوة 3: نستخدم transaction عشان نزود العداد بأمان من التزامن
+                codeRef.transaction(function(currentData) {
+                    if (currentData === null) return undefined; // الكود اتحذف في اللحظة دي
+
+                    // نشيك تاني جوا الـ transaction من أمان
+                    if (currentData.usesCount >= currentData.maxUses) {
+                        return currentData; // خلص - ماتعدلش حاجة
                     }
 
-                    // مبروك! الكود شغال ونزل في الليميت، نبعت الفلوس للاعب
+                    // كل حاجة تمام، نزود العداد
+                    currentData.usesCount = currentData.usesCount + 1;
+                    return currentData;
+
+                }, function(error, committed, finalSnapshot) {
+                    if (error) {
+                        return alert("حدث خطأ غير متوقع، حاول تاني.");
+                    }
+
+                    if (!committed || !finalSnapshot || !finalSnapshot.exists()) {
+                        return alert("❌ الكود مش موجود أو انتهت صلاحيته!");
+                    }
+
+                    const finalData = finalSnapshot.val();
+
+                    // لو الـ transaction اشتغل بس الكود كان فعلاً خلص (حد تاني اخده في نفس اللحظة)
+                    // نشيك إن العداد الجديد مش أكبر من الليميت
+                    if (finalData.usesCount > finalData.maxUses) {
+                        // نرجع العداد للحد الأقصى
+                        codeRef.child('usesCount').set(finalData.maxUses);
+                        return alert("❌ خسارة! الكود خلص من عند غيرك في نفس اللحظة.");
+                    }
+
+                    // ✅ مبروك! الكود اشتغل - نحدث بيانات اللاعب
                     const prizeAmount = parseInt(finalData.amount);
-                    let newBalance = currentUser.balance + prizeAmount;
+                    const newBalance = (currentUser.balance || 0) + prizeAmount;
                     usedCodesList.push(enteredCode);
-                    
+
                     db.ref('users/' + currentUser.username).update({
                         balance: newBalance,
                         usedCodes: usedCodesList.join(',')
                     });
 
-                    alert(`🎉 مبروك! تم تفعيل الكود بنجاح وإضافة ${prizeAmount} جنيه لمحفظتك! 🪙`);
                     document.getElementById('gift-code-input').value = "";
-                }
+                    alert(`🎉 مبروك! تم تفعيل الكود بنجاح وإضافة ${prizeAmount} جنيه لمحفظتك! 🪙`);
+                });
+            }).catch(function(err) {
+                alert("خطأ في الاتصال: " + err.message);
             });
         });
 
-        // 👑 لوحة تحكم المعلم محمود المطورّة
+        // 👑 لوحة تحكم المعلم محمود
         function initAdminPanel() {
-            // 🎁 صنع أكواد هدايا ليميتد جديدة
             document.getElementById('create-gift-code-btn').addEventListener('click', function() {
                 const codeName = document.getElementById('admin-code-name').value.trim().toUpperCase();
                 const codeAmount = parseInt(document.getElementById('admin-code-amount').value);
                 const codeLimit = parseInt(document.getElementById('admin-code-limit').value);
 
-                if(!codeName || !codeAmount || codeAmount <= 0 || !codeLimit || codeLimit <= 0) {
+                if (!codeName || !codeAmount || codeAmount <= 0 || !codeLimit || codeLimit <= 0) {
                     return alert("أرجوك اكتب الكود، والمبلغ، والحد الأقصى للاستخدام بشكل صحيح!");
                 }
 
-                // هيكل الكود الجديد جواه القيمة، الحد الأقصى، وعدد المرات الحالية (بتبدأ بـ 0)
                 db.ref('gift_codes/' + codeName).set({
                     amount: codeAmount,
                     maxUses: codeLimit,
@@ -488,11 +501,9 @@
                 document.getElementById('admin-code-limit').value = "";
             });
 
-            // بث الرسالة العلوية
             document.getElementById('broadcast-announcement-btn').addEventListener('click', function() {
                 const text = document.getElementById('admin-announcement-input').value.trim();
-                if(!text) return alert("اكتب النص اللي عاوز تبثه الأول يا معلم محمود!");
-                
+                if (!text) return alert("اكتب النص اللي عاوز تبثه الأول يا معلم محمود!");
                 db.ref('announcement').set(text);
                 alert("📢 تم بث الإعلان بنجاح وظهر فوق عند الكل حالياً!");
             });
@@ -540,15 +551,14 @@
                 const oldId = document.getElementById('change-id-oldvalue').value.trim();
                 const newId = document.getElementById('change-id-newvalue').value.trim();
 
-                if(!oldId || !newId) return alert("اكتب الأيدي القديم والجديد");
+                if (!oldId || !newId) return alert("اكتب الأيدي القديم والجديد");
 
                 db.ref('ids/' + oldId).once('value').then(function(idSnap) {
-                    if(idSnap.exists()) {
+                    if (idSnap.exists()) {
                         const targetUser = idSnap.val();
                         db.ref('ids/' + oldId).set(null);
                         db.ref('users/' + targetUser).update({ userId: newId });
                         db.ref('ids/' + newId).set(targetUser);
-
                         alert(`تم تعديل الـ ID للحساب بنجاح`);
                         document.getElementById('change-id-oldvalue').value = "";
                         document.getElementById('change-id-newvalue').value = "";
@@ -562,7 +572,7 @@
                 if (snapshot.exists()) {
                     const allUsers = snapshot.val();
                     for (let name in allUsers) {
-                        if(name === 'mahmoud') continue;
+                        if (name === 'mahmoud') continue;
                         const user = allUsers[name];
                         const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
                         const item = document.createElement('div');
@@ -574,19 +584,19 @@
             });
         }
 
-        // نظام الأصدقاء والتحدي والشات
+        // نظام الأصدقاء
         document.getElementById('add-friend-btn').addEventListener('click', function() {
             const searchId = document.getElementById('search-friend-id').value.trim();
-            if(!searchId) return alert("اكتب الأيدي للبحث");
+            if (!searchId) return alert("اكتب الأيدي للبحث");
 
             db.ref('ids/' + searchId).once('value').then(function(idSnap) {
-                if(!idSnap.exists()) return alert("لم يتم العثور على أيدي!");
+                if (!idSnap.exists()) return alert("لم يتم العثور على أيدي!");
 
                 const friendUsername = idSnap.val();
-                if(friendUsername === currentUser.username) return alert("ماتقدرش تضيف نفسك!");
+                if (friendUsername === currentUser.username) return alert("ماتقدرش تضيف نفسك!");
 
-                let currentFriends = currentUser.friends ? currentUser.friends.split(',') : [];
-                if(currentFriends.includes(friendUsername)) return alert("موجود في أصدقائك بالفعل!");
+                let currentFriends = currentUser.friends ? currentUser.friends.split(',').filter(f => f !== '') : [];
+                if (currentFriends.includes(friendUsername)) return alert("موجود في أصدقائك بالفعل!");
 
                 currentFriends.push(friendUsername);
                 db.ref('users/' + currentUser.username).update({ friends: currentFriends.join(',') });
@@ -598,12 +608,14 @@
         function updateFriendsListUI() {
             const listContainer = document.getElementById('friends-display-list');
             listContainer.innerHTML = "";
-            if(!currentUser.friends) return listContainer.innerHTML = "<p style='color:#ccc; font-size:14px;'>لا يوجد أصدقاء مضافين.</p>";
+            if (!currentUser.friends || currentUser.friends.trim() === '') {
+                return listContainer.innerHTML = "<p style='color:#ccc; font-size:14px;'>لا يوجد أصدقاء مضافين.</p>";
+            }
 
-            const friendsArray = currentUser.friends.split(',');
+            const friendsArray = currentUser.friends.split(',').filter(f => f !== '');
             friendsArray.forEach(function(fName) {
                 db.ref('users/' + fName).once('value').then(function(fSnap) {
-                    if(fSnap.exists()) {
+                    if (fSnap.exists()) {
                         const fData = fSnap.val();
                         const statusText = fData.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
                         
@@ -652,7 +664,7 @@
 
         document.getElementById('send-chat-btn').addEventListener('click', sendChatMessageAction);
         document.getElementById('chat-input-message').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') sendChatMessageAction();
+            if (e.key === 'Enter') sendChatMessageAction();
         });
 
         function sendChatMessageAction() {
@@ -677,12 +689,12 @@
             activeChatFriend = null;
         });
 
-        // نظام اللعب والمطابقة (Matchmaking والرهان)
+        // نظام اللعب والمطابقة
         window.sendChallenge = function(friendName) {
             const bet = prompt("أدخل قيمة رهان التحدي:", "50");
             const betAmount = parseInt(bet);
-            if(!betAmount || betAmount < 10) return alert("الرهان خطأ");
-            if(currentUser.balance < betAmount) return alert("محفظتك لا تكفي!");
+            if (!betAmount || betAmount < 10) return alert("الرهان خطأ");
+            if (currentUser.balance < betAmount) return alert("محفظتك لا تكفي!");
 
             const roomId = "challenge_" + currentUser.username + "_" + Date.now();
             db.ref('rooms/' + roomId).set({
@@ -703,12 +715,12 @@
 
         function listenToIncomingChallenges() {
             db.ref('challenges/' + currentUser.username).on('value', function(snapshot) {
-                if(!snapshot.exists()) return;
+                if (!snapshot.exists()) return;
                 const challenge = snapshot.val();
                 
                 let confirmPlay = confirm(`وصلتك دعوة تحدي من [${challenge.from}] على مبلغ ${challenge.betAmount} جنيه! هل تقبل؟`);
-                if(confirmPlay) {
-                    if(currentUser.balance < challenge.betAmount) {
+                if (confirmPlay) {
+                    if (currentUser.balance < challenge.betAmount) {
                         alert("لا تملك رصيد كافي!");
                         db.ref('challenges/' + currentUser.username).set(null);
                         return;
