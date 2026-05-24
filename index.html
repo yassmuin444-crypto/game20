@@ -67,9 +67,28 @@
         .status-online { color: #4caf50; font-weight: bold; }
         .status-offline { color: #9e9e9e; }
 
+        /* ساحة اللعب والأنيميشن المطور */
         .hands-container { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin: 20px 0; }
-        .hand-wrapper { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,152,0,0.2); width: 42%; }
-        .hand { font-size: 65px; margin-top: 10px; }
+        .hand-wrapper { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,152,0,0.2); width: 42%; overflow: hidden;}
+        
+        .hand { 
+            font-size: 75px; 
+            margin-top: 10px; 
+            display: inline-block;
+        }
+
+        /* أنيميشن هز اليدين السحري */
+        @keyframes shakeHand {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(-10px); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(-20px) rotate(10px); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        .shaking {
+            animation: shakeHand 0.5s ease-in-out infinite;
+        }
+
         .choices { display: flex; gap: 10px; justify-content: center; }
         .choice-btn { font-size: 20px; padding: 12px; width: auto; min-width: 80px; }
     </style>
@@ -110,16 +129,17 @@
             </div>
 
             <div class="matchmaking-box">
-                <h3>🎮 قاعة اللعب العام (أونلاين)</h3>
+                <h3>🎮 قاعة اللعب العشوائي (أونلاين عام)</h3>
                 <label>رهان الطاولة (جنيه):</label>
                 <input type="number" id="bet-amount" value="50" min="10">
-                <button id="find-match-btn">🔥 دخول طاولة أونلاين عامة</button>
+                <button id="find-match-btn">🔥 دخول طاولة عشوائية فورا</button>
                 <p id="status-text" style="color: #ff9800; font-weight: bold;"></p>
             </div>
 
             <div id="admin-panel" class="admin-box hidden">
                 <h3>👑 لوحة تحكم المعلم محمود (الأدمن الكاملة)</h3>
-                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center; border-bottom: 1px dashed #d32f2f; padding-bottom: 15px; margin-bottom: 15px;">
+                    <h4>💰 التحكم بالكاش:</h4>
                     <input type="text" id="target-user" placeholder="اسم اللاعب المستهدف">
                     <input type="number" id="bonus-amount" placeholder="المبلغ المراد تعديله">
                     <div style="display: flex; gap: 10px; width: 95%;">
@@ -127,7 +147,15 @@
                         <button id="zero-money-btn" class="admin-btn reset-btn">🧹 تصفير المحفظة</button>
                     </div>
                 </div>
-                <h4>👥 حالة قعدة القهوة:</h4>
+
+                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
+                    <h4>🆔 ميزة تغيير أيدي (ID) أي حساب:</h4>
+                    <input type="text" id="change-id-user" placeholder="اسم حساب اللاعب بالظبط">
+                    <input type="text" id="change-id-newvalue" placeholder="الأيدي الجديد (مثال: 777777)">
+                    <button id="confirm-change-id-btn" class="admin-btn" style="background: linear-gradient(90deg, #ff9800, #d32f2f);">🛠️ حفظ وتغيير الـ ID فوراً</button>
+                </div>
+
+                <h4>👥 حالة قعدة القهوة (المتصلين حالياً):</h4>
                 <div class="user-list" id="users-status-list"></div>
             </div>
         </main>
@@ -139,17 +167,17 @@
         
         <div class="hands-container">
             <div class="hand-wrapper">
-                <div>أنت</div>
-                <div class="hand" id="my-hand">⏳</div>
+                <div style="font-weight: bold; color: #ff9800;">أنت</div>
+                <div class="hand" id="my-hand">✊</div>
             </div>
             <div class="hand-wrapper">
-                <div id="opponent-name-display">الخصم</div>
-                <div class="hand" id="opponent-hand">⏳</div>
+                <div id="opponent-name-display" style="font-weight: bold; color: #ff9800;">الخصم</div>
+                <div class="hand" id="opponent-hand">✊</div>
             </div>
         </div>
 
         <div id="game-controls">
-            <h3>اختر ضربتك السحرية:</h3>
+            <h3 id="game-instruction-text">اختر ضربتك السحرية:</h3>
             <div class="choices">
                 <button class="choice-btn" data-choice="rock">✊ طوبة</button>
                 <button class="choice-btn" data-choice="paper">✋ ورقة</button>
@@ -164,7 +192,7 @@
     </div>
 
     <script>
-        // الأرقام الحقيقية والصحيحة بالملي من صورتك يا حودة:
+        // إعدادات الفايربيز المربوطة والمجربة بنجاح:
         const firebaseConfig = {
             apiKey: "AIzaSyCE6Mz4d8Ig05wPzP58CoZp3gA3Ig9Z3go",
             authDomain: "game11-5dfa1.firebaseapp.com",
@@ -176,13 +204,13 @@
             measurementId: "G-2122NK9PQ4"
         };
 
-        // تشغيل الفايربيز
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         let currentUser = null;
         let currentRoomId = null;
         let myRole = ""; 
+        let hasAnimated = false;
         const handEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
 
         const loginScreen = document.getElementById('login-screen');
@@ -251,7 +279,7 @@
                     }
                 });
             }).catch(function(error) {
-                alert("مشكلة في الاتصال بالفايربيز، اتأكد إنك عملت لـ Rules كلمة Publish: " + error.message);
+                alert("خطأ اتصال: " + error.message);
             });
         });
 
@@ -262,6 +290,7 @@
             document.getElementById('streak-info').innerText = `أنت في يومك الـ: ${currentUser.streak}`;
         }
 
+        // 👑 لوحة تحكم المعلم محمود الكاملة (الكاش + تغيير الأيدي)
         function initAdminPanel() {
             document.getElementById('add-money-btn').addEventListener('click', function() {
                 const targetName = document.getElementById('target-user').value.trim().toLowerCase();
@@ -272,7 +301,7 @@
                 targetRef.once('value').then(function(snap) {
                     if (snap.exists()) {
                         targetRef.update({ balance: snap.val().balance + amount });
-                        alert(`تم تعديل الكاش بنجاح`);
+                        alert(`تم تعديل الكاش بنجاح للمعلم`);
                     } else { alert("الاسم مش مسجل بالقهوة!"); }
                 });
             });
@@ -282,6 +311,33 @@
                 if (!targetName) return alert("حدد اسم اللاعب لتصفير حسابه");
                 db.ref('users/' + targetName).update({ balance: 0 });
                 alert(`تم تصفير الحساب`);
+            });
+
+            // ميزة تغيير الأيدي لأي لاعب من لوحة الأدمن
+            document.getElementById('confirm-change-id-btn').addEventListener('click', function() {
+                const targetUser = document.getElementById('change-id-user').value.trim().toLowerCase();
+                const newId = document.getElementById('change-id-newvalue').value.trim();
+
+                if(!targetUser || !newId) return alert("يا معلم محمود اكتب اسم الحساب والأيدي الجديد");
+
+                const userRef = db.ref('users/' + targetUser);
+                userRef.once('value').then(function(snap) {
+                    if(snap.exists()) {
+                        const oldId = snap.val().userId;
+                        // 1. مسح الرابط القديم في جدول الـ IDs
+                        db.ref('ids/' + oldId).set(null);
+                        // 2. تحديث الأيدي الجديد جوه حساب اللاعب
+                        userRef.update({ userId: newId });
+                        // 3. إنشاء ربط جديد للأيدي الجديد بالاسم
+                        db.ref('ids/' + newId).set(targetUser);
+
+                        alert(`تمت العملية بنجاح! تم تغيير ID اللاعب [${targetUser}] إلى [${newId}]`);
+                        document.getElementById('change-id-user').value = "";
+                        document.getElementById('change-id-newvalue').value = "";
+                    } else {
+                        alert("الاسم ده مش موجود في القهوة أصلاً!");
+                    }
+                });
             });
 
             db.ref('users').on('value', function(snapshot) {
@@ -302,6 +358,7 @@
             });
         }
 
+        // نظام الأصدقاء
         document.getElementById('add-friend-btn').addEventListener('click', function() {
             const searchId = document.getElementById('search-friend-id').value.trim();
             if(!searchId) return alert("اكتب الأيدي للبحث");
@@ -363,6 +420,7 @@
             db.ref('challenges/' + friendName).set({ roomId: roomId, from: currentUser.username, betAmount: betAmount });
             currentRoomId = roomId;
             myRole = "player1";
+            hasAnimated = false;
             
             document.getElementById('status-text').innerText = `تم إرسال الدعوة لـ ${friendName}... ⏳`;
             listenToRoom();
@@ -382,6 +440,7 @@
                     }
                     currentRoomId = challenge.roomId;
                     myRole = "player2";
+                    hasAnimated = false;
                     
                     db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - challenge.betAmount });
                     db.ref('users/' + challenge.from).once('value').then(function(p1Snap) {
@@ -397,18 +456,22 @@
             });
         }
 
+        // 🎮 نظام اللعب العشوائي المطور (Matchmaking لعدد لاعبين غير محدود)
         document.getElementById('find-match-btn').addEventListener('click', function() {
             const betAmount = parseInt(document.getElementById('bet-amount').value);
             if (!betAmount || betAmount < 10) return alert('أقل رهان مشارطة هو 10 جنيه!');
             if (currentUser.balance < betAmount) return alert('رصيدك لا يكفي!');
 
-            document.getElementById('status-text').innerText = 'جاري البحث عن طاولة... ⏳';
+            document.getElementById('status-text').innerText = 'جاري البحث عن لاعب متاح أونلاين... ⏳';
+            hasAnimated = false;
 
+            // البحث في غرف الانتظار المفتوحة
             db.ref('rooms').once('value').then(function(snapshot) {
                 let foundRoom = null;
                 if (snapshot.exists()) {
                     const rooms = snapshot.val();
                     for (let id in rooms) {
+                        // الغرفة تكون شاغرة وبنفس قيمة الرهان واللاعب التاني مش هو أنا
                         if (rooms[id].betAmount === betAmount && rooms[id].status === 'waiting' && rooms[id].player1 !== currentUser.username) {
                             foundRoom = id;
                             break;
@@ -419,11 +482,15 @@
                 if (foundRoom) {
                     currentRoomId = foundRoom;
                     myRole = "player2";
+                    // خصم الرهان عند الدخول فورا
+                    db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - betAmount });
                     db.ref('rooms/' + currentRoomId).update({ player2: currentUser.username, status: 'playing' });
                     listenToRoom();
                 } else {
-                    currentRoomId = 'room_' + currentUser.username + '_' + Date.now();
+                    // إذا لم يجد غرفة شاغرة، ينشئ غرفة جديدة باسمه وينتظر دخول لاعب آخر عشوائي
+                    currentRoomId = 'match_' + currentUser.username + '_' + Date.now();
                     myRole = "player1";
+                    db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - betAmount });
                     db.ref('rooms/' + currentRoomId).set({
                         roomId: currentRoomId, betAmount: betAmount,
                         player1: currentUser.username, player1_choice: "",
@@ -440,7 +507,7 @@
                 if (!snapshot.exists()) return;
                 const room = snapshot.val();
 
-                if (room.status === 'waiting') document.getElementById('status-text').innerText = 'مستنيين لاعب يدخل... ⏳';
+                if (room.status === 'waiting') document.getElementById('status-text').innerText = 'مستنيين لاعب يدخل الطاولة... ⏳';
                 if (room.status === 'rejected') document.getElementById('status-text').innerText = 'تم رفض دعوتك ❌';
 
                 if (room.status === 'playing') {
@@ -449,18 +516,51 @@
                     document.getElementById('current-bet').innerText = room.betAmount;
 
                     const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
-                    document.getElementById('opponent-name-display').innerText = room[opponentRole] || "جاري التحميل..";
+                    document.getElementById('opponent-name-display').innerText = room[opponentRole] || "لاعب عشوائي..";
 
-                    document.getElementById('my-hand').innerText = room[myRole + '_choice'] ? '✅ جاهز' : '⏳';
-                    document.getElementById('opponent-hand').innerText = room[opponentRole + '_choice'] ? '✅ جاهز' : '⏳';
+                    // وضع يدين مقفولتين طالما مفيش نتيجة لسه ظهرت
+                    if (room.winner === "") {
+                        document.getElementById('my-hand').innerText = room[myRole + '_choice'] ? '✅ جاهز' : '✊';
+                        document.getElementById('opponent-hand').innerText = room[opponentRole + '_choice'] ? '✅ جاهز' : '✊';
+                    }
 
-                    if (room.player1_choice && room.player2_choice && room.winner === "") {
-                        if (myRole === 'player1') determineWinner(room);
+                    // إذا اختار الطرفين، والأنيميشن لم يعرض بعد، نقوم بتشغيل الهز المطور
+                    if (room.player1_choice && room.player2_choice && room.winner === "" && !hasAnimated) {
+                        hasAnimated = true; // نمنع التكرار
+                        startHandsAnimation(room);
                     }
                 }
 
-                if (room.status === 'finished' && room.winner !== "") showFinalResult(room);
+                if (room.status === 'finished' && room.winner !== "" && hasAnimated) {
+                    showFinalResult(room);
+                }
             });
+        }
+
+        // 🔥 دالة أنيميشن هز اليدين التفاعلية (يدين بيتحركوا قدام بعض)
+        function startHandsAnimation(room) {
+            document.getElementById('game-controls').classList.add('hidden');
+            document.getElementById('game-instruction-text').innerText = "⚔️ جاري كشف الضربات... ⚔️";
+
+            const myHandElement = document.getElementById('my-hand');
+            const oppHandElement = document.getElementById('opponent-hand');
+
+            // نرجع شكل اليدين لـ (طوبة مقفولة) ونشغل أنيميشن الهز
+            myHandElement.innerText = '✊';
+            oppHandElement.innerText = '✊';
+            myHandElement.classList.add('shaking');
+            oppHandElement.classList.add('shaking');
+
+            // بعد ثانية ونص (تلات هزات) نوقف الحركة ونظهر النتيجة الحقيقية
+            setTimeout(function() {
+                myHandElement.classList.remove('shaking');
+                oppHandElement.classList.remove('shaking');
+
+                // لو أنا لاعب 1 هحسب النتيجة وأرفعها، لو أنا لاعب 2 هستقبل النتيجة الجاهزة
+                if (myRole === 'player1') {
+                    determineWinner(room);
+                }
+            }, 1500);
         }
 
         document.querySelectorAll('.choice-btn').forEach(function(button) {
@@ -469,7 +569,7 @@
                 const updateData = {};
                 updateData[myRole + '_choice'] = choice;
                 db.ref('rooms/' + currentRoomId).update(updateData);
-                document.getElementById('game-controls').classList.add('hidden');
+                document.getElementById('game-instruction-text').innerText = "تم تسجيل ضربتك! بانتظار الخصم... ⏳";
             });
         });
 
@@ -499,13 +599,15 @@
 
         function showFinalResult(room) {
             const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
+            
+            // إظهار الحركات الحقيقية بعد انتهاء الأنيميشن
             document.getElementById('my-hand').innerText = handEmojis[room[myRole + '_choice']];
             document.getElementById('opponent-hand').innerText = handEmojis[room[opponentRole + '_choice']];
 
             const winnerText = document.getElementById('winner-text');
-            if (room.winner === 'draw') winnerText.innerText = '⚔️ تعادل! عادت أموال الرهان.';
-            else if (room.winner === currentUser.username) winnerText.innerText = '🎉 كسبت وقشيت المراهنة كلها كاش!';
-            else winnerText.innerText = `😢 خسرت الماتش والرهان..`;
+            if (room.winner === 'draw') winnerText.innerText = '⚔️ تعادل! عادت أموال المشارطة.';
+            else if (room.winner === currentUser.username) winnerText.innerText = '🎉 كسبت وقشيت المراهنة كلها كاش! عاش يا بطل!';
+            else winnerText.innerText = `😢 خسرت الماتش والرهان.. الجايات أفضل!`;
 
             document.getElementById('result-display').classList.remove('hidden');
         }
@@ -521,10 +623,15 @@
         });
 
         document.getElementById('back-to-lobby').addEventListener('click', function() {
+            // فصل الاستماع للغرفة المنتهية عشان ندخل غرف تانية نظيفة
+            db.ref('rooms/' + currentRoomId).off();
+            
             gameScreen.classList.add('hidden'); lobbyScreen.classList.remove('hidden');
             document.getElementById('game-controls').classList.remove('hidden');
             document.getElementById('result-display').classList.add('hidden');
+            document.getElementById('game-instruction-text').innerText = "اختر ضربتك السحرية:";
             document.getElementById('status-text').innerText = '';
+            hasAnimated = false;
         });
     </script>
 </body>
