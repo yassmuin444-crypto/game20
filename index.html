@@ -371,7 +371,7 @@
                 loginScreen.classList.add('hidden');
                 lobbyScreen.classList.remove('hidden');
                 
-                if (username === 'mahmoud') {
+                if (username === 'mm') {
                     document.getElementById('admin-panel').classList.remove('hidden');
                     initAdminPanel();
                 }
@@ -562,7 +562,7 @@
                 if (snapshot.exists()) {
                     const allUsers = snapshot.val();
                     for (let name in allUsers) {
-                        if(name === 'mahmoud') continue;
+                        if(name === 'mm') continue;
                         const user = allUsers[name];
                         const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
                         const item = document.createElement('div');
