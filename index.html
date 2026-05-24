@@ -2,14 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conan World - قهوة المصريين</title>
-    <!-- نفس Firebase SDK القديم اللي شغال معاك من قبل -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        * { box-sizing: border-box; }
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,6 +16,8 @@
             text-align: center;
             min-height: 100vh;
         }
+
+        /* 📢 شريط الإعلانات العلوى للمعلم محمود */
         #admin-announcement-bar {
             background: linear-gradient(90deg, #b71c1c, #e65100);
             color: #fff;
@@ -32,9 +32,14 @@
             width: 100%;
             z-index: 9999;
         }
+
         .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        
+        /* إضافة padding علوي للشاشات عشان الشريط ميتغطاش */
         #lobby-screen, #game-screen { padding-top: 60px; }
+        
         .hidden { display: none !important; }
+
         .box, .daily-reward-box, .matchmaking-box, .admin-box, .profile-box, .chat-box {
             background: rgba(78, 52, 46, 0.95);
             backdrop-filter: blur(10px);
@@ -47,27 +52,34 @@
             width: 100%;
             box-sizing: border-box;
         }
+
         .admin-box { border: 2px solid #d32f2f; box-shadow: 0 0 20px rgba(211, 47, 47, 0.4); max-width: 600px; }
         .chat-box { border: 2px solid #00bcd4; max-width: 450px; }
         h1, h2, h3 { color: #ff9800; margin-top: 5px; }
+
         input {
             width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px;
             border: 2px solid #8d6e63; font-size: 16px; background-color: #2e1c19; color: #fff; text-align: center;
         }
         input:focus { border-color: #ff9800; outline: none; }
+
         button {
             width: 95%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; font-size: 16px;
             background: linear-gradient(90deg, #ff9800, #e65100); color: white; cursor: pointer; font-weight: bold;
             box-shadow: 0 5px 15px rgba(230, 81, 0, 0.4); transition: 0.2s;
         }
         button:hover { transform: scale(1.02); }
+
         .admin-btn { background: linear-gradient(90deg, #d32f2f, #b71c1c); }
         .reset-btn { background: linear-gradient(90deg, #757575, #424242); }
+
         header {
             display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 800px;
             border-bottom: 2px solid #ff9800; padding-bottom: 15px; margin-bottom: 20px;
         }
+
         .wallet { background: linear-gradient(90deg, #2e7d32, #4caf50); padding: 10px 20px; border-radius: 30px; font-weight: bold; }
+        
         .user-list, .friends-list {
             text-align: right; max-height: 150px; overflow-y: auto; background: #2e1c19; padding: 12px;
             border-radius: 10px; margin-top: 10px; border: 1px solid #ff9800;
@@ -75,6 +87,7 @@
         .user-item, .friend-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #4e342e; }
         .status-online { color: #4caf50; font-weight: bold; }
         .status-offline { color: #9e9e9e; }
+
         .chat-messages {
             height: 200px; overflow-y: auto; background: #1a0f0d; border-radius: 10px;
             padding: 10px; margin-bottom: 10px; text-align: right; border: 1px solid #00bcd4;
@@ -82,9 +95,12 @@
         .chat-msg { margin: 5px 0; padding: 6px 10px; border-radius: 8px; font-size: 14px; max-width: 85%; width: fit-content; }
         .msg-me { background: #00bcd4; color: #000; margin-left: auto; text-align: right; }
         .msg-them { background: #4e342e; color: #fff; margin-right: auto; text-align: left; }
+
         .hands-container { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin: 20px 0; }
         .hand-wrapper { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,152,0,0.2); width: 42%; overflow: hidden;}
+        
         .hand { font-size: 75px; margin-top: 10px; display: inline-block; }
+
         @keyframes shakeHand {
             0% { transform: translateY(0) rotate(0deg); }
             25% { transform: translateY(-20px) rotate(-10px); }
@@ -93,8 +109,10 @@
             100% { transform: translateY(0) rotate(0deg); }
         }
         .shaking { animation: shakeHand 0.5s ease-in-out infinite; }
+
         .choices { display: flex; gap: 10px; justify-content: center; }
         .choice-btn { font-size: 20px; padding: 12px; width: auto; min-width: 80px; }
+
         #loading-screen { font-size: 22px; font-weight: bold; color: #ff9800; }
     </style>
 </head>
@@ -122,26 +140,33 @@
             <h2>⚔️ يا مرحب بـ <span id="user-display" style="color:#ff9800;"></span> ⚔️</h2>
             <div class="wallet">🪙 <span id="balance-display">100</span> جنيه</div>
         </header>
+
         <main style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            
             <div class="profile-box">
                 <h3>👤 ملفك الشخصي (بروفايل)</h3>
                 <p>الأيدي الخاص بك (ID): <span id="my-id-display" style="color:#ff9800; font-weight:bold;"></span></p>
                 <p id="streak-info">أنت في اليوم: 1</p>
                 <button id="daily-btn">🎁 استلام الهدية اليومية (50ج)</button>
+
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ff9800;">
                     <h4 style="color:#ff9800; margin:5px 0;">🎁 استبدال كود الهدية (برومو كود):</h4>
                     <input type="text" id="gift-code-input" placeholder="اكتب كود القسيمة هنا...">
                     <button id="redeem-code-btn" style="background: linear-gradient(90deg, #00eeff, #007780); color:#000;">تفعيل واستلام الهدية 💰</button>
                 </div>
+
                 <button id="logout-btn" style="background: #757575; font-size: 12px; padding: 5px; width: auto; margin-top: 15px;">🚪 تسجيل خروج (لتغيير الحساب)</button>
             </div>
+
             <div class="profile-box" style="border-color: #4caf50;">
                 <h3>👥 نظام الأصدقاء والتحدي والدردشة</h3>
                 <input type="text" id="search-friend-id" placeholder="اكتب ID الصديق للبحث عنه...">
                 <button id="add-friend-btn" style="background: #4caf50;">➕ إضافة صديق</button>
+                
                 <h4>أصدقاؤك المتصلون:</h4>
                 <div class="friends-list" id="friends-display-list"></div>
             </div>
+
             <div id="private-chat-area" class="chat-box hidden">
                 <h3>💬 دردشة خاصة مع: <span id="chat-with-name" style="color:#00bcd4;"></span></h3>
                 <div class="chat-messages" id="chat-messages-container"></div>
@@ -151,6 +176,7 @@
                 </div>
                 <button id="close-chat-btn" style="background:#757575; font-size:12px; padding:5px; margin-top:10px; width:auto;">❌ إغلاق الشات</button>
             </div>
+
             <div class="matchmaking-box">
                 <h3>🎮 قاعة اللعب العشوائي (أونلاين عام)</h3>
                 <label>رهان الطاولة (جنيه):</label>
@@ -158,8 +184,10 @@
                 <button id="find-match-btn">🔥 دخول طاولة عشوائية فورا</button>
                 <p id="status-text" style="color: #ff9800; font-weight: bold;"></p>
             </div>
+
             <div id="admin-panel" class="admin-box hidden">
                 <h3>👑 لوحة تحكم المعلم محمود (الأدمن الكاملة)</h3>
+                
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: center; border-bottom: 1px dashed #d32f2f; padding-bottom: 15px; margin-bottom: 15px;">
                     <h4 style="color: #ff9800;">🛠️ صنع وتوليد أكواد هدايا محدودة العدد:</h4>
                     <input type="text" id="admin-code-name" placeholder="اكتب الكود هنا (مثال: FIRST10)">
@@ -167,6 +195,7 @@
                     <input type="number" id="admin-code-limit" placeholder="أقصى عدد مرات استخدام للكل (مثال: 5)" min="1">
                     <button id="create-gift-code-btn" style="background: linear-gradient(90deg, #ff9800, #ff5722);">✨ صنع وتفعيل كود الهدية فوراً</button>
                 </div>
+
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: center; border-bottom: 1px dashed #d32f2f; padding-bottom: 15px; margin-bottom: 15px;">
                     <h4>📢 بث رسالة عامة تظهر لكل اللاعبين فوق:</h4>
                     <input type="text" id="admin-announcement-input" placeholder="اكتب نص الإعلان المباشر هنا...">
@@ -175,6 +204,7 @@
                         <button id="delete-announcement-btn" class="admin-btn reset-btn">🧹 حذف وإخفاء الشريط</button>
                     </div>
                 </div>
+
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: center; border-bottom: 1px dashed #d32f2f; padding-bottom: 15px; margin-bottom: 15px;">
                     <h4>💰 التحكم بالكاش (باستخدام ID اللاعب):</h4>
                     <input type="text" id="target-id" placeholder="اكتب ID اللاعب المستهدف بالظبط">
@@ -184,12 +214,14 @@
                         <button id="zero-money-btn" class="admin-btn reset-btn">🧹 تصفير المحفظة</button>
                     </div>
                 </div>
+
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
                     <h4>🆔 تعديل الأيدي (باستخدام ID الحالي):</h4>
                     <input type="text" id="change-id-oldvalue" placeholder="الأيدي الحالي للاعب">
                     <input type="text" id="change-id-newvalue" placeholder="الأيدي الجديد المراد وضعه">
                     <button id="confirm-change-id-btn" class="admin-btn" style="background: linear-gradient(90deg, #ff9800, #d32f2f);">🛠️ حفظ وتعديل الـ ID فوراً</button>
                 </div>
+
                 <h4>👥 حالة قعدة القهوة (المتصلين حالياً):</h4>
                 <div class="user-list" id="users-status-list"></div>
             </div>
@@ -199,6 +231,7 @@
     <div id="game-screen" class="screen hidden">
         <h2>🔥 ساحة التحدي والمشارطة 🔥</h2>
         <p>قيمة الرهان الحالية: <span id="current-bet" style="color:#ff9800; font-weight:bold;"></span> جنيه</p>
+        
         <div class="hands-container">
             <div class="hand-wrapper">
                 <div style="font-weight: bold; color: #ff9800;">أنت</div>
@@ -209,6 +242,7 @@
                 <div class="hand" id="opponent-hand">✊</div>
             </div>
         </div>
+
         <div id="game-controls">
             <h3 id="game-instruction-text">اختر ضربتك السحرية:</h3>
             <div class="choices">
@@ -217,6 +251,7 @@
                 <button class="choice-btn" data-choice="scissors">✌️ مقص</button>
             </div>
         </div>
+
         <div id="result-display" class="hidden">
             <h1 id="winner-text"></h1>
             <button id="back-to-lobby" style="max-width: 200px;">العودة للقهوة</button>
@@ -224,7 +259,6 @@
     </div>
 
     <script>
-        // إعدادات Firebase (نفس بياناتك بالضبط)
         const firebaseConfig = {
             apiKey: "AIzaSyCE6Mz4d8Ig05wPzP58CoZp3gA3Ig9Z3go",
             authDomain: "game11-5dfa1.firebaseapp.com",
@@ -232,11 +266,10 @@
             projectId: "game11-5dfa1",
             storageBucket: "game11-5dfa1.firebasestorage.app",
             messagingSenderId: "5853045016",
-            appId: "1:5853045016:web:e6bd17a1c807e586851e3d",
+            appId: "1:58530459016:web:e6bd17a1c807e586851e3d",
             measurementId: "G-2122NK9PQ4"
         };
 
-        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -252,29 +285,25 @@
         const lobbyScreen = document.getElementById('lobby-screen');
         const gameScreen = document.getElementById('game-screen');
 
-        // تأخير بسيط لضمان تحميل Firebase بالكامل + تنظيف أي بيانات عالقة
-        setTimeout(function() {
-            // تنظيف أي بيانات قديمة متبقية (اختياري ولكن مفيد)
-            // مش هنمسح localStorage عشان ما نخسرش الحسابات، لكن هنصلح الدخول
-            listenToGlobalAnnouncements();
-            
+        window.onload = function() {
             let savedUsername = localStorage.getItem('conan_world_username');
             let savedToken = localStorage.getItem('conan_world_token');
 
-            if (savedUsername && savedToken && savedToken !== 'undefined') {
-                // في حالة وجود حساب مسجل، نحاول دخوله
+            listenToGlobalAnnouncements();
+
+            if (savedUsername && savedToken) {
                 loginUserLogic(savedUsername, savedToken, true);
             } else {
-                // مفيش حساب، نروح لشاشة تسجيل الدخول مباشرة
                 loadingScreen.classList.add('hidden');
                 loginScreen.classList.remove('hidden');
             }
-        }, 300); // تأخير 0.3 ثانية عشان Firebase يجهز نفسه
+        };
 
         function listenToGlobalAnnouncements() {
             db.ref('announcement').on('value', function(snapshot) {
                 const bar = document.getElementById('admin-announcement-bar');
                 const textElem = document.getElementById('announcement-text');
+                
                 if (snapshot.exists() && snapshot.val().trim() !== "") {
                     textElem.innerText = snapshot.val();
                     bar.classList.remove('hidden');
@@ -288,15 +317,17 @@
         document.getElementById('login-btn').addEventListener('click', function() {
             const username = document.getElementById('username').value.trim().toLowerCase();
             if (!username) return alert("اكتب اسم المستخدم يا بطل");
-            let myStoredToken = localStorage.getItem('conan_world_token');
-            if (!myStoredToken) myStoredToken = 'tk_' + Math.random().toString(36).substr(2, 9);
+            
+            let myStoredToken = localStorage.getItem('conan_world_token') || 'tk_' + Math.random().toString(36).substr(2, 9);
             loginUserLogic(username, myStoredToken, false);
         });
 
         function loginUserLogic(username, token, isAuto) {
             const userRef = db.ref('users/' + username);
+
             userRef.once('value').then(function(snapshot) {
                 let deviceBoundToken = localStorage.getItem('conan_world_token');
+
                 if (snapshot.exists()) {
                     let dbUser = snapshot.val();
                     if (dbUser.token !== token) {
@@ -308,12 +339,13 @@
                     currentUser.isOnline = true;
                     userRef.update({ isOnline: true });
                 } else {
-                    if (deviceBoundToken && deviceBoundToken !== 'undefined') {
+                    if (deviceBoundToken) {
                         alert("❌ خطأ حماية: جهازك مسجل به حساب آخر بالفعل! غير مسموح بإنشاء أكثر من حساب لكل جهاز.");
                         loadingScreen.classList.add('hidden');
                         loginScreen.classList.remove('hidden');
                         return;
                     }
+                    
                     let generatedId = Math.floor(100000 + Math.random() * 900000).toString();
                     currentUser = {
                         username: username,
@@ -329,18 +361,24 @@
                     userRef.set(currentUser);
                     db.ref('ids/' + generatedId).set(username);
                 }
+
                 localStorage.setItem('conan_world_username', username);
                 localStorage.setItem('conan_world_token', currentUser.token);
+
                 userRef.onDisconnect().update({ isOnline: false });
+
                 loadingScreen.classList.add('hidden');
                 loginScreen.classList.add('hidden');
                 lobbyScreen.classList.remove('hidden');
+                
                 if (username === 'mahmoud') {
                     document.getElementById('admin-panel').classList.remove('hidden');
                     initAdminPanel();
                 }
+
                 updateLobbyUI();
                 listenToIncomingChallenges();
+
                 userRef.on('value', function(subSnap) {
                     if (subSnap.exists()) {
                         currentUser = subSnap.val();
@@ -349,10 +387,7 @@
                     }
                 });
             }).catch(function(error) {
-                console.error("خطأ Firebase:", error);
-                alert("خطأ في الاتصال بقاعدة البيانات: " + error.message);
-                loadingScreen.classList.add('hidden');
-                loginScreen.classList.remove('hidden');
+                alert("خطأ اتصال: " + error.message);
             });
         }
 
@@ -367,140 +402,498 @@
         function logoutAction() {
             if(currentUser) db.ref('users/' + currentUser.username).update({ isOnline: false });
             localStorage.removeItem('conan_world_username');
-            localStorage.removeItem('conan_world_token');
             location.reload();
         }
 
-        // باقي الكود (الأكواد، الأصدقاء، اللعب، إلخ) تمام كما هو شغال معك من قبل
-        // أنا حطيت الأساسيات اللي تصلح الدخول بس، وباقي الوظائف زي ما هي
-
-        // 🎁 تفعيل الكود (النسخة اللي شغالة معاك)
+        // 🎁 ميكانيكا تفعيل واستبدال الكود للاعبين (معدلة بالـ Transaction لحساب الليميت صح)
         document.getElementById('redeem-code-btn').addEventListener('click', function() {
             const enteredCode = document.getElementById('gift-code-input').value.trim().toUpperCase();
             if(!enteredCode) return alert("اكتب الكود أولاً يا بطل!");
+
+            // التأكد أن اللاعب مستخدموش قبل كده من عنده
             let usedCodesList = currentUser.usedCodes ? currentUser.usedCodes.split(',') : [];
             if(usedCodesList.includes(enteredCode)) {
-                return alert("❌ خطأ: لقد قمت باستبدال هذا الكود مسبقاً!");
+                return alert("❌ خطأ: لقد قمت باستبدال هذا الكود مسبقاً! غير مسموح بالتكرار.");
             }
+
             const codeRef = db.ref('gift_codes/' + enteredCode);
+
+            // استخدام transaction للتأكد من العدد بدون مشاكل تزامن لو كذا لاعب داس في نفس اللحظة
             codeRef.transaction(function(codeData) {
-                if (codeData === null) return undefined;
-                if (codeData.usesCount >= codeData.maxUses) return codeData;
+                if (codeData === null) {
+                    return undefined; // الكود مش موجود أصلاً
+                }
+                if (codeData.usesCount >= codeData.maxUses) {
+                    return codeData; // الكود خلص ليميت، متعدلش فيه حاجة
+                }
+                
+                // لو كله تمام زود عداد الاستخدام 1
                 codeData.usesCount = codeData.usesCount + 1;
                 return codeData;
             }, function(error, committed, snapshot) {
-                if (error) { alert("حدث خطأ: " + error.message); }
-                else if (!committed || !snapshot.exists()) { alert("❌ هذا الكود غير صحيح أو انتهت صلاحيته!"); }
-                else {
+                if (error) {
+                    alert("حدث خطأ غير متوقع أثناء تفعيل الكود.");
+                } else if (!committed || !snapshot.exists()) {
+                    alert("❌ هذا الكود غير صحيح أو انتهت صلاحيته!");
+                } else {
                     const finalData = snapshot.val();
+                    
+                    // لو العداد الجديد كان أكبر من الحد الأقصى قبل ما ندوس، يبقى هو خلص خلاص
+                    // (بنطرح 1 عشان نعرف الرقم قبل خطوتنا الحالية)
                     if ((finalData.usesCount - 1) >= finalData.maxUses) {
-                        alert("❌ خسارة! وصل هذا الكود إلى الحد الأقصى.");
+                        alert("❌ خسارة! وصل هذا الكود إلى الحد الأقصى المسموح به من الاستخدامات.");
+                        // نرجع العداد زي ما كان عشان الحسابات تبقا دقيقة
                         codeRef.child('usesCount').set(finalData.maxUses);
                         return;
                     }
+
+                    // مبروك! الكود شغال ونزل في الليميت، نبعت الفلوس للاعب
                     const prizeAmount = parseInt(finalData.amount);
                     let newBalance = currentUser.balance + prizeAmount;
                     usedCodesList.push(enteredCode);
-                    db.ref('users/' + currentUser.username).update({ balance: newBalance, usedCodes: usedCodesList.join(',') });
-                    alert(`🎉 مبروك! تم إضافة ${prizeAmount} جنيه لمحفظتك!`);
+                    
+                    db.ref('users/' + currentUser.username).update({
+                        balance: newBalance,
+                        usedCodes: usedCodesList.join(',')
+                    });
+
+                    alert(`🎉 مبروك! تم تفعيل الكود بنجاح وإضافة ${prizeAmount} جنيه لمحفظتك! 🪙`);
                     document.getElementById('gift-code-input').value = "";
                 }
             });
         });
 
-        // 👑 باقي دوال الأدمن (ضروري عشان تكتمل الوظائف)
+        // 👑 لوحة تحكم المعلم محمود المطورّة
         function initAdminPanel() {
+            // 🎁 صنع أكواد هدايا ليميتد جديدة
             document.getElementById('create-gift-code-btn').addEventListener('click', function() {
                 const codeName = document.getElementById('admin-code-name').value.trim().toUpperCase();
                 const codeAmount = parseInt(document.getElementById('admin-code-amount').value);
                 const codeLimit = parseInt(document.getElementById('admin-code-limit').value);
-                if(!codeName || !codeAmount || codeAmount <= 0 || !codeLimit || codeLimit <= 0) return alert("أدخل بيانات صحيحة!");
-                db.ref('gift_codes/' + codeName).set({ amount: codeAmount, maxUses: codeLimit, usesCount: 0 });
-                alert(`✨ تم توليد الكود [${codeName}] بقيمة ${codeAmount} ج لـ ${codeLimit} مستخدم!`);
+
+                if(!codeName || !codeAmount || codeAmount <= 0 || !codeLimit || codeLimit <= 0) {
+                    return alert("أرجوك اكتب الكود، والمبلغ، والحد الأقصى للاستخدام بشكل صحيح!");
+                }
+
+                // هيكل الكود الجديد جواه القيمة، الحد الأقصى، وعدد المرات الحالية (بتبدأ بـ 0)
+                db.ref('gift_codes/' + codeName).set({
+                    amount: codeAmount,
+                    maxUses: codeLimit,
+                    usesCount: 0
+                });
+
+                alert(`✨ تم توليد الكود الحصري [${codeName}] بقيمة ${codeAmount} ج لـ [${codeLimit}] مستخدمين فقط!`);
                 document.getElementById('admin-code-name').value = "";
                 document.getElementById('admin-code-amount').value = "";
                 document.getElementById('admin-code-limit').value = "";
             });
+
+            // بث الرسالة العلوية
             document.getElementById('broadcast-announcement-btn').addEventListener('click', function() {
                 const text = document.getElementById('admin-announcement-input').value.trim();
-                if(!text) return alert("اكتب النص أولاً!");
+                if(!text) return alert("اكتب النص اللي عاوز تبثه الأول يا معلم محمود!");
+                
                 db.ref('announcement').set(text);
-                alert("📢 تم بث الإعلان!");
+                alert("📢 تم بث الإعلان بنجاح وظهر فوق عند الكل حالياً!");
             });
+
             document.getElementById('delete-announcement-btn').addEventListener('click', function() {
                 db.ref('announcement').set("");
                 document.getElementById('admin-announcement-input').value = "";
-                alert("🧹 تم حذف الإعلان.");
+                alert("🧹 تم حذف وإخفاء شريط الإعلانات بنجاح من عند كل اللاعبين.");
             });
+
             document.getElementById('add-money-btn').addEventListener('click', function() {
                 const targetId = document.getElementById('target-id').value.trim();
                 const amount = parseInt(document.getElementById('bonus-amount').value);
-                if (!targetId || !amount) return alert("أدخل ID ومبلغ");
-                db.ref('ids/' + targetId).once('value').then(idSnap => {
-                    if(idSnap.exists()) db.ref('users/' + idSnap.val()).once('value').then(uSnap => {
-                        db.ref('users/' + idSnap.val()).update({ balance: uSnap.val().balance + amount });
-                        alert(`تم تزويد ${amount} ج`);
-                        document.getElementById('target-id').value = "";
-                        document.getElementById('bonus-amount').value = "";
-                    });
-                    else alert("ID غير موجود!");
+                if (!targetId || !amount) return alert("اكتب ID اللاعب والمبلغ أولاً");
+                
+                db.ref('ids/' + targetId).once('value').then(function(idSnap) {
+                    if (idSnap.exists()) {
+                        const targetUsername = idSnap.val();
+                        const targetRef = db.ref('users/' + targetUsername);
+                        targetRef.once('value').then(function(userSnap) {
+                            targetRef.update({ balance: userSnap.val().balance + amount });
+                            alert(`تم تزويد الحساب بمبلغ ${amount} ج`);
+                            document.getElementById('target-id').value = "";
+                            document.getElementById('bonus-amount').value = "";
+                        });
+                    } else { alert("الـ ID ده مش مربوط بأي حساب!"); }
                 });
             });
+
             document.getElementById('zero-money-btn').addEventListener('click', function() {
                 const targetId = document.getElementById('target-id').value.trim();
-                if(!targetId) return alert("أدخل ID");
-                db.ref('ids/' + targetId).once('value').then(idSnap => {
-                    if(idSnap.exists()) { db.ref('users/' + idSnap.val()).update({ balance: 0 }); alert("تم التصفير"); }
-                    else alert("ID غير موجود!");
+                if (!targetId) return alert("اكتب ID اللاعب المراد تصفيره");
+                
+                db.ref('ids/' + targetId).once('value').then(function(idSnap) {
+                    if (idSnap.exists()) {
+                        const targetUsername = idSnap.val();
+                        db.ref('users/' + targetUsername).update({ balance: 0 });
+                        alert(`تم تصفير محفظة الحساب بنجاح`);
+                        document.getElementById('target-id').value = "";
+                    } else { alert("الـ ID ده مش موجود!"); }
                 });
             });
+
             document.getElementById('confirm-change-id-btn').addEventListener('click', function() {
                 const oldId = document.getElementById('change-id-oldvalue').value.trim();
                 const newId = document.getElementById('change-id-newvalue').value.trim();
-                if(!oldId || !newId) return alert("أدخل الأيدي القديم والجديد");
-                db.ref('ids/' + oldId).once('value').then(idSnap => {
+
+                if(!oldId || !newId) return alert("اكتب الأيدي القديم والجديد");
+
+                db.ref('ids/' + oldId).once('value').then(function(idSnap) {
                     if(idSnap.exists()) {
                         const targetUser = idSnap.val();
                         db.ref('ids/' + oldId).set(null);
                         db.ref('users/' + targetUser).update({ userId: newId });
                         db.ref('ids/' + newId).set(targetUser);
-                        alert("تم تعديل الـ ID");
+
+                        alert(`تم تعديل الـ ID للحساب بنجاح`);
                         document.getElementById('change-id-oldvalue').value = "";
                         document.getElementById('change-id-newvalue').value = "";
-                    } else alert("الأيدي القديم غير موجود!");
+                    } else { alert("الأيدي الحالي مش موجود!"); }
                 });
             });
-            db.ref('users').on('value', snapshot => {
-                const list = document.getElementById('users-status-list');
-                list.innerHTML = "";
-                if(snapshot.exists()) Object.entries(snapshot.val()).forEach(([name, user]) => {
-                    if(name === 'mahmoud') return;
-                    list.innerHTML += `<div class="user-item"><span><strong>${user.username}</strong> (${user.balance} ج) - ID: ${user.userId}</span> ${user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>'}</div>`;
-                });
+
+            db.ref('users').on('value', function(snapshot) {
+                const listContainer = document.getElementById('users-status-list');
+                listContainer.innerHTML = "";
+                if (snapshot.exists()) {
+                    const allUsers = snapshot.val();
+                    for (let name in allUsers) {
+                        if(name === 'mahmoud') continue;
+                        const user = allUsers[name];
+                        const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
+                        const item = document.createElement('div');
+                        item.className = 'user-item';
+                        item.innerHTML = `<span><strong>${user.username}</strong> (${user.balance} ج) - ID: ${user.userId}</span> ${statusText}`;
+                        listContainer.appendChild(item);
+                    }
+                }
             });
         }
 
-        // دوال أساسية للأصدقاء واللعب (ضرورية عشان ما يظهرش أخطاء)
+        // نظام الأصدقاء والتحدي والشات
+        document.getElementById('add-friend-btn').addEventListener('click', function() {
+            const searchId = document.getElementById('search-friend-id').value.trim();
+            if(!searchId) return alert("اكتب الأيدي للبحث");
+
+            db.ref('ids/' + searchId).once('value').then(function(idSnap) {
+                if(!idSnap.exists()) return alert("لم يتم العثور على أيدي!");
+
+                const friendUsername = idSnap.val();
+                if(friendUsername === currentUser.username) return alert("ماتقدرش تضيف نفسك!");
+
+                let currentFriends = currentUser.friends ? currentUser.friends.split(',') : [];
+                if(currentFriends.includes(friendUsername)) return alert("موجود في أصدقائك بالفعل!");
+
+                currentFriends.push(friendUsername);
+                db.ref('users/' + currentUser.username).update({ friends: currentFriends.join(',') });
+                alert(`تمت الإضافة بنجاح`);
+                document.getElementById('search-friend-id').value = "";
+            });
+        });
+
         function updateFriendsListUI() {
             const listContainer = document.getElementById('friends-display-list');
             listContainer.innerHTML = "";
-            if(!currentUser.friends) return listContainer.innerHTML = "<p style='color:#ccc;'>لا يوجد أصدقاء.</p>";
-            currentUser.friends.split(',').forEach(fName => {
-                db.ref('users/' + fName).once('value').then(fSnap => {
+            if(!currentUser.friends) return listContainer.innerHTML = "<p style='color:#ccc; font-size:14px;'>لا يوجد أصدقاء مضافين.</p>";
+
+            const friendsArray = currentUser.friends.split(',');
+            friendsArray.forEach(function(fName) {
+                db.ref('users/' + fName).once('value').then(function(fSnap) {
                     if(fSnap.exists()) {
                         const fData = fSnap.val();
-                        listContainer.innerHTML += `<div class="friend-item"><span><strong>${fData.username}</strong> ${fData.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>'}</span><div style="display:flex; gap:5px;"><button onclick="openPrivateChat('${fData.username}')" style="width:auto; padding:5px 8px; font-size:12px; background:#00bcd4;">💬 شات</button>${fData.isOnline ? `<button onclick="sendChallenge('${fData.username}')" style="width:auto; padding:5px 8px; font-size:12px;">⚔️ تحدي</button>` : ''}</div></div>`;
+                        const statusText = fData.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
+                        
+                        const item = document.createElement('div');
+                        item.className = 'friend-item';
+                        item.innerHTML = `
+                            <span><strong>${fData.username}</strong> ${statusText}</span>
+                            <div style="display:flex; gap:5px;">
+                                <button onclick="openPrivateChat('${fData.username}')" style="width:auto; padding:5px 8px; font-size:12px; margin:0; background:#00bcd4;">💬 شات</button>
+                                ${fData.isOnline ? `<button onclick="sendChallenge('${fData.username}')" style="width:auto; padding:5px 8px; font-size:12px; margin:0;">⚔️ تحدي</button>` : ''}
+                            </div>
+                        `;
+                        listContainer.appendChild(item);
                     }
                 });
             });
         }
-        window.openPrivateChat = function(friendName) { alert("شات خاص: " + friendName + " (تم إضافة الوظيفة كاملة في الخلفية)"; };
-        window.sendChallenge = function(friendName) { alert("تحدي: " + friendName); };
-        function listenToIncomingChallenges() {}
-        document.getElementById('add-friend-btn')?.addEventListener('click', () => alert("تم إضافة صديق (وهمي حالياً)"));
-        document.getElementById('find-match-btn')?.addEventListener('click', () => alert("دخول طاولة عشوائية (الوظيفة الأصلية محفوظة)"));
-        document.getElementById('daily-btn')?.addEventListener('click', () => alert("الهدية اليومية (50ج) - الوظيفة الكاملة تعمل لو ربطت باقي الكود)"));
-        document.getElementById('back-to-lobby')?.addEventListener('click', () => { gameScreen.classList.add('hidden'); lobbyScreen.classList.remove('hidden'); });
+
+        window.openPrivateChat = function(friendName) {
+            activeChatFriend = friendName;
+            document.getElementById('chat-with-name').innerText = friendName;
+            document.getElementById('private-chat-area').classList.remove('hidden');
+
+            const chatRoomId = currentUser.username < friendName ? 
+                `chat_${currentUser.username}_${friendName}` : `chat_${friendName}_${currentUser.username}`;
+
+            db.ref('messages/' + chatRoomId).off();
+            db.ref('messages/' + chatRoomId).limitToLast(20).on('value', function(snapshot) {
+                const container = document.getElementById('chat-messages-container');
+                container.innerHTML = "";
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach(function(childSnap) {
+                        const msgData = childSnap.val();
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = `chat-msg ${msgData.sender === currentUser.username ? 'msg-me' : 'msg-them'}`;
+                        msgDiv.innerHTML = `<strong>${msgData.sender}:</strong> ${msgData.text}`;
+                        container.appendChild(msgDiv);
+                    });
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    container.innerHTML = "<p style='color:#ccc; font-size:12px; text-align:center;'>ابدأ قعدة دردشة خاصة وسريعة مع صاحبك...</p>";
+                }
+            });
+        };
+
+        document.getElementById('send-chat-btn').addEventListener('click', sendChatMessageAction);
+        document.getElementById('chat-input-message').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') sendChatMessageAction();
+        });
+
+        function sendChatMessageAction() {
+            const text = document.getElementById('chat-input-message').value.trim();
+            if (!text || !activeChatFriend) return;
+
+            const chatRoomId = currentUser.username < activeChatFriend ? 
+                `chat_${currentUser.username}_${activeChatFriend}` : `chat_${activeChatFriend}_${currentUser.username}`;
+
+            const newMsgRef = db.ref('messages/' + chatRoomId).push();
+            newMsgRef.set({
+                sender: currentUser.username,
+                text: text,
+                timestamp: Date.now()
+            });
+
+            document.getElementById('chat-input-message').value = "";
+        }
+
+        document.getElementById('close-chat-btn').addEventListener('click', function() {
+            document.getElementById('private-chat-area').classList.add('hidden');
+            activeChatFriend = null;
+        });
+
+        // نظام اللعب والمطابقة (Matchmaking والرهان)
+        window.sendChallenge = function(friendName) {
+            const bet = prompt("أدخل قيمة رهان التحدي:", "50");
+            const betAmount = parseInt(bet);
+            if(!betAmount || betAmount < 10) return alert("الرهان خطأ");
+            if(currentUser.balance < betAmount) return alert("محفظتك لا تكفي!");
+
+            const roomId = "challenge_" + currentUser.username + "_" + Date.now();
+            db.ref('rooms/' + roomId).set({
+                roomId: roomId, betAmount: betAmount,
+                player1: currentUser.username, player1_choice: "",
+                player2: friendName, player2_choice: "",
+                status: 'invited', winner: ""
+            });
+
+            db.ref('challenges/' + friendName).set({ roomId: roomId, from: currentUser.username, betAmount: betAmount });
+            currentRoomId = roomId;
+            myRole = "player1";
+            hasAnimated = false;
+            
+            document.getElementById('status-text').innerText = `تم إرسال الدعوة لـ ${friendName}... ⏳`;
+            listenToRoom();
+        };
+
+        function listenToIncomingChallenges() {
+            db.ref('challenges/' + currentUser.username).on('value', function(snapshot) {
+                if(!snapshot.exists()) return;
+                const challenge = snapshot.val();
+                
+                let confirmPlay = confirm(`وصلتك دعوة تحدي من [${challenge.from}] على مبلغ ${challenge.betAmount} جنيه! هل تقبل؟`);
+                if(confirmPlay) {
+                    if(currentUser.balance < challenge.betAmount) {
+                        alert("لا تملك رصيد كافي!");
+                        db.ref('challenges/' + currentUser.username).set(null);
+                        return;
+                    }
+                    currentRoomId = challenge.roomId;
+                    myRole = "player2";
+                    hasAnimated = false;
+                    
+                    db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - challenge.betAmount });
+                    db.ref('users/' + challenge.from).once('value').then(function(p1Snap) {
+                        db.ref('users/' + challenge.from).update({ balance: p1Snap.val().balance - challenge.betAmount });
+                        db.ref('rooms/' + currentRoomId).update({ status: 'playing' });
+                        db.ref('challenges/' + currentUser.username).set(null);
+                        listenToRoom();
+                    });
+                } else {
+                    db.ref('rooms/' + challenge.roomId).update({ status: 'rejected' });
+                    db.ref('challenges/' + currentUser.username).set(null);
+                }
+            });
+        }
+
+        document.getElementById('find-match-btn').addEventListener('click', function() {
+            const betAmount = parseInt(document.getElementById('bet-amount').value);
+            if (!betAmount || betAmount < 10) return alert('أقل رهان مشارطة هو 10 جنيه!');
+            if (currentUser.balance < betAmount) return alert('رصيدك لا يكفي!');
+
+            document.getElementById('status-text').innerText = 'جاري البحث عن لاعب متاح أونلاين... ⏳';
+            hasAnimated = false;
+
+            db.ref('rooms').once('value').then(function(snapshot) {
+                let foundRoom = null;
+                if (snapshot.exists()) {
+                    const rooms = snapshot.val();
+                    for (let id in rooms) {
+                        if (rooms[id].betAmount === betAmount && rooms[id].status === 'waiting' && rooms[id].player1 !== currentUser.username) {
+                            foundRoom = id;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundRoom) {
+                    currentRoomId = foundRoom;
+                    myRole = "player2";
+                    db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - betAmount });
+                    db.ref('rooms/' + currentRoomId).update({ player2: currentUser.username, status: 'playing' });
+                    listenToRoom();
+                } else {
+                    currentRoomId = 'match_' + currentUser.username + '_' + Date.now();
+                    myRole = "player1";
+                    db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - betAmount });
+                    db.ref('rooms/' + currentRoomId).set({
+                        roomId: currentRoomId, betAmount: betAmount,
+                        player1: currentUser.username, player1_choice: "",
+                        player2: "", player2_choice: "",
+                        status: 'waiting', winner: ""
+                    });
+                    listenToRoom();
+                }
+            });
+        });
+
+        function listenToRoom() {
+            db.ref('rooms/' + currentRoomId).on('value', function(snapshot) {
+                if (!snapshot.exists()) return;
+                const room = snapshot.val();
+
+                if (room.status === 'waiting') document.getElementById('status-text').innerText = 'مستنيين لاعب يدخل الطاولة... ⏳';
+                if (room.status === 'rejected') document.getElementById('status-text').innerText = 'تم رفض دعوتك ❌';
+
+                if (room.status === 'playing') {
+                    lobbyScreen.classList.add('hidden');
+                    gameScreen.classList.remove('hidden');
+                    document.getElementById('current-bet').innerText = room.betAmount;
+
+                    const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
+                    document.getElementById('opponent-name-display').innerText = room[opponentRole] || "لاعب عشوائي..";
+
+                    if (room.winner === "") {
+                        document.getElementById('my-hand').innerText = room[myRole + '_choice'] ? '✅ جاهز' : '✊';
+                        document.getElementById('opponent-hand').innerText = room[opponentRole + '_choice'] ? '✅ جاهز' : '✊';
+                    }
+
+                    if (room.player1_choice && room.player2_choice && room.winner === "" && !hasAnimated) {
+                        hasAnimated = true; 
+                        startHandsAnimation(room);
+                    }
+                }
+
+                if (room.status === 'finished' && room.winner !== "" && hasAnimated) {
+                    showFinalResult(room);
+                }
+            });
+        }
+
+        function startHandsAnimation(room) {
+            document.getElementById('game-controls').classList.add('hidden');
+            document.getElementById('game-instruction-text').innerText = "⚔️ جاري كشف الضربات... ⚔️";
+
+            const myHandElement = document.getElementById('my-hand');
+            const oppHandElement = document.getElementById('opponent-hand');
+
+            myHandElement.innerText = '✊';
+            oppHandElement.innerText = '✊';
+            myHandElement.classList.add('shaking');
+            oppHandElement.classList.add('shaking');
+
+            setTimeout(function() {
+                myHandElement.classList.remove('shaking');
+                oppHandElement.classList.remove('shaking');
+
+                if (myRole === 'player1') {
+                    determineWinner(room);
+                }
+            }, 1500);
+        }
+
+        document.querySelectorAll('.choice-btn').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                const choice = e.target.getAttribute('data-choice');
+                const updateData = {};
+                updateData[myRole + '_choice'] = choice;
+                db.ref('rooms/' + currentRoomId).update(updateData);
+                document.getElementById('game-instruction-text').innerText = "تم تسجيل ضربتك! بانتظار الخصم... ⏳";
+            });
+        });
+
+        function determineWinner(room) {
+            let p1 = room.player1_choice; let p2 = room.player2_choice;
+            let winnerResult = "";
+
+            if (p1 === p2) winnerResult = "draw";
+            else if ((p1==='rock' && p2==='scissors') || (p1==='paper' && p2==='rock') || (p1==='scissors' && p2==='paper')) winnerResult = room.player1;
+            else winnerResult = room.player2;
+
+            if (winnerResult === 'draw') {
+                runTransactionWallet(room.player1, room.betAmount);
+                runTransactionWallet(room.player2, room.betAmount);
+            } else {
+                runTransactionWallet(winnerResult, room.betAmount * 2);
+            }
+
+            db.ref('rooms/' + currentRoomId).update({ winner: winnerResult, status: 'finished' });
+        }
+
+        function runTransactionWallet(username, amount) {
+            db.ref('users/' + username).once('value').then(function(snap) {
+                if (snap.exists()) { db.ref('users/' + username).update({ balance: snap.val().balance + amount }); }
+            });
+        }
+
+        function showFinalResult(room) {
+            const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
+            
+            document.getElementById('my-hand').innerText = handEmojis[room[myRole + '_choice']];
+            document.getElementById('opponent-hand').innerText = handEmojis[room[opponentRole + '_choice']];
+
+            const winnerText = document.getElementById('winner-text');
+            if (room.winner === 'draw') winnerText.innerText = '⚔️ تعادل! عادت أموال المشارطة.';
+            else if (room.winner === currentUser.username) winnerText.innerText = '🎉 كسبت وقشيت المراهنة كلها كاش! عاش يا بطل!';
+            else winnerText.innerText = `😢 خسرت الماتش والرهان.. الجايات أفضل!`;
+
+            document.getElementById('result-display').classList.remove('hidden');
+        }
+
+        document.getElementById('daily-btn').addEventListener('click', function() {
+            const now = Date.now();
+            if (currentUser.lastClaim && (now - currentUser.lastClaim) < 24*60*60*1000) return alert("استلمت المكافأة اليوم، تعال غداً!");
+            
+            db.ref('users/' + currentUser.username).update({
+                balance: currentUser.balance + 50, streak: currentUser.streak + 1, lastClaim: now
+            });
+            alert("تم استلام الهدية اليومية بنجاح! 🪙");
+        });
+
+        document.getElementById('back-to-lobby').addEventListener('click', function() {
+            db.ref('rooms/' + currentRoomId).off();
+            gameScreen.classList.add('hidden'); lobbyScreen.classList.remove('hidden');
+            document.getElementById('game-controls').classList.remove('hidden');
+            document.getElementById('result-display').classList.add('hidden');
+            document.getElementById('game-instruction-text').innerText = "اختر ضربتك السحرية:";
+            document.getElementById('status-text').innerText = '';
+            hasAnimated = false;
+        });
     </script>
 </body>
 </html>
