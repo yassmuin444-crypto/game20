@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conan World - قهوة المصريين</title>
     <style>
-        /* --- تصميم جيمنج احترافي ومودرن --- */
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -27,9 +26,8 @@
 
         .hidden { display: none !important; }
 
-        /* كروت التصميم الجيمنج */
         .box, .daily-reward-box, .matchmaking-box, .admin-box {
-            background: rgba(78, 52, 46, 0.85);
+            background: rgba(78, 52, 46, 0.95);
             backdrop-filter: blur(10px);
             padding: 30px;
             border-radius: 20px;
@@ -39,16 +37,14 @@
             max-width: 450px;
             width: 100%;
             box-sizing: border-box;
-            transition: 0.3s;
         }
 
         .admin-box {
             border: 2px solid #d32f2f;
-            box-shadow: 0 0 20px rgba(211, 47, 47, 0.4);
             max-width: 600px;
         }
 
-        h1 { color: #ff9800; text-shadow: 0 0 10px rgba(255,152,0,0.5); }
+        h1 { color: #ff9800; }
 
         input {
             width: 90%;
@@ -60,9 +56,7 @@
             background-color: #2e1c19;
             color: #fff;
             text-align: center;
-            outline: none;
         }
-        input:focus { border-color: #ff9800; }
 
         button {
             width: 95%;
@@ -75,13 +69,7 @@
             color: white;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(230, 81, 0, 0.4);
-            transition: 0.2s ease-in-out;
         }
-        button:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(255,152,0,0.6); }
-
-        .admin-btn { background: linear-gradient(90deg, #d32f2f, #b71c1c); box-shadow: 0 5px 15px rgba(211,47,47,0.4); }
-        .reset-btn { background: linear-gradient(90deg, #757575, #424242); box-shadow: none; }
 
         header {
             display: flex;
@@ -91,7 +79,6 @@
             max-width: 800px;
             border-bottom: 2px solid #ff9800;
             padding-bottom: 15px;
-            margin-bottom: 20px;
         }
 
         .wallet {
@@ -99,11 +86,8 @@
             padding: 12px 25px;
             border-radius: 30px;
             font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 4px 10px rgba(76,175,80,0.3);
         }
 
-        /* ساحة اللعب */
         .hands-container {
             display: flex;
             justify-content: space-around;
@@ -116,30 +100,12 @@
             background: rgba(255,255,255,0.05);
             padding: 20px;
             border-radius: 15px;
-            border: 1px solid rgba(255,152,0,0.2);
             width: 40%;
         }
 
-        .hand { font-size: 70px; margin-top: 10px; animation: bounce 0.5s infinite alternate; }
-
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
-
-        .choices { display: flex; gap: 15px; justify-content: center; width: 100%; }
-        .choice-btn { font-size: 24px; padding: 15px; width: auto; min-width: 90px; }
-
-        .user-list {
-            text-align: right;
-            max-height: 180px;
-            overflow-y: auto;
-            background: #2e1c19;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            border: 1px solid #d32f2f;
-        }
-        .user-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #4e342e; }
-        .status-online { color: #4caf50; font-weight: bold; }
-        .status-offline { color: #9e9e9e; }
+        .hand { font-size: 70px; }
+        .choices { display: flex; gap: 15px; }
+        .choice-btn { font-size: 24px; padding: 15px; width: auto; }
     </style>
 </head>
 <body>
@@ -147,253 +113,132 @@
     <div id="login-screen" class="screen">
         <div class="box">
             <h1>☕ CONAN WORLD ☕</h1>
-            <p style="color: #ccc;">سجل اسمك وانزل قعدة القهوة للتحدي والمشارطة</p>
-            <input type="text" id="username" placeholder="اكتب اسم المستخدم هنا...">
-            <input type="password" id="password" placeholder="كلمة المرور (أي شيء)">
-            <button id="login-btn">دخول السيرفر السريع</button>
+            <p>اكتب اسمك وادخل القهوة فوراً</p>
+            <input type="text" id="username" placeholder="اكتب اسم المستخدم...">
+            <button id="login-btn">دخول فوري 🚀</button>
         </div>
     </div>
 
     <div id="lobby-screen" class="screen hidden">
         <header>
-            <h2>⚔️ منور القهوة يا <span id="user-display" style="color:#ff9800;"></span> ⚔️</h2>
+            <h2>⚔️ منور يا <span id="user-display" style="color:#ff9800;"></span> ⚔️</h2>
             <div class="wallet">🪙 <span id="balance-display">100</span> جنيه</div>
         </header>
 
         <main style="display: flex; flex-direction: column; align-items: center; width: 100%;">
             <div class="daily-reward-box">
-                <h3>🎁 الهدية اليومية للدعم</h3>
-                <p id="streak-info" style="color: #ff9800; font-weight: bold;">أنت في اليوم: 0</p>
-                <button id="daily-btn">⚡ استلام الهدية الفورية</button>
+                <h3>🎁 الهدية اليومية</h3>
+                <button id="daily-btn">⚡ استلام الهدية</button>
             </div>
 
             <div class="matchmaking-box">
-                <h3>🎮 بدء طاولة تحدي (طوبة - ورقة - مقص)</h3>
-                <label style="display:block; margin-bottom:5px;">حدد قيمة المشارطة (جنيه):</label>
-                <input type="number" id="bet-amount" value="50" min="10">
-                <button id="find-match-btn">🔥 ابحث عن لاعب أونلاين</button>
-                <p id="status-text" style="color: #ff9800; font-weight: bold;"></p>
+                <h3>🎮 تحدي طوبة - ورقة - مقص</h3>
+                <button id="find-match-btn">🔥 ابحث عن لاعب</button>
             </div>
 
             <div id="admin-panel" class="admin-box hidden">
-                <h3>👑 لوحة تحكم المعلم محمود</h3>
-                <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
-                    <input type="text" id="target-user" placeholder="اسم اللاعب المستهدف">
-                    <input type="number" id="bonus-amount" placeholder="المبلغ">
-                    <div style="display: flex; gap: 10px; width: 95%;">
-                        <button id="add-money-btn" class="admin-btn">➕ تزويد كاش</button>
-                        <button id="zero-money-btn" class="admin-btn reset-btn">🧹 تصفير المحفظة</button>
-                    </div>
-                </div>
-                <h4>👥 كشف لاعبين القهوة:</h4>
-                <div class="user-list" id="users-status-list"></div>
+                <h3>👑 لوحة تحكم الأدمن</h3>
+                <p>مرحباً بك يا معلم محمود</p>
             </div>
         </main>
     </div>
 
     <div id="game-screen" class="screen hidden">
-        <h2>🔥 ساحة المعركة الحية 🔥</h2>
-        <p style="font-size: 18px;">مشارطة الطاولة: <span id="current-bet" style="color:#ff9800; font-weight:bold;"></span> جنيه</p>
-        
+        <h2>🔥 ساحة المعركة 🔥</h2>
         <div class="hands-container">
-            <div class="hand-wrapper">
-                <div>أنت</div>
-                <div class="hand" id="my-hand">⏳</div>
-            </div>
-            <div class="hand-wrapper">
-                <div>الخصم</div>
-                <div class="hand" id="opponent-hand">⏳</div>
-            </div>
+            <div class="hand-wrapper"><div>أنت</div><div class="hand" id="my-hand">⏳</div></div>
+            <div class="hand-wrapper"><div>الخصم</div><div class="hand" id="opponent-hand">⏳</div></div>
         </div>
-
         <div id="game-controls">
-            <h3>اختر ضربتك القادمة بسرعة:</h3>
             <div class="choices">
-                <button class="choice-btn" data-choice="rock">✊ طوبة</button>
-                <button class="choice-btn" data-choice="paper">✋ ورقة</button>
-                <button class="choice-btn" data-choice="scissors">✌️ مقص</button>
+                <button class="choice-btn" onclick="playTurn('rock')">✊ طوبة</button>
+                <button class="choice-btn" onclick="playTurn('paper')">✋ ورقة</button>
+                <button class="choice-btn" onclick="playTurn('scissors')">✌️ مقص</button>
             </div>
         </div>
-
         <div id="result-display" class="hidden">
             <h1 id="winner-text"></h1>
-            <button id="back-to-lobby" style="max-width: 200px;">رجوع للقهوة</button>
+            <button id="back-to-lobby">رجوع</button>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    <script>
+        let balance = 100;
+        let username = "";
 
-        // ⚠️ املأ البيانات دي بالظبط من مشروع الفايربيز بتاعك يا حودة عشان يربط أونلاين فوراً:
-        const firebaseConfig = {
-            apiKey: "اكتب_الـ_apiKey_بتاعك_هنا",
-            authDomain: "مشروعك.firebaseapp.com",
-            databaseURL: "https://مشروعك-rtdb.firebaseio.com/",
-            projectId: "اسم-مشروعك",
-            storageBucket: "مشروعك.appspot.com",
-            messagingSenderId: "قم_بالنسخ_من_الفايربيز",
-            appId: "قم_بالنسخ_من_الفايربيز"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        let currentUser = null;
-        let currentRoomId = null;
-        const handEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
-
-        const loginScreen = document.getElementById('login-screen');
-        const lobbyScreen = document.getElementById('lobby-screen');
-        const gameScreen = document.getElementById('game-screen');
-
-        // تسجيل دخول فوري بدون أي تعليق
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const username = document.getElementById('username').value.trim().toLowerCase();
-            if (!username) return alert("اكتب اسمك الأول يا صاحبي");
-
-            const userRef = ref(db, 'users/' + username);
-            const snapshot = await get(userRef);
-
-            if (snapshot.exists()) {
-                currentUser = snapshot.val();
-                currentUser.isOnline = true;
-                await update(userRef, { isOnline: true });
-            } else {
-                currentUser = { username: username, balance: 100, lastClaim: 0, streak: 0, isOnline: true };
-                await set(userRef, currentUser);
+        // دالة الدخول الفوري المباشر
+        document.getElementById('login-btn').addEventListener('click', function() {
+            const inputName = document.getElementById('username').value.trim();
+            if (!inputName) {
+                alert("اكتب اسمك الأول يا صاحبي");
+                return;
             }
 
-            loginScreen.classList.add('hidden');
-            lobbyScreen.classList.remove('hidden');
-            
-            if (username === 'mahmoud') {
+            username = inputName;
+            document.getElementById('user-display').innerText = username;
+            document.getElementById('balance-display').innerText = balance;
+
+            // إخفاء شاشة الدخول وإظهار القهوة
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('lobby-screen').classList.remove('hidden');
+
+            // لو الأدمن محمود يفتح اللوحة
+            if (username.toLowerCase() === 'mahmoud') {
                 document.getElementById('admin-panel').classList.remove('hidden');
-                initAdminPanel();
             }
-
-            updateLobbyUI();
-
-            onValue(userRef, (subSnap) => {
-                if (subSnap.exists()) {
-                    currentUser = subSnap.val();
-                    document.getElementById('balance-display').innerText = currentUser.balance;
-                }
-            });
         });
 
-        function updateLobbyUI() {
-            document.getElementById('user-display').innerText = currentUser.username;
-            document.getElementById('balance-display').innerText = currentUser.balance;
-            document.getElementById('streak-info').innerText = `أنت في يومك الـ: ${currentUser.streak}`;
-        }
-
-        // لوحة تحكم محمود
-        function initAdminPanel() {
-            document.getElementById('add-money-btn').addEventListener('click', async () => {
-                const targetName = document.getElementById('target-user').value.trim().toLowerCase();
-                const amount = parseInt(document.getElementById('bonus-amount').value);
-                const targetRef = ref(db, 'users/' + targetName);
-                const snap = await get(targetRef);
-                if (snap.exists()) {
-                    await update(targetRef, { balance: snap.val().balance + amount });
-                    alert(`تمت إضافة الفلوس لـ ${targetName}`);
-                }
-            });
-
-            document.getElementById('zero-money-btn').addEventListener('click', async () => {
-                const targetName = document.getElementById('target-user').value.trim().toLowerCase();
-                await update(ref(db, 'users/' + targetName), { balance: 0 });
-                alert(`تم تصفير حساب ${targetName}`);
-            });
-
-            onValue(ref(db, 'users'), (snapshot) => {
-                const listContainer = document.getElementById('users-status-list');
-                listContainer.innerHTML = "";
-                if (snapshot.exists()) {
-                    const allUsers = snapshot.val();
-                    for (let name in allUsers) {
-                        if(name === 'mahmoud') continue;
-                        const user = allUsers[name];
-                        const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
-                        const item = document.createElement('div');
-                        item.className = 'user-item';
-                        item.innerHTML = `<span><strong>${user.username}</strong> (${user.balance} ج)</span> ${statusText}`;
-                        listContainer.appendChild(item);
-                    }
-                }
-            });
-        }
-
-        // المكافأة اليومية
-        document.getElementById('daily-btn').addEventListener('click', async () => {
-            currentUser.balance += 50;
-            currentUser.streak += 1;
-            await update(ref(db, 'users/' + currentUser.username), currentUser);
-            updateLobbyUI();
-            alert("أخدت 50 جنيه مكافأة يومية يا بطل! 🪙");
+        // الهدية اليومية
+        document.getElementById('daily-btn').addEventListener('click', function() {
+            balance += 50;
+            document.getElementById('balance-display').innerText = balance;
+            alert("أخدت 50 جنيه هدية! 🪙");
         });
 
-        // نظام اللعب والمحاكاة السريعة الحلوة
-        document.getElementById('find-match-btn').addEventListener('click', () => {
-            const betAmount = parseInt(document.getElementById('bet-amount').value);
-            if (currentUser.balance < betAmount) return alert('رصيدك مش كفاية للمشارطة دي!');
-
-            document.getElementById('status-text').innerText = 'جاري البحث عن فريند يتشارط معاك... ⏳';
-
-            setTimeout(async () => {
-                currentUser.balance -= betAmount;
-                await update(ref(db, 'users/' + currentUser.username), { balance: currentUser.balance });
-
-                currentRoomId = "room_" + Date.now();
-                lobbyScreen.classList.add('hidden');
-                gameScreen.classList.remove('hidden');
-                document.getElementById('current-bet').innerText = betAmount;
-                document.getElementById('my-hand').innerText = '⏳';
-                document.getElementById('opponent-hand').innerText = '⏳';
-            }, 1200);
-        });
-
-        document.querySelectorAll('.choice-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const choice = e.target.getAttribute('data-choice');
-                document.getElementById('game-controls').classList.add('hidden');
-                
-                let p1 = choice;
-                let p2 = ["rock", "paper", "scissors"][Math.floor(Math.random() * 3)];
-                let res = "";
-
-                if (p1 === p2) { 
-                    res = "draw"; 
-                    currentUser.balance += parseInt(document.getElementById('current-bet').innerText); 
-                } else if ((p1==='rock' && p2==='scissors') || (p1==='paper' && p2==='rock') || (p1==='scissors' && p2==='paper')) {
-                    res = currentUser.username; 
-                    currentUser.balance += (parseInt(document.getElementById('current-bet').innerText) * 2);
-                } else { 
-                    res = "opponent"; 
-                }
-
-                update(ref(db, 'users/' + currentUser.username), { balance: currentUser.balance });
-
-                document.getElementById('my-hand').innerText = handEmojis[p1];
-                document.getElementById('opponent-hand').innerText = handEmojis[p2];
-
-                const winnerText = document.getElementById('winner-text');
-                if(res === "draw") winnerText.innerText = "⚔️ النتيجة: تعادل! الفلوس رجعت مكاانها.";
-                else if(res === currentUser.username) winnerText.innerText = "🎉 مبروك! كسبت وقشيت الرهان كله الكاش جالك!";
-                else winnerText.innerText = "😢 الخصم كسب المرة دي وعلم عليك! عوضها الماتش الجاي.";
-
-                document.getElementById('result-display').classList.remove('hidden');
-            });
-        });
-
-        document.getElementById('back-to-lobby').addEventListener('click', () => {
-            gameScreen.classList.add('hidden');
-            lobbyScreen.classList.remove('hidden');
+        // الانتقال لساحة اللعب
+        document.getElementById('find-match-btn').addEventListener('click', function() {
+            document.getElementById('lobby-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('my-hand').innerText = '⏳';
+            document.getElementById('opponent-hand').innerText = '⏳';
             document.getElementById('game-controls').classList.remove('hidden');
             document.getElementById('result-display').classList.add('hidden');
-            document.getElementById('status-text').innerText = '';
-            updateLobbyUI();
+        });
+
+        // جولة اللعب
+        window.playTurn = function(myChoice) {
+            const choices = ['rock', 'paper', 'scissors'];
+            const handEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
+            const opponentChoice = choices[Math.floor(Math.random() * 3)];
+
+            document.getElementById('my-hand').innerText = handEmojis[myChoice];
+            document.getElementById('opponent-hand').innerText = handEmojis[opponentChoice];
+
+            let result = "";
+            if (myChoice === opponentChoice) {
+                result = "⚔️ تعادل!";
+            } else if (
+                (myChoice === 'rock' && opponentChoice === 'scissors') ||
+                (myChoice === 'paper' && opponentChoice === 'rock') ||
+                (myChoice === 'scissors' && opponentChoice === 'paper')
+            ) {
+                result = "🎉 كسبت الماتش!";
+                balance += 50;
+            } else {
+                result = "😢 خسرت الماتش!";
+                balance -= 50;
+            }
+
+            document.getElementById('balance-display').innerText = balance;
+            document.getElementById('winner-text').innerText = result;
+            document.getElementById('game-controls').classList.add('hidden');
+            document.getElementById('result-display').classList.remove('hidden');
+        };
+
+        // الرجوع للقهوة
+        document.getElementById('back-to-lobby').addEventListener('click', function() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('lobby-screen').classList.remove('hidden');
         });
     </script>
 </body>
