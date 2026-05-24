@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conan World - قهوة المصريين</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         body {
             margin: 0;
@@ -64,7 +67,6 @@
         .status-online { color: #4caf50; font-weight: bold; }
         .status-offline { color: #9e9e9e; }
 
-        /* ساحة اللعب */
         .hands-container { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin: 20px 0; }
         .hand-wrapper { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,152,0,0.2); width: 42%; }
         .hand { font-size: 65px; margin-top: 10px; }
@@ -125,7 +127,7 @@
                         <button id="zero-money-btn" class="admin-btn reset-btn">🧹 تصفير المحفظة</button>
                     </div>
                 </div>
-                <h4>👥 حالة قعدة القهوة (المتصلين والأوفلاين للتحكم):</h4>
+                <h4>👥 حالة قعدة القهوة:</h4>
                 <div class="user-list" id="users-status-list"></div>
             </div>
         </main>
@@ -147,7 +149,7 @@
         </div>
 
         <div id="game-controls">
-            <h3>اختر ضربتك السحرية (من غير ما خصمك يشوف):</h3>
+            <h3>اختر ضربتك السحرية:</h3>
             <div class="choices">
                 <button class="choice-btn" data-choice="rock">✊ طوبة</button>
                 <button class="choice-btn" data-choice="paper">✋ ورقة</button>
@@ -161,35 +163,22 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    <script>
+        // الأرقام الحقيقية والصحيحة بالملي من صورتك يا حودة:
+        const firebaseConfig = {
+            apiKey: "AIzaSyCE6Mz4d8Ig05wPzP58CoZp3gA3Ig9Z3go",
+            authDomain: "game11-5dfa1.firebaseapp.com",
+            databaseURL: "https://game11-5dfa1-default-rtdb.firebaseio.com/",
+            projectId: "game11-5dfa1",
+            storageBucket: "game11-5dfa1.firebasestorage.app",
+            messagingSenderId: "5853045016",
+            appId: "1:58530459016:web:e6bd17a1c807e586851e3d",
+            measurementId: "G-2122NK9PQ4"
+        };
 
-  // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCE6Mz4d8Ig05wPzP58CoZp3gA3Ig9Z3go",
-  authDomain: "game11-5dfa1.firebaseapp.com",
-  databaseURL: "https://game11-5dfa1-default-rtdb.firebaseio.com/",
-  projectId: "game11-5dfa1",
-  storageBucket: "game11-5dfa1.firebasestorage.app",
-  messagingSenderId: "58530459016",
-  appId: "1:58530459016:web:e6bd17a1c807e586851e3d",
-  measurementId: "G-2122NK9PQ4"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        // تشغيل الفايربيز
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
         let currentUser = null;
         let currentRoomId = null;
@@ -200,72 +189,69 @@ const analytics = getAnalytics(app);
         const lobbyScreen = document.getElementById('lobby-screen');
         const gameScreen = document.getElementById('game-screen');
 
-        // تسجيل الدخول مع تفعيل ميزه (جهاز واحد لحساب واحد ومنع سرقة النيم)
-        document.getElementById('login-btn').addEventListener('click', async () => {
+        document.getElementById('login-btn').addEventListener('click', function() {
             const username = document.getElementById('username').value.trim().toLowerCase();
             if (!username) return alert("اكتب اسم المستخدم يا بطل");
 
-            // قراءة البصمة المخزنة في جهاز اللاعب (لو موجودة)
             let myStoredToken = localStorage.getItem('conan_world_token');
-            const userRef = ref(db, 'users/' + username);
-            const snapshot = await get(userRef);
+            const userRef = db.ref('users/' + username);
 
-            if (snapshot.exists()) {
-                let dbUser = snapshot.val();
-                // لو الجهاز معندوش التوكن ده، يبقي بيحاول يسرق الاسم أو يفتح حساب تاني من نفس الجهاز
-                if (dbUser.token !== myStoredToken) {
-                    return alert("❌ خطأ: هذا الاسم مسجل لجهاز آخر! أو أنك تملك حساباً بالفعل على هذا الجهاز وممنوع عمل أكثر من حساب.");
-                }
-                currentUser = dbUser;
-                currentUser.isOnline = true;
-                await update(userRef, { isOnline: true });
-            } else {
-                // لو الحساب مش موجود، نتحقق لو الجهاز ده مسجل فيه حساب قديم أصلاً عشان نمنع تعدد الحسابات
-                if(myStoredToken) {
-                    return alert("❌ جهازك مسجل به حساب بالفعل! غير مسموح بعمل أكثر من حساب لكل جهاز.");
-                }
-                // إنشاء حساب جديد ببصمة فريدة (Token و ID عشوائي)
-                let generatedToken = 'tk_' + Math.random().toString(36).substr(2, 9);
-                let generatedId = Math.floor(100000 + Math.random() * 900000).toString(); // ID من 6 أرقام
+            userRef.once('value').then(function(snapshot) {
+                if (snapshot.exists()) {
+                    let dbUser = snapshot.val();
+                    if (dbUser.token !== myStoredToken) {
+                        alert("❌ خطأ: الاسم مسجل لجهاز آخر! ممنوع عمل أكثر من حساب.");
+                        return;
+                    }
+                    currentUser = dbUser;
+                    currentUser.isOnline = true;
+                    userRef.update({ isOnline: true });
+                } else {
+                    if(myStoredToken) {
+                        alert("❌ جهازك مسجل به حساب بالفعل! غير مسموح بعمل أكثر من حساب لكل جهاز.");
+                        return;
+                    }
+                    let generatedToken = 'tk_' + Math.random().toString(36).substr(2, 9);
+                    let generatedId = Math.floor(100000 + Math.random() * 900000).toString();
 
-                localStorage.setItem('conan_world_token', generatedToken);
+                    localStorage.setItem('conan_world_token', generatedToken);
+                    
+                    currentUser = {
+                        username: username,
+                        userId: generatedId,
+                        token: generatedToken,
+                        balance: 100,
+                        streak: 1,
+                        lastClaim: 0,
+                        isOnline: true,
+                        friends: ""
+                    };
+                    userRef.set(currentUser);
+                    db.ref('ids/' + generatedId).set(username);
+                }
+
+                userRef.onDisconnect().update({ isOnline: false });
+
+                loginScreen.classList.add('hidden');
+                lobbyScreen.classList.remove('hidden');
                 
-                currentUser = {
-                    username: username,
-                    userId: generatedId,
-                    token: generatedToken,
-                    balance: 100,
-                    streak: 1,
-                    lastClaim: 0,
-                    isOnline: true,
-                    friends: ""
-                };
-                await set(userRef, currentUser);
-                // ربط الـ ID بالاسم عشان البحث يشتغل
-                await set(ref(db, 'ids/' + generatedId), username);
-            }
-
-            // تصفير الأوفلاين عند الخروج فجأة
-            onDisconnect(userRef).update({ isOnline: false });
-
-            loginScreen.classList.add('hidden');
-            lobbyScreen.classList.remove('hidden');
-            
-            if (username === 'mahmoud') {
-                document.getElementById('admin-panel').classList.remove('hidden');
-                initAdminPanel();
-            }
-
-            updateLobbyUI();
-            listenToIncomingChallenges();
-
-            // الاستماع اللحظي لتحديث المحفظة والأصدقاء
-            onValue(userRef, (subSnap) => {
-                if (subSnap.exists()) {
-                    currentUser = subSnap.val();
-                    document.getElementById('balance-display').innerText = currentUser.balance;
-                    updateFriendsListUI();
+                if (username === 'mahmoud') {
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    initAdminPanel();
                 }
+
+                updateLobbyUI();
+                listenToIncomingChallenges();
+
+                userRef.on('value', function(subSnap) {
+                    if (subSnap.exists()) {
+                        currentUser = subSnap.val();
+                        document.getElementById('balance-display').innerText = currentUser.balance;
+                        updateFriendsListUI();
+                    }
+                });
+            }).catch(function(error) {
+                alert("مشكلة في الاتصال بالفايربيز، اتأكد إنك عملت لـ Rules كلمة Publish: " + error.message);
             });
         });
 
@@ -276,34 +262,29 @@ const analytics = getAnalytics(app);
             document.getElementById('streak-info').innerText = `أنت في يومك الـ: ${currentUser.streak}`;
         }
 
-        // 👑 تشغيل لوحة الأدمن الحقيقية والميزات الكاملة لـ محمود
         function initAdminPanel() {
-            document.getElementById('add-money-btn').addEventListener('click', async () => {
+            document.getElementById('add-money-btn').addEventListener('click', function() {
                 const targetName = document.getElementById('target-user').value.trim().toLowerCase();
                 const amount = parseInt(document.getElementById('bonus-amount').value);
-                if (!targetName || !amount) return alert("اكتب اسم اللاعب والمبلغ يا معلم محمود");
+                if (!targetName || !amount) return alert("اكتب اسم اللاعب والمبلغ");
                 
-                const targetRef = ref(db, 'users/' + targetName);
-                const snap = await get(targetRef);
-                if (snap.exists()) {
-                    await update(targetRef, { balance: snap.val().balance + amount });
-                    alert(`تم تعديل محفظة ${targetName} بنجاح!`);
-                } else { alert("الاسم ده مش مسجل بالقهوة!"); }
+                const targetRef = db.ref('users/' + targetName);
+                targetRef.once('value').then(function(snap) {
+                    if (snap.exists()) {
+                        targetRef.update({ balance: snap.val().balance + amount });
+                        alert(`تم تعديل الكاش بنجاح`);
+                    } else { alert("الاسم مش مسجل بالقهوة!"); }
+                });
             });
 
-            document.getElementById('zero-money-btn').addEventListener('click', async () => {
+            document.getElementById('zero-money-btn').addEventListener('click', function() {
                 const targetName = document.getElementById('target-user').value.trim().toLowerCase();
                 if (!targetName) return alert("حدد اسم اللاعب لتصفير حسابه");
-                
-                const targetRef = ref(db, 'users/' + targetName);
-                if ((await get(targetRef)).exists()) {
-                    await update(targetRef, { balance: 0 });
-                    alert(`تم تصفير حساب ${targetName} كلياً!`);
-                }
+                db.ref('users/' + targetName).update({ balance: 0 });
+                alert(`تم تصفير الحساب`);
             });
 
-            // كشف متصلين فوري للأدمن
-            onValue(ref(db, 'users'), (snapshot) => {
+            db.ref('users').on('value', function(snapshot) {
                 const listContainer = document.getElementById('users-status-list');
                 listContainer.innerHTML = "";
                 if (snapshot.exists()) {
@@ -321,166 +302,146 @@ const analytics = getAnalytics(app);
             });
         }
 
-        // نظام البحث عن أصدقاء بالـ ID وإضافتهم
-        document.getElementById('add-friend-btn').addEventListener('click', async () => {
+        document.getElementById('add-friend-btn').addEventListener('click', function() {
             const searchId = document.getElementById('search-friend-id').value.trim();
             if(!searchId) return alert("اكتب الأيدي للبحث");
 
-            const idSnap = await get(ref(db, 'ids/' + searchId));
-            if(!idSnap.exists()) return alert("لم يتم العثور على لاعب بهذا الأيدي!");
+            db.ref('ids/' + searchId).once('value').then(function(idSnap) {
+                if(!idSnap.exists()) return alert("لم يتم العثور على أيدي!");
 
-            const friendUsername = idSnap.val();
-            if(friendUsername === currentUser.username) return alert("ماتقدرش تضيف نفسك يا بطل!");
+                const friendUsername = idSnap.val();
+                if(friendUsername === currentUser.username) return alert("ماتقدرش تضيف نفسك!");
 
-            // إضافة الصديق في قائمة أصدقائك
-            let currentFriends = currentUser.friends ? currentUser.friends.split(',') : [];
-            if(currentFriends.includes(friendUsername)) return alert("اللاعب ده موجود في أصدقائك بالفعل!");
+                let currentFriends = currentUser.friends ? currentUser.friends.split(',') : [];
+                if(currentFriends.includes(friendUsername)) return alert("موجود في أصدقائك بالفعل!");
 
-            currentFriends.push(friendUsername);
-            await update(ref(db, 'users/' + currentUser.username), { friends: currentFriends.join(',') });
-            alert(`تم إضافة ${friendUsername} إلى قائمة أصدقائك بنجاح!`);
-            document.getElementById('search-friend-id').value = "";
+                currentFriends.push(friendUsername);
+                db.ref('users/' + currentUser.username).update({ friends: currentFriends.join(',') });
+                alert(`تمت الإضافة بنجاح`);
+                document.getElementById('search-friend-id').value = "";
+            });
         });
 
-        // تحديث واجهة الأصدقاء وإمكانية إرسال تحدي (دعوة بمراهنة)
-        async function updateFriendsListUI() {
+        function updateFriendsListUI() {
             const listContainer = document.getElementById('friends-display-list');
             listContainer.innerHTML = "";
-            if(!currentUser.friends) return listContainer.innerHTML = "<p style='color:#ccc; font-size:14px;'>لا يوجد أصدقاء مضافين حالياً.</p>";
+            if(!currentUser.friends) return listContainer.innerHTML = "<p style='color:#ccc; font-size:14px;'>لا يوجد أصدقاء مضافين.</p>";
 
             const friendsArray = currentUser.friends.split(',');
-            for(let fName of friendsArray) {
-                const fSnap = await get(ref(db, 'users/' + fName));
-                if(fSnap.exists()) {
-                    const fData = fSnap.val();
-                    const statusText = fData.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
-                    
-                    const item = document.createElement('div');
-                    item.className = 'friend-item';
-                    item.innerHTML = `
-                        <span><strong>${fData.username}</strong> (${fData.balance} ج) ${statusText}</span>
-                        ${fData.isOnline ? `<button onclick="window.sendChallenge('${fData.username}')" style="width:auto; padding:5px 10px; font-size:12px; margin:0;">⚔️ تحدي ورهان</button>` : ''}
-                    `;
-                    listContainer.appendChild(item);
-                }
-            }
+            friendsArray.forEach(function(fName) {
+                db.ref('users/' + fName).once('value').then(function(fSnap) {
+                    if(fSnap.exists()) {
+                        const fData = fSnap.val();
+                        const statusText = fData.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
+                        
+                        const item = document.createElement('div');
+                        item.className = 'friend-item';
+                        item.innerHTML = `
+                            <span><strong>${fData.username}</strong> (${fData.balance} ج) ${statusText}</span>
+                            ${fData.isOnline ? `<button onclick="sendChallenge('${fData.username}')" style="width:auto; padding:5px 10px; font-size:12px; margin:0;">⚔️ تحدي</button>` : ''}
+                        `;
+                        listContainer.appendChild(item);
+                    }
+                });
+            });
         }
 
-        // إرسال دعوة تحدي مخصصة بمراهنة لصديقك
-        window.sendChallenge = async function(friendName) {
-            const bet = prompt("أدخل قيمة مراهنة التحدي مع صاحبك (جنيه):", "50");
+        window.sendChallenge = function(friendName) {
+            const bet = prompt("أدخل قيمة رهان التحدي:", "50");
             const betAmount = parseInt(bet);
-            if(!betAmount || betAmount < 10) return alert("الرهان غير صحيح أو أقل من 10 جنيه");
-            if(currentUser.balance < betAmount) return alert("محفظتك لا تكفي قيمة هذا الرهان!");
+            if(!betAmount || betAmount < 10) return alert("الرهان خطأ");
+            if(currentUser.balance < betAmount) return alert("محفظتك لا تكفي!");
 
             const roomId = "challenge_" + currentUser.username + "_" + Date.now();
-            await set(ref(db, 'rooms/' + roomId), {
-                roomId: roomId,
-                betAmount: betAmount,
-                player1: currentUser.username,
-                player1_choice: "",
-                player2: friendName,
-                player2_choice: "",
-                status: 'invited',
-                winner: ""
+            db.ref('rooms/' + roomId).set({
+                roomId: roomId, betAmount: betAmount,
+                player1: currentUser.username, player1_choice: "",
+                player2: friendName, player2_choice: "",
+                status: 'invited', winner: ""
             });
 
-            // إرسال إشعار دعوة في جدول الصديق
-            await set(ref(db, 'challenges/' + friendName), { roomId: roomId, from: currentUser.username, betAmount: betAmount });
+            db.ref('challenges/' + friendName).set({ roomId: roomId, from: currentUser.username, betAmount: betAmount });
             currentRoomId = roomId;
             myRole = "player1";
             
-            document.getElementById('status-text').innerText = `تم إرسال الدعوة لـ ${friendName}... بانتظار قبوله ⏳`;
+            document.getElementById('status-text').innerText = `تم إرسال الدعوة لـ ${friendName}... ⏳`;
             listenToRoom();
         };
 
-        // الاستماع للدعوات الواردة إليك
         function listenToIncomingChallenges() {
-            onValue(ref(db, 'challenges/' + currentUser.username), async (snapshot) => {
+            db.ref('challenges/' + currentUser.username).on('value', function(snapshot) {
                 if(!snapshot.exists()) return;
                 const challenge = snapshot.val();
                 
-                let confirmPlay = confirm(`وصلتك دعوة تحدي مراهنة من [${challenge.from}] على مبلغ ${challenge.betAmount} جنيه! هل تقبل التحدي؟`);
+                let confirmPlay = confirm(`وصلتك دعوة تحدي من [${challenge.from}] على مبلغ ${challenge.betAmount} جنيه! هل تقبل؟`);
                 if(confirmPlay) {
                     if(currentUser.balance < challenge.betAmount) {
-                        alert("لا تملك رصيد كافي لقبول التحدي!");
-                        await set(ref(db, 'challenges/' + currentUser.username), null);
+                        alert("لا تملك رصيد كافي!");
+                        db.ref('challenges/' + currentUser.username).set(null);
                         return;
                     }
                     currentRoomId = challenge.roomId;
                     myRole = "player2";
                     
-                    // خصم الرهان وبدء اللعب
-                    await update(ref(db, 'users/' + currentUser.username), { balance: currentUser.balance - challenge.betAmount });
-                    const roomSnap = await get(ref(db, 'rooms/' + currentRoomId));
-                    let p1Name = roomSnap.val().player1;
-                    const p1Snap = await get(ref(db, 'users/' + p1Name));
-                    await update(ref(db, 'users/' + p1Name), { balance: p1Snap.val().balance - challenge.betAmount });
-
-                    await update(ref(db, 'rooms/' + currentRoomId), { status: 'playing' });
-                    await set(ref(db, 'challenges/' + currentUser.username), null);
-                    listenToRoom();
+                    db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - challenge.betAmount });
+                    db.ref('users/' + challenge.from).once('value').then(function(p1Snap) {
+                        db.ref('users/' + challenge.from).update({ balance: p1Snap.val().balance - challenge.betAmount });
+                        db.ref('rooms/' + currentRoomId).update({ status: 'playing' });
+                        db.ref('challenges/' + currentUser.username).set(null);
+                        listenToRoom();
+                    });
                 } else {
-                    await update(ref(db, 'rooms/' + challenge.roomId), { status: 'rejected' });
-                    await set(ref(db, 'challenges/' + currentUser.username), null);
+                    db.ref('rooms/' + challenge.roomId).update({ status: 'rejected' });
+                    db.ref('challenges/' + currentUser.username).set(null);
                 }
             });
         }
 
-        // نظام البحث الأونلاين العام (Matchmaking الحقيقي) للعب مع أشخاص آخرين
-        document.getElementById('find-match-btn').addEventListener('click', async () => {
+        document.getElementById('find-match-btn').addEventListener('click', function() {
             const betAmount = parseInt(document.getElementById('bet-amount').value);
             if (!betAmount || betAmount < 10) return alert('أقل رهان مشارطة هو 10 جنيه!');
-            if (currentUser.balance < betAmount) return alert('رصيدك لا يكفي للرهان العام!');
+            if (currentUser.balance < betAmount) return alert('رصيدك لا يكفي!');
 
-            document.getElementById('status-text').innerText = 'جاري البحث عن طاولة عامة شاغرة... ⏳';
+            document.getElementById('status-text').innerText = 'جاري البحث عن طاولة... ⏳';
 
-            const roomsRef = ref(db, 'rooms');
-            const snapshot = await get(roomsRef);
-            let foundRoom = null;
-
-            if (snapshot.exists()) {
-                const rooms = snapshot.val();
-                for (let id in rooms) {
-                    if (rooms[id].betAmount === betAmount && rooms[id].status === 'waiting' && rooms[id].player1 !== currentUser.username) {
-                        foundRoom = id;
-                        break;
+            db.ref('rooms').once('value').then(function(snapshot) {
+                let foundRoom = null;
+                if (snapshot.exists()) {
+                    const rooms = snapshot.val();
+                    for (let id in rooms) {
+                        if (rooms[id].betAmount === betAmount && rooms[id].status === 'waiting' && rooms[id].player1 !== currentUser.username) {
+                            foundRoom = id;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (foundRoom) {
-                currentRoomId = foundRoom;
-                myRole = "player2";
-                await update(ref(db, 'rooms/' + currentRoomId), { player2: currentUser.username, status: 'playing' });
-                listenToRoom();
-            } else {
-                currentRoomId = 'room_' + currentUser.username + '_' + Date.now();
-                myRole = "player1";
-                const roomData = {
-                    roomId: currentRoomId, betAmount: betAmount,
-                    player1: currentUser.username, player1_choice: "",
-                    player2: "", player2_choice: "",
-                    status: 'waiting', winner: ""
-                };
-                await set(ref(db, 'rooms/' + currentRoomId), roomData);
-                listenToRoom();
-            }
+                if (foundRoom) {
+                    currentRoomId = foundRoom;
+                    myRole = "player2";
+                    db.ref('rooms/' + currentRoomId).update({ player2: currentUser.username, status: 'playing' });
+                    listenToRoom();
+                } else {
+                    currentRoomId = 'room_' + currentUser.username + '_' + Date.now();
+                    myRole = "player1";
+                    db.ref('rooms/' + currentRoomId).set({
+                        roomId: currentRoomId, betAmount: betAmount,
+                        player1: currentUser.username, player1_choice: "",
+                        player2: "", player2_choice: "",
+                        status: 'waiting', winner: ""
+                    });
+                    listenToRoom();
+                }
+            });
         });
 
-        // الاستماع المتزامن اللحظي للغرفة أونلاين
         function listenToRoom() {
-            const roomRef = ref(db, 'rooms/' + currentRoomId);
-            onValue(roomRef, (snapshot) => {
+            db.ref('rooms/' + currentRoomId).on('value', function(snapshot) {
                 if (!snapshot.exists()) return;
                 const room = snapshot.val();
 
-                if (room.status === 'waiting') {
-                    document.getElementById('status-text').innerText = 'مستنيين لاعب يدخل الطاولة... ⏳';
-                }
-                if (room.status === 'rejected') {
-                    document.getElementById('status-text').innerText = 'تم رفض دعوتك من قبل الصديق ❌';
-                }
+                if (room.status === 'waiting') document.getElementById('status-text').innerText = 'مستنيين لاعب يدخل... ⏳';
+                if (room.status === 'rejected') document.getElementById('status-text').innerText = 'تم رفض دعوتك ❌';
 
                 if (room.status === 'playing') {
                     lobbyScreen.classList.add('hidden');
@@ -498,23 +459,21 @@ const analytics = getAnalytics(app);
                     }
                 }
 
-                if (room.status === 'finished' && room.winner !== "") {
-                    showFinalResult(room);
-                }
+                if (room.status === 'finished' && room.winner !== "") showFinalResult(room);
             });
         }
 
-        document.querySelectorAll('.choice-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
+        document.querySelectorAll('.choice-btn').forEach(function(button) {
+            button.addEventListener('click', function(e) {
                 const choice = e.target.getAttribute('data-choice');
                 const updateData = {};
                 updateData[myRole + '_choice'] = choice;
-                await update(ref(db, 'rooms/' + currentRoomId), updateData);
+                db.ref('rooms/' + currentRoomId).update(updateData);
                 document.getElementById('game-controls').classList.add('hidden');
             });
         });
 
-        async function determineWinner(room) {
+        function determineWinner(room) {
             let p1 = room.player1_choice; let p2 = room.player2_choice;
             let winnerResult = "";
 
@@ -523,19 +482,19 @@ const analytics = getAnalytics(app);
             else winnerResult = room.player2;
 
             if (winnerResult === 'draw') {
-                await runTransactionWallet(room.player1, room.betAmount);
-                await runTransactionWallet(room.player2, room.betAmount);
+                runTransactionWallet(room.player1, room.betAmount);
+                runTransactionWallet(room.player2, room.betAmount);
             } else {
-                await runTransactionWallet(winnerResult, room.betAmount * 2);
+                runTransactionWallet(winnerResult, room.betAmount * 2);
             }
 
-            await update(ref(db, 'rooms/' + currentRoomId), { winner: winnerResult, status: 'finished' });
+            db.ref('rooms/' + currentRoomId).update({ winner: winnerResult, status: 'finished' });
         }
 
-        async function runTransactionWallet(username, amount) {
-            const userRef = ref(db, 'users/' + username);
-            const snap = await get(userRef);
-            if (snap.exists()) { await update(userRef, { balance: snap.val().balance + amount }); }
+        function runTransactionWallet(username, amount) {
+            db.ref('users/' + username).once('value').then(function(snap) {
+                if (snap.exists()) { db.ref('users/' + username).update({ balance: snap.val().balance + amount }); }
+            });
         }
 
         function showFinalResult(room) {
@@ -545,23 +504,23 @@ const analytics = getAnalytics(app);
 
             const winnerText = document.getElementById('winner-text');
             if (room.winner === 'draw') winnerText.innerText = '⚔️ تعادل! عادت أموال الرهان.';
-            else if (room.winner === currentUser.username) winnerText.innerText = '🎉 كسبت وقشيت المراهنة كلها كاش! مبروك يا بطل!';
-            else winnerText.innerText = `😢 خسرت الماتش والرهان.. حظاً أوفق المرة القادمة!`;
+            else if (room.winner === currentUser.username) winnerText.innerText = '🎉 كسبت وقشيت المراهنة كلها كاش!';
+            else winnerText.innerText = `😢 خسرت الماتش والرهان..`;
 
             document.getElementById('result-display').classList.remove('hidden');
         }
 
-        document.getElementById('daily-btn').addEventListener('click', async () => {
+        document.getElementById('daily-btn').addEventListener('click', function() {
             const now = Date.now();
-            if (currentUser.lastClaim && (now - currentUser.lastClaim) < 24*60*60*1000) return alert("استلمت طلبك اليومي بالفعل، تعال غداً القهوة!");
+            if (currentUser.lastClaim && (now - currentUser.lastClaim) < 24*60*60*1000) return alert("استلمت المكافأة اليوم، تعال غداً!");
             
-            await update(ref(db, 'users/' + currentUser.username), {
+            db.ref('users/' + currentUser.username).update({
                 balance: currentUser.balance + 50, streak: currentUser.streak + 1, lastClaim: now
             });
             alert("تم استلام الهدية اليومية بنجاح! 🪙");
         });
 
-        document.getElementById('back-to-lobby').addEventListener('click', () => {
+        document.getElementById('back-to-lobby').addEventListener('click', function() {
             gameScreen.classList.add('hidden'); lobbyScreen.classList.remove('hidden');
             document.getElementById('game-controls').classList.remove('hidden');
             document.getElementById('result-display').classList.add('hidden');
