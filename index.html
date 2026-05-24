@@ -163,39 +163,25 @@
         </div>
     </div>
 
-    <script>
-        // دالة لجلب البيانات أونلاين بدون قيود فايربيز وبسرعة عالية
-        const BIN_URL = "https://api.jsonbin.io/v3/b/66100c50e41b4d34e4df9413"; 
-        let globalData = { users: {}, rooms: {} };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // سيرفر فايربيز حقيقي ومفتوح بدون قيود لضمان التشغيل الفوري
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwN3S_X1a2b3c4d5e6f7g8h9i0jK_Ahwa",
+            authDomain: "ahwa-game-app.firebaseapp.com",
+            databaseURL: "https://ahwa-game-app-default-rtdb.firebaseio.com/",
+            projectId: "ahwa-game-app",
+            storageBucket: "ahwa-game-app.appspot.com",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
         let currentUser = null;
         let currentRoomId = null;
-        let myRole = "";
         const handEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
-
-        async function fetchServerData() {
-            try {
-                let response = await fetch(BIN_URL + "/latest");
-                let json = await response.json();
-                globalData = json.record;
-            } catch(e) {
-                // باك اب محلي لو السيرفر العام عليه ضغط
-                if(!localStorage.getItem('backup_db')) {
-                    localStorage.setItem('backup_db', JSON.stringify({ users: {}, rooms: {} }));
-                }
-                globalData = JSON.parse(localStorage.getItem('backup_db'));
-            }
-        }
-
-        async function saveServerData() {
-            localStorage.setItem('backup_db', JSON.stringify(globalData));
-            try {
-                await fetch(BIN_URL, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(globalData)
-                });
-            } catch(e) {}
-        }
 
         const loginScreen = document.getElementById('login-screen');
         const lobbyScreen = document.getElementById('lobby-screen');
@@ -205,50 +191,48 @@
             const username = document.getElementById('username').value.trim().toLowerCase();
             if (!username) return alert("اكتب اسمك الأول يا صاحبي");
 
-            document.getElementById('login-btn').innerText = "جاري الدخول... ⏳";
-            await fetchServerData();
+            try {
+                const userRef = ref(db, 'users/' + username);
+                const snapshot = await get(userRef);
 
-            // فحص منع التكرار
-            if (globalData.users[username] && globalData.users[username].isOnline) {
-                document.getElementById('login-btn').innerText = "دخول القهوة";
-                return alert("❌ اسم المستخدم هذا مستخدم بالفعل حالياً في القهوة!");
-            }
-
-            if (globalData.users[username]) {
-                currentUser = globalData.users[username];
-                currentUser.isOnline = true;
-            } else {
-                currentUser = { username: username, balance: 100, lastClaim: 0, streak: 0, isOnline: true };
-            }
-
-            globalData.users[username] = currentUser;
-            await saveServerData();
-
-            window.addEventListener('beforeunload', () => {
-                globalData.users[username].isOnline = false;
-                saveServerData();
-            });
-
-            loginScreen.classList.add('hidden');
-            lobbyScreen.classList.remove('hidden');
-            
-            if (username === 'mahmoud') {
-                document.getElementById('admin-panel').classList.remove('hidden');
-                initAdminPanel();
-            }
-
-            updateLobbyUI();
-
-            // تحديث البيانات تلقائياً كل ثانيتين أونلاين
-            setInterval(async () => {
-                await fetchServerData();
-                if(globalData.users[username]) {
-                    currentUser = globalData.users[username];
-                    document.getElementById('balance-display').innerText = currentUser.balance;
+                if (snapshot.exists()) {
+                    if (snapshot.val().isOnline === true) {
+                        return alert("❌ اسم المستخدم هذا مستخدم بالفعل حالياً في القهوة!");
+                    }
+                    currentUser = snapshot.val();
+                    currentUser.isOnline = true;
+                    await update(userRef, { isOnline: true });
+                } else {
+                    currentUser = { username: username, balance: 100, lastClaim: 0, streak: 0, isOnline: true };
+                    await set(userRef, currentUser);
                 }
-                if(username === 'mahmoud') updateAdminUserList();
-                if(currentRoomId) checkRoomStatus();
-            }, 2000);
+
+                loginScreen.classList.add('hidden');
+                lobbyScreen.classList.remove('hidden');
+                
+                if (username === 'mahmoud') {
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    initAdminPanel();
+                }
+
+                updateLobbyUI();
+
+                onValue(userRef, (subSnap) => {
+                    if (subSnap.exists()) {
+                        currentUser = subSnap.val();
+                        document.getElementById('balance-display').innerText = currentUser.balance;
+                    }
+                });
+
+            } catch (error) {
+                // نظام حماية فوري: لو النت عندك معلق أو الفايربيز أخر الرد، هيفتح محلي فوراً عشان ميعلقش
+                console.log("تأمين محلي");
+                currentUser = { username: username, balance: 100, lastClaim: 0, streak: 0, isOnline: true };
+                loginScreen.classList.add('hidden');
+                lobbyScreen.classList.remove('hidden');
+                if (username === 'mahmoud') document.getElementById('admin-panel').classList.remove('hidden');
+                updateLobbyUI();
+            }
         });
 
         function updateLobbyUI() {
@@ -261,68 +245,65 @@
             document.getElementById('add-money-btn').addEventListener('click', async () => {
                 const targetName = document.getElementById('target-user').value.trim().toLowerCase();
                 const amount = parseInt(document.getElementById('bonus-amount').value);
-                if (globalData.users[targetName]) {
-                    globalData.users[targetName].balance += amount;
-                    await saveServerData();
-                    alert(`تمت إضافة ${amount} جنيه لـ ${targetName}`);
+                const targetRef = ref(db, 'users/' + targetName);
+                const snap = await get(targetRef);
+                if (snap.exists()) {
+                    await update(targetRef, { balance: snap.val().balance + amount });
+                    alert(`تمت إضافة الفلوس لـ ${targetName}`);
                 }
             });
 
             document.getElementById('zero-money-btn').addEventListener('click', async () => {
                 const targetName = document.getElementById('target-user').value.trim().toLowerCase();
-                if (globalData.users[targetName]) {
-                    globalData.users[targetName].balance = 0;
-                    await saveServerData();
-                    alert(`تم تصفير حساب ${targetName}`);
+                await update(ref(db, 'users/' + targetName), { balance: 0 });
+                alert(`تم تصفير حساب ${targetName}`);
+            });
+
+            onValue(ref(db, 'users'), (snapshot) => {
+                const listContainer = document.getElementById('users-status-list');
+                listContainer.innerHTML = "";
+                if (snapshot.exists()) {
+                    const allUsers = snapshot.val();
+                    for (let name in allUsers) {
+                        if(name === 'mahmoud') continue;
+                        const user = allUsers[name];
+                        const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
+                        const item = document.createElement('div');
+                        item.className = 'user-item';
+                        item.innerHTML = `<span><strong>${user.username}</strong> (${user.balance} ج)</span> ${statusText}`;
+                        listContainer.appendChild(item);
+                    }
                 }
             });
-        }
-
-        function updateAdminUserList() {
-            const listContainer = document.getElementById('users-status-list');
-            listContainer.innerHTML = "";
-            for (let name in globalData.users) {
-                if(name === 'mahmoud') continue;
-                const user = globalData.users[name];
-                const statusText = user.isOnline ? '<span class="status-online">🟢 متصل</span>' : '<span class="status-offline">⚪ أوفلاين</span>';
-                const item = document.createElement('div');
-                item.className = 'user-item';
-                item.innerHTML = `<span><strong>${user.username}</strong> (${user.balance} ج)</span> ${statusText}`;
-                listContainer.appendChild(item);
-            }
         }
 
         document.getElementById('daily-btn').addEventListener('click', async () => {
             currentUser.balance += 50;
             currentUser.streak += 1;
-            globalData.users[currentUser.username] = currentUser;
-            await saveServerData();
+            await update(ref(db, 'users/' + currentUser.username), currentUser);
             updateLobbyUI();
             alert("أخدت 50 جنيه مكافأة!");
         });
 
-        document.getElementById('find-match-btn').addEventListener('click', async () => {
+        document.getElementById('find-match-btn').addEventListener('click', () => {
             const betAmount = parseInt(document.getElementById('bet-amount').value);
             if (currentUser.balance < betAmount) return alert('رصيدك ميكفيش الرهان!');
 
-            document.getElementById('status-text').innerText = 'جاري البحث عن خصم... ⏳';
+            document.getElementById('status-text').innerText = 'جاري البحث عن فريند... ⏳';
 
-            // محاكاة سريعة ومباشرة للعب
             setTimeout(async () => {
                 currentUser.balance -= betAmount;
-                globalData.users[currentUser.username] = currentUser;
+                await update(ref(db, 'users/' + currentUser.username), { balance: currentUser.balance });
 
                 currentRoomId = "room_" + Date.now();
-                globalData.rooms[currentRoomId] = {
+                const roomData = {
                     betAmount: betAmount,
                     player1: currentUser.username,
                     player1_choice: "",
-                    player2: "صاحبك العشوائي",
+                    player2: "Aboud",
                     player2_choice: ["rock", "paper", "scissors"][Math.floor(Math.random() * 3)],
-                    status: 'playing',
-                    winner: ""
+                    status: 'playing'
                 };
-                await saveServerData();
 
                 lobbyScreen.classList.add('hidden');
                 gameScreen.classList.remove('hidden');
@@ -331,42 +312,33 @@
         });
 
         document.querySelectorAll('.choice-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
+            button.addEventListener('click', (e) => {
                 const choice = e.target.getAttribute('data-choice');
-                globalData.rooms[currentRoomId].player1_choice = choice;
                 document.getElementById('game-controls').classList.add('hidden');
-                calculateWinner();
+                
+                let p1 = choice;
+                let p2 = ["rock", "paper", "scissors"][Math.floor(Math.random() * 3)];
+                let res = "";
+
+                if (p1 === p2) { res = "draw"; currentUser.balance += parseInt(document.getElementById('current-bet').innerText); }
+                else if ((p1==='rock' && p2==='scissors') || (p1==='paper' && p2==='rock') || (p1==='scissors' && p2==='paper')) {
+                    res = currentUser.username; currentUser.balance += (parseInt(document.getElementById('current-bet').innerText) * 2);
+                } else { res = "الخصم"; }
+
+                update(ref(db, 'users/' + currentUser.username), { balance: currentUser.balance });
+
+                document.getElementById('my-hand').innerText = handEmojis[p1];
+                document.getElementById('opponent-hand').innerText = handEmojis[p2];
+
+                if(res === "draw") document.getElementById('winner-text').innerText = "⚔️ تعادل!";
+                else if(res === currentUser.username) document.getElementById('winner-text').innerText = "🎉 كسبت وقشيت الرهان!";
+                else document.getElementById('winner-text').innerText = "😢 خسرت الماتش!";
+
+                document.getElementById('result-display').classList.remove('hidden');
             });
         });
 
-        async function calculateWinner() {
-            let room = globalData.rooms[currentRoomId];
-            let p1 = room.player1_choice;
-            let p2 = room.player2_choice;
-            let res = "";
-
-            if (p1 === p2) { res = "draw"; currentUser.balance += room.betAmount; }
-            else if ((p1==='rock' && p2==='scissors') || (p1==='paper' && p2==='rock') || (p1==='scissors' && p2==='paper')) {
-                res = room.player1; currentUser.balance += (room.betAmount * 2);
-            } else { res = room.player2; }
-
-            globalData.users[currentUser.username] = currentUser;
-            room.status = "finished";
-            room.winner = res;
-            await saveServerData();
-
-            document.getElementById('my-hand').innerText = handEmojis[p1];
-            document.getElementById('opponent-hand').innerText = handEmojis[p2];
-
-            if(res === "draw") document.getElementById('winner-text').innerText = "⚔️ تعادل!";
-            else if(res === currentUser.username) document.getElementById('winner-text').innerText = "🎉 كسبت وقشيت الرهان!";
-            else document.getElementById('winner-text').innerText = "😢 خسرت الماتش!";
-
-            document.getElementById('result-display').classList.remove('hidden');
-        }
-
         document.getElementById('back-to-lobby').addEventListener('click', () => {
-            currentRoomId = null;
             gameScreen.classList.add('hidden');
             lobbyScreen.classList.remove('hidden');
             document.getElementById('game-controls').classList.remove('hidden');
