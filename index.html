@@ -67,11 +67,17 @@
         .status-online { color: #4caf50; font-weight: bold; }
         .status-offline { color: #9e9e9e; }
 
+        /* ساحة اللعب والأنيميشن المطور */
         .hands-container { display: flex; justify-content: space-around; width: 100%; max-width: 500px; margin: 20px 0; }
         .hand-wrapper { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,152,0,0.2); width: 42%; overflow: hidden;}
         
-        .hand { font-size: 75px; margin-top: 10px; display: inline-block; }
+        .hand { 
+            font-size: 75px; 
+            margin-top: 10px; 
+            display: inline-block;
+        }
 
+        /* أنيميشن هز اليدين السحري */
         @keyframes shakeHand {
             0% { transform: translateY(0) rotate(0deg); }
             25% { transform: translateY(-20px) rotate(-10px); }
@@ -79,27 +85,22 @@
             75% { transform: translateY(-20px) rotate(10px); }
             100% { transform: translateY(0) rotate(0deg); }
         }
-        .shaking { animation: shakeHand 0.5s ease-in-out infinite; }
+        .shaking {
+            animation: shakeHand 0.5s ease-in-out infinite;
+        }
 
         .choices { display: flex; gap: 10px; justify-content: center; }
         .choice-btn { font-size: 20px; padding: 12px; width: auto; min-width: 80px; }
-
-        /* شاشة التحميل التلقائي */
-        #loading-screen { font-size: 22px; font-weight: bold; color: #ff9800; }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen" class="screen">
-        <div>☕ جاري قراءة بيانات جهازك والدخول للقهوة... ⏳</div>
-    </div>
-
-    <div id="login-screen" class="screen hidden">
+    <div id="login-screen" class="screen">
         <div class="box">
             <h1>☕ CONAN WORLD ☕</h1>
-            <p style="color: #ccc;">سجل اسمك أول مرة وسيتم حفظه تلقائياً على جهازك</p>
+            <p style="color: #ccc;">كل جهاز حساب واحد فقط - ممنوع سرقة الأسماء</p>
             <input type="text" id="username" placeholder="اكتب اسم المستخدم الجديد هنا...">
-            <button id="login-btn">دخول السيرفر وحفظ الحساب 🚀</button>
+            <button id="login-btn">دخول السيرفر والتحقق من الجهاز 🚀</button>
         </div>
     </div>
 
@@ -116,7 +117,6 @@
                 <p>الأيدي الخاص بك (ID): <span id="my-id-display" style="color:#ff9800; font-weight:bold;"></span></p>
                 <p id="streak-info">أنت في اليوم: 1</p>
                 <button id="daily-btn">🎁 استلام الهدية اليومية (50ج)</button>
-                <button id="logout-btn" style="background: #757575; font-size: 12px; padding: 5px; width: auto; margin-top: 10px;">🚪 تسجيل خروج (لتغيير الحساب)</button>
             </div>
 
             <div class="profile-box" style="border-color: #4caf50;">
@@ -137,11 +137,10 @@
             </div>
 
             <div id="admin-panel" class="admin-box hidden">
-                <h3>👑 لوحة تحكم المعلم محمود (الأدمن بالأيدي)</h3>
-                
+                <h3>👑 لوحة تحكم المعلم محمود (الأدمن الكاملة)</h3>
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: center; border-bottom: 1px dashed #d32f2f; padding-bottom: 15px; margin-bottom: 15px;">
-                    <h4>💰 التحكم بالكاش (باستخدام ID اللاعب):</h4>
-                    <input type="text" id="target-id" placeholder="اكتب ID اللاعب المستهدف بالظبط">
+                    <h4>💰 التحكم بالكاش:</h4>
+                    <input type="text" id="target-user" placeholder="اسم اللاعب المستهدف">
                     <input type="number" id="bonus-amount" placeholder="المبلغ المراد تعديله">
                     <div style="display: flex; gap: 10px; width: 95%;">
                         <button id="add-money-btn" class="admin-btn">➕ تزويد كاش</button>
@@ -150,10 +149,10 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 5px; align-items: center;">
-                    <h4>🆔 تعديل الأيدي (باستخدام ID الحالي):</h4>
-                    <input type="text" id="change-id-oldvalue" placeholder="الأيدي الحالي للاعب">
-                    <input type="text" id="change-id-newvalue" placeholder="الأيدي الجديد المراد وضعه">
-                    <button id="confirm-change-id-btn" class="admin-btn" style="background: linear-gradient(90deg, #ff9800, #d32f2f);">🛠️ حفظ وتعديل الـ ID فوراً</button>
+                    <h4>🆔 ميزة تغيير أيدي (ID) أي حساب:</h4>
+                    <input type="text" id="change-id-user" placeholder="اسم حساب اللاعب بالظبط">
+                    <input type="text" id="change-id-newvalue" placeholder="الأيدي الجديد (مثال: 777777)">
+                    <button id="confirm-change-id-btn" class="admin-btn" style="background: linear-gradient(90deg, #ff9800, #d32f2f);">🛠️ حفظ وتغيير الـ ID فوراً</button>
                 </div>
 
                 <h4>👥 حالة قعدة القهوة (المتصلين حالياً):</h4>
@@ -193,7 +192,7 @@
     </div>
 
     <script>
-        // إعدادات الفايربيز
+        // إعدادات الفايربيز المربوطة والمجربة بنجاح:
         const firebaseConfig = {
             apiKey: "AIzaSyCE6Mz4d8Ig05wPzP58CoZp3gA3Ig9Z3go",
             authDomain: "game11-5dfa1.firebaseapp.com",
@@ -214,58 +213,41 @@
         let hasAnimated = false;
         const handEmojis = { rock: '✊', paper: '✋', scissors: '✌️' };
 
-        const loadingScreen = document.getElementById('loading-screen');
         const loginScreen = document.getElementById('login-screen');
         const lobbyScreen = document.getElementById('lobby-screen');
         const gameScreen = document.getElementById('game-screen');
 
-        // دالة الفحص التلقائي عند فتح الموقع (Auto Login)
-        window.onload = function() {
-            let savedUsername = localStorage.getItem('conan_world_username');
-            let savedToken = localStorage.getItem('conan_world_token');
-
-            if (savedUsername && savedToken) {
-                // الحساب محفوظ مسبقاً، ندخل علطول
-                loginUserLogic(savedUsername, savedToken, true);
-            } else {
-                // أول مرة يدخل، نخفي شاشة التحميل ونظهر شاشة التسجيل
-                loadingScreen.classList.add('hidden');
-                loginScreen.classList.remove('hidden');
-            }
-        };
-
-        // عند الضغط على زرار الدخول اليدوي لأول مرة
         document.getElementById('login-btn').addEventListener('click', function() {
             const username = document.getElementById('username').value.trim().toLowerCase();
             if (!username) return alert("اكتب اسم المستخدم يا بطل");
-            
-            let myStoredToken = localStorage.getItem('conan_world_token') || 'tk_' + Math.random().toString(36).substr(2, 9);
-            loginUserLogic(username, myStoredToken, false);
-        });
 
-        // منطق الدخول والربط بالفايربيز
-        function loginUserLogic(username, token, isAuto) {
+            let myStoredToken = localStorage.getItem('conan_world_token');
             const userRef = db.ref('users/' + username);
 
             userRef.once('value').then(function(snapshot) {
                 if (snapshot.exists()) {
                     let dbUser = snapshot.val();
-                    if (dbUser.token !== token) {
-                        alert("❌ خطأ: الاسم مسجل لجهاز آخر! ممنوع سرقة الأسماء.");
-                        if(isAuto) logoutAction();
+                    if (dbUser.token !== myStoredToken) {
+                        alert("❌ خطأ: الاسم مسجل لجهاز آخر! ممنوع عمل أكثر من حساب.");
                         return;
                     }
                     currentUser = dbUser;
                     currentUser.isOnline = true;
                     userRef.update({ isOnline: true });
                 } else {
-                    if (isAuto) return logoutAction();
-                    
+                    if(myStoredToken) {
+                        alert("❌ جهازك مسجل به حساب بالفعل! غير مسموح بعمل أكثر من حساب لكل جهاز.");
+                        return;
+                    }
+                    let generatedToken = 'tk_' + Math.random().toString(36).substr(2, 9);
                     let generatedId = Math.floor(100000 + Math.random() * 900000).toString();
+
+                    localStorage.setItem('conan_world_token', generatedToken);
+                    
                     currentUser = {
                         username: username,
                         userId: generatedId,
-                        token: token,
+                        token: generatedToken,
                         balance: 100,
                         streak: 1,
                         lastClaim: 0,
@@ -276,13 +258,8 @@
                     db.ref('ids/' + generatedId).set(username);
                 }
 
-                // حفظ الاسم والتوكن في المتصفح للدخول التلقائي المرة القادمة
-                localStorage.setItem('conan_world_username', username);
-                localStorage.setItem('conan_world_token', currentUser.token);
-
                 userRef.onDisconnect().update({ isOnline: false });
 
-                loadingScreen.classList.add('hidden');
                 loginScreen.classList.add('hidden');
                 lobbyScreen.classList.remove('hidden');
                 
@@ -302,9 +279,9 @@
                     }
                 });
             }).catch(function(error) {
-                alert("خطأ في الاتصال: " + error.message);
+                alert("خطأ اتصال: " + error.message);
             });
-        }
+        });
 
         function updateLobbyUI() {
             document.getElementById('user-display').innerText = currentUser.username;
@@ -313,80 +290,56 @@
             document.getElementById('streak-info').innerText = `أنت في يومك الـ: ${currentUser.streak}`;
         }
 
-        // تسجيل الخروج لتغيير الحساب
-        document.getElementById('logout-btn').addEventListener('click', logoutAction);
-        function logoutAction() {
-            if(currentUser) db.ref('users/' + currentUser.username).update({ isOnline: false });
-            localStorage.removeItem('conan_world_username');
-            localStorage.removeItem('conan_world_token');
-            location.reload();
-        }
-
-        // 👑 لوحة تحكم المعلم محمود المطوّرة بالكامل بالأيدي (ID) فقط
+        // 👑 لوحة تحكم المعلم محمود الكاملة (الكاش + تغيير الأيدي)
         function initAdminPanel() {
-            // 1. تزويد الكاش عن طريق الـ ID
             document.getElementById('add-money-btn').addEventListener('click', function() {
-                const targetId = document.getElementById('target-id').value.trim();
+                const targetName = document.getElementById('target-user').value.trim().toLowerCase();
                 const amount = parseInt(document.getElementById('bonus-amount').value);
-                if (!targetId || !amount) return alert("يا معلم اكتب ID اللاعب والمبلغ أولاً");
+                if (!targetName || !amount) return alert("اكتب اسم اللاعب والمبلغ");
                 
-                db.ref('ids/' + targetId).once('value').then(function(idSnap) {
-                    if (idSnap.exists()) {
-                        const targetUsername = idSnap.val();
-                        const targetRef = db.ref('users/' + targetUsername);
-                        targetRef.once('value').then(function(userSnap) {
-                            targetRef.update({ balance: userSnap.val().balance + amount });
-                            alert(`تم تزويد الحساب المرتبط بـ ID [${targetId}] بمبلغ ${amount} ج`);
-                            document.getElementById('target-id').value = "";
-                            document.getElementById('bonus-amount').value = "";
-                        });
-                    } else { alert("الـ ID ده مش مربوط بأي حساب في القهوة!"); }
+                const targetRef = db.ref('users/' + targetName);
+                targetRef.once('value').then(function(snap) {
+                    if (snap.exists()) {
+                        targetRef.update({ balance: snap.val().balance + amount });
+                        alert(`تم تعديل الكاش بنجاح للمعلم`);
+                    } else { alert("الاسم مش مسجل بالقهوة!"); }
                 });
             });
 
-            // 2. تصفير المحفظة عن طريق الـ ID
             document.getElementById('zero-money-btn').addEventListener('click', function() {
-                const targetId = document.getElementById('target-id').value.trim();
-                if (!targetId) return alert("يا معلم اكتب ID اللاعب المراد تصفيره");
-                
-                db.ref('ids/' + targetId).once('value').then(function(idSnap) {
-                    if (idSnap.exists()) {
-                        const targetUsername = idSnap.val();
-                        db.ref('users/' + targetUsername).update({ balance: 0 });
-                        alert(`تم تصفير محفظة الحساب صاحب الـ ID [${targetId}] بنجاح`);
-                        document.getElementById('target-id').value = "";
-                    } else { alert("الـ ID ده مش موجود!"); }
-                });
+                const targetName = document.getElementById('target-user').value.trim().toLowerCase();
+                if (!targetName) return alert("حدد اسم اللاعب لتصفير حسابه");
+                db.ref('users/' + targetName).update({ balance: 0 });
+                alert(`تم تصفير الحساب`);
             });
 
-            // 3. تعديل وتغيير الأيدي عن طريق معرفة الـ ID القديم
+            // ميزة تغيير الأيدي لأي لاعب من لوحة الأدمن
             document.getElementById('confirm-change-id-btn').addEventListener('click', function() {
-                const oldId = document.getElementById('change-id-oldvalue').value.trim();
+                const targetUser = document.getElementById('change-id-user').value.trim().toLowerCase();
                 const newId = document.getElementById('change-id-newvalue').value.trim();
 
-                if(!oldId || !newId) return alert("اكتب الأيدي القديم والأيدي الجديد يا معلم محمود");
+                if(!targetUser || !newId) return alert("يا معلم محمود اكتب اسم الحساب والأيدي الجديد");
 
-                db.ref('ids/' + oldId).once('value').then(function(idSnap) {
-                    if(idSnap.exists()) {
-                        const targetUser = idSnap.val();
-                        
-                        // مسح ربط الأيدي القديم
+                const userRef = db.ref('users/' + targetUser);
+                userRef.once('value').then(function(snap) {
+                    if(snap.exists()) {
+                        const oldId = snap.val().userId;
+                        // 1. مسح الرابط القديم في جدول الـ IDs
                         db.ref('ids/' + oldId).set(null);
-                        // تحديث الحساب بالأيدي الجديد
-                        db.ref('users/' + targetUser).update({ userId: newId });
-                        // عمل ربط جديد للأيدي الجديد بالاسم
+                        // 2. تحديث الأيدي الجديد جوه حساب اللاعب
+                        userRef.update({ userId: newId });
+                        // 3. إنشاء ربط جديد للأيدي الجديد بالاسم
                         db.ref('ids/' + newId).set(targetUser);
 
-                        alert(`تم بنجاح تعديل الـ ID للحساب [${targetUser}] من (${oldId}) إلى (${newId})`);
-                        document.getElementById('change-id-oldvalue').value = "";
+                        alert(`تمت العملية بنجاح! تم تغيير ID اللاعب [${targetUser}] إلى [${newId}]`);
+                        document.getElementById('change-id-user').value = "";
                         document.getElementById('change-id-newvalue').value = "";
                     } else {
-                        alert("الأيدي الحالي ده مش مربوط بأي لاعب!");
+                        alert("الاسم ده مش موجود في القهوة أصلاً!");
                     }
                 });
             });
 
-            // عرض حالة قعدة القهوة
             db.ref('users').on('value', function(snapshot) {
                 const listContainer = document.getElementById('users-status-list');
                 listContainer.innerHTML = "";
@@ -503,7 +456,7 @@
             });
         }
 
-        // 🎮 اللعب العشوائي العام
+        // 🎮 نظام اللعب العشوائي المطور (Matchmaking لعدد لاعبين غير محدود)
         document.getElementById('find-match-btn').addEventListener('click', function() {
             const betAmount = parseInt(document.getElementById('bet-amount').value);
             if (!betAmount || betAmount < 10) return alert('أقل رهان مشارطة هو 10 جنيه!');
@@ -512,11 +465,13 @@
             document.getElementById('status-text').innerText = 'جاري البحث عن لاعب متاح أونلاين... ⏳';
             hasAnimated = false;
 
+            // البحث في غرف الانتظار المفتوحة
             db.ref('rooms').once('value').then(function(snapshot) {
                 let foundRoom = null;
                 if (snapshot.exists()) {
                     const rooms = snapshot.val();
                     for (let id in rooms) {
+                        // الغرفة تكون شاغرة وبنفس قيمة الرهان واللاعب التاني مش هو أنا
                         if (rooms[id].betAmount === betAmount && rooms[id].status === 'waiting' && rooms[id].player1 !== currentUser.username) {
                             foundRoom = id;
                             break;
@@ -527,10 +482,12 @@
                 if (foundRoom) {
                     currentRoomId = foundRoom;
                     myRole = "player2";
+                    // خصم الرهان عند الدخول فورا
                     db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - betAmount });
                     db.ref('rooms/' + currentRoomId).update({ player2: currentUser.username, status: 'playing' });
                     listenToRoom();
                 } else {
+                    // إذا لم يجد غرفة شاغرة، ينشئ غرفة جديدة باسمه وينتظر دخول لاعب آخر عشوائي
                     currentRoomId = 'match_' + currentUser.username + '_' + Date.now();
                     myRole = "player1";
                     db.ref('users/' + currentUser.username).update({ balance: currentUser.balance - betAmount });
@@ -561,13 +518,15 @@
                     const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
                     document.getElementById('opponent-name-display').innerText = room[opponentRole] || "لاعب عشوائي..";
 
+                    // وضع يدين مقفولتين طالما مفيش نتيجة لسه ظهرت
                     if (room.winner === "") {
                         document.getElementById('my-hand').innerText = room[myRole + '_choice'] ? '✅ جاهز' : '✊';
                         document.getElementById('opponent-hand').innerText = room[opponentRole + '_choice'] ? '✅ جاهز' : '✊';
                     }
 
+                    // إذا اختار الطرفين، والأنيميشن لم يعرض بعد، نقوم بتشغيل الهز المطور
                     if (room.player1_choice && room.player2_choice && room.winner === "" && !hasAnimated) {
-                        hasAnimated = true; 
+                        hasAnimated = true; // نمنع التكرار
                         startHandsAnimation(room);
                     }
                 }
@@ -578,6 +537,7 @@
             });
         }
 
+        // 🔥 دالة أنيميشن هز اليدين التفاعلية (يدين بيتحركوا قدام بعض)
         function startHandsAnimation(room) {
             document.getElementById('game-controls').classList.add('hidden');
             document.getElementById('game-instruction-text').innerText = "⚔️ جاري كشف الضربات... ⚔️";
@@ -585,15 +545,18 @@
             const myHandElement = document.getElementById('my-hand');
             const oppHandElement = document.getElementById('opponent-hand');
 
+            // نرجع شكل اليدين لـ (طوبة مقفولة) ونشغل أنيميشن الهز
             myHandElement.innerText = '✊';
             oppHandElement.innerText = '✊';
             myHandElement.classList.add('shaking');
             oppHandElement.classList.add('shaking');
 
+            // بعد ثانية ونص (تلات هزات) نوقف الحركة ونظهر النتيجة الحقيقية
             setTimeout(function() {
                 myHandElement.classList.remove('shaking');
                 oppHandElement.classList.remove('shaking');
 
+                // لو أنا لاعب 1 هحسب النتيجة وأرفعها، لو أنا لاعب 2 هستقبل النتيجة الجاهزة
                 if (myRole === 'player1') {
                     determineWinner(room);
                 }
@@ -637,6 +600,7 @@
         function showFinalResult(room) {
             const opponentRole = myRole === 'player1' ? 'player2' : 'player1';
             
+            // إظهار الحركات الحقيقية بعد انتهاء الأنيميشن
             document.getElementById('my-hand').innerText = handEmojis[room[myRole + '_choice']];
             document.getElementById('opponent-hand').innerText = handEmojis[room[opponentRole + '_choice']];
 
@@ -659,7 +623,9 @@
         });
 
         document.getElementById('back-to-lobby').addEventListener('click', function() {
+            // فصل الاستماع للغرفة المنتهية عشان ندخل غرف تانية نظيفة
             db.ref('rooms/' + currentRoomId).off();
+            
             gameScreen.classList.add('hidden'); lobbyScreen.classList.remove('hidden');
             document.getElementById('game-controls').classList.remove('hidden');
             document.getElementById('result-display').classList.add('hidden');
