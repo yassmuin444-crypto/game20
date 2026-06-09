@@ -2,157 +2,138 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>منصة الاختبارات الذكية - Cyber Security</title>
+    <title>اختبار Cyber Security الشامل</title>
     <style>
-        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; padding: 20px; }
-        .rgb-text { font-size: 3rem; font-weight: bold; animation: rgb-glow 3s infinite alternate; }
+        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .rgb-text { font-size: 2.5rem; font-weight: bold; animation: rgb-glow 3s infinite alternate; }
         @keyframes rgb-glow {
             0% { text-shadow: 0 0 10px #ff0000; color: #ff0000; }
             50% { text-shadow: 0 0 10px #00ff00; color: #00ff00; }
             100% { text-shadow: 0 0 10px #0000ff; color: #0000ff; }
         }
-        .btn { padding: 15px 30px; font-size: 20px; cursor: pointer; background: #00ffcc; border: none; border-radius: 10px; margin: 10px; transition: 0.3s; }
-        .btn:hover { background: #00ccaa; }
+        .btn { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #00ffcc; border: none; border-radius: 10px; margin: 10px; }
         .hidden { display: none; }
-        .question-box { background: #333; padding: 20px; margin: 20px auto; width: 80%; border-radius: 15px; text-align: right; }
-        .correct { color: #00ff00; font-weight: bold; }
-        .wrong { color: #ff0000; font-weight: bold; }
-        input[type="text"] { padding: 10px; width: 200px; }
+        .question-box { background: #333; padding: 20px; margin: 15px auto; width: 85%; border-radius: 10px; text-align: right; }
+        .option-btn { display: block; width: 100%; padding: 12px; margin: 5px 0; background: #444; border: 1px solid #555; color: white; cursor: pointer; text-align: right; border-radius: 5px; }
+        .option-btn:hover { background: #555; }
+        .correct { background-color: #008800 !important; }
+        .wrong { background-color: #880000 !important; }
     </style>
 </head>
 <body>
 
     <div id="start-screen">
         <h1 class="rgb-text">منور يا بشمهندس!</h1>
-        <p>جاهز لاختبار الـ Cyber Security؟</p>
+        <p>جاهز لاختبار الـ Cyber Security الشامل؟</p>
         <button class="btn" onclick="showSectionSelection()">جاهز للاختبار</button>
     </div>
 
     <div id="section-screen" class="hidden">
-        <h2>اختر نوع الأسئلة:</h2>
+        <h2>اختر القسم:</h2>
         <button class="btn" onclick="loadQuiz('mcq')">أسئلة الاختياري (MCQ)</button>
         <button class="btn" onclick="loadQuiz('tf')">أسئلة الصح والخطأ (T/F)</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
         <div id="questions-container"></div>
-        <button class="btn" onclick="calculateResult()">إنهاء وعرض النتيجة</button>
+        <button class="btn" onclick="location.reload()">إنهاء والعودة للرئيسية</button>
     </div>
 
     <script>
         const quizData = {
             mcq: [
-                { q: "A set of stations controlled by a single function is called:", a: "Basic Service Set (BSS)" },
-                { q: "Receiver (B) can decrypt a confidential message using his:", a: "Private Key" },
-                { q: "Contents of a certificate are signed by a trusted:", a: "Certificate Authority" },
-                { q: "Which phase generates and distributes cryptographic keys?", a: "Key Management Phase" },
-                { q: "A station in WLAN is:", a: "Any device implementing IEEE 802.11" },
-                { q: "Hash function SHA-384 has an input block size of:", a: "1024 bits" },
-                { q: "Each user applies to the Certificate Authority by providing a:", a: "Public Key" },
-                { q: "IEEE 802.11 was formed to develop protocols for:", a: "Wireless LANS" },
-                { q: "In message authentication, S represents:", a: "Shared secret" },
-                { q: "An Access Point provides:", a: "Access to DS" },
-                { q: "The decryption algorithm transforms ciphertext into:", a: "Plaintext" },
-                { q: "Distribution System is used to:", a: "Connect BSSs into ESS" },
-                { q: "A DMZ System provides:", a: "Basic protection for remainder of network" },
-                { q: "Stations in WLAN:", a: "Select AP to communicate" },
-                { q: "Authentication Phase is:", a: "Mutual authentication" },
-                { q: "In WLAN any station within radio range can:", a: "Transmit and receive" },
-                { q: "WPA is:", a: "More secure than WEP" },
-                { q: "In wired LAN stations:", a: "Must be physically connected" },
-                { q: "SHA-384 output size is:", a: "384 bits" },
-                { q: "Certificate Authority binds:", a: "Identity to public key" },
-                { q: "Input of a hash function is:", a: "Variable-size data" },
-                { q: "Output of a hash function is:", a: "Fixed-length hash value" },
-                { q: "Hash functions accept:", a: "Variable-length data and fixed output" },
-                { q: "Application of hash functions:", a: "Both" },
-                { q: "Message authentication ensures:", a: "Data received exactly as sent" },
-                { q: "To verify integrity use:", a: "Message Authentication" },
-                { q: "Message authentication helps ensure:", a: "Sender identity validity" },
-                { q: "Source encrypts hash with:", a: "Sender private key" },
-                { q: "Destination verifies hash using:", a: "Sender public key" },
-                { q: "Digital signature communication is:", a: "M||E(PRa,H(M))" },
-                { q: "PRa refers to:", a: "Sender private key" },
-                { q: "Confidentiality + signature:", a: "M||E(PRa,H(M))" },
-                { q: "Message authentication expression:", a: "M||E(PRa,H(M))" },
-                { q: "1024-bit input and 512-bit output hash is:", a: "SHA-512" },
-                { q: "SHA-384 has:", a: "1024/384" },
-                { q: "Variable-length input is processed to produce:", a: "Fixed-size hash" },
-                { q: "Hash function sizes are measured in:", a: "Bits" },
-                { q: "Digital signature correctly uses:", a: "Sender private key" },
-                { q: "Main purpose of hash function:", a: "Fixed-size digest" },
-                { q: "Key Management Phase is responsible for:", a: "Generating and distributing cryptographic keys" }
+                { q: "A set of stations controlled by a single function is called:", options: ["Distribution System", "Access Point", "Basic Service Set (BSS)", "Authorized Servers"], a: "Basic Service Set (BSS)" },
+                { q: "Receiver (B) can decrypt a confidential message using his:", options: ["Public Key", "Encryption Algorithm", "Ciphertext", "Private Key"], a: "Private Key" },
+                { q: "Contents of a certificate are signed by a trusted:", options: ["Hash Function", "Certificate Authority", "Scrambled Message", "Digital Signature"], a: "Certificate Authority" },
+                { q: "Which phase generates and distributes cryptographic keys?", options: ["Authentication Phase", "Discovery Phase", "Key Management Phase", "Connection Termination Phase"], a: "Key Management Phase" },
+                { q: "A station in WLAN is:", options: ["Any device implementing IEEE 802.11", "Only an Access Point", "A firewall", "A router"], a: "Any device implementing IEEE 802.11" },
+                { q: "Hash function SHA-384 has an input block size of:", options: ["1024 bits", "512 bits", "512 bytes", "1024 bytes"], a: "1024 bits" },
+                { q: "Each user applies to the Certificate Authority by providing a:", options: ["Public Key", "Private Key", "Hash Function", "Digital Signature"], a: "Public Key" },
+                { q: "IEEE 802.11 was formed to develop protocols for:", options: ["MAN", "WAN", "Wireless LANS", "Bluetooth"], a: "Wireless LANS" },
+                { q: "In message authentication, S represents:", options: ["Public key", "Private key", "Shared secret", "Session ID"], a: "Shared secret" },
+                { q: "An Access Point provides:", options: ["Certificates", "Access to DS", "Firewall", "Encryption"], a: "Access to DS" },
+                { q: "The decryption algorithm transforms ciphertext into:", options: ["Plaintext", "Public Key", "Private Key", "Signature"], a: "Plaintext" },
+                { q: "Distribution System is used to:", options: ["Generate keys", "Connect BSSs into ESS", "Create certificates", "Authenticate users"], a: "Connect BSSs into ESS" },
+                { q: "A DMZ System provides:", options: ["Basic protection for remainder of network", "Encryption", "Routing only", "Authentication"], a: "Basic protection for remainder of network" },
+                { q: "Stations in WLAN:", options: ["Select AP to communicate", "Use only wired links", "Never authenticate", "Create certificates"], a: "Select AP to communicate" },
+                { q: "Authentication Phase is:", options: ["Key distribution", "AP discovery", "Mutual authentication", "Termination"], a: "Mutual authentication" },
+                { q: "In WLAN any station within radio range can:", options: ["Issue certificates", "Generate keys", "Transmit and receive", "Create firewalls"], a: "Transmit and receive" },
+                { q: "WPA is:", options: ["Less secure than WEP", "Equal to WEP", "More secure than WEP", "Not security protocol"], a: "More secure than WEP" },
+                { q: "In wired LAN stations:", options: ["Use radio only", "Must be physically connected", "Never authenticate", "Have no privacy"], a: "Must be physically connected" },
+                { q: "SHA-384 output size is:", options: ["256 bits", "384 bits", "512 bits", "1024 bits"], a: "384 bits" },
+                { q: "Certificate Authority binds:", options: ["Identity to public key", "Identity to private key", "Password", "MAC address"], a: "Identity to public key" },
+                { q: "Input of a hash function is:", options: ["Fixed-size data", "Variable-size data", "Public key", "Private key"], a: "Variable-size data" },
+                { q: "Output of a hash function is:", options: ["Variable length", "Fixed-length hash value", "Private key", "Public key"], a: "Fixed-length hash value" },
+                { q: "Hash functions accept:", options: ["Variable-length data and fixed output", "Fixed input/output", "Variable output", "None"], a: "Variable-length data and fixed output" },
+                { q: "Application of hash functions:", options: ["Message Authentication", "Digital Signature", "Both", "Firewall"], a: "Both" },
+                { q: "Message authentication ensures:", options: ["Data received exactly as sent", "Public key validity", "Password validity", "Compression"], a: "Data received exactly as sent" },
+                { q: "To verify integrity use:", options: ["Firewall", "AP", "Message Authentication", "DS"], a: "Message Authentication" },
+                { q: "Message authentication helps ensure:", options: ["Sender identity validity", "Receiver password", "Speed", "Compression"], a: "Sender identity validity" },
+                { q: "Source encrypts hash with:", options: ["Receiver public key", "Sender private key", "Shared key", "Receiver private key"], a: "Sender private key" },
+                { q: "Destination verifies hash using:", options: ["Sender public key", "Sender private key", "Shared key", "Receiver private key"], a: "Sender public key" },
+                { q: "Digital signature communication is:", options: ["E(K, [M | H(M||S)])", "M||E(PRa,H(M))", "H(M) | |S", "E(K,M)"], a: "M||E(PRa,H(M))" },
+                { q: "PRa refers to:", options: ["Sender private key", "Receiver private key", "Shared key", "Certificate"], a: "Sender private key" },
+                { q: "Confidentiality + signature:", options: ["M||E(PRa,H(M))", "E(K,[M||E(PRa,H(M))])", "H(M||S)", "E(PRa,M)"], a: "E(K,[M||E(PRa,H(M))])" },
+                { q: "Message authentication expression:", options: ["M||E(PRa,H(M))", "E(K_s[M||H(M||S)])", "E(PRa,H(M))", "H(M)"], a: "E(K_s[M||H(M||S)])" },
+                { q: "1024-bit input and 512-bit output hash is:", options: ["SHA-256", "SHA-384", "SHA-512", "MD5"], a: "SHA-512" },
+                { q: "SHA-384 has:", options: ["512/384", "1024/384", "1024/512", "512/512"], a: "1024/384" },
+                { q: "Variable-length input is processed to produce:", options: ["Public key", "Ciphertext", "Fixed-size hash", "Certificate"], a: "Fixed-size hash" },
+                { q: "Hash function sizes are measured in:", options: ["Bytes", "Characters", "Bits", "KB"], a: "Bits" },
+                { q: "Digital signature correctly uses:", options: ["Sender private key", "Receiver private key", "Firewall", "AP"], a: "Sender private key" },
+                { q: "Main purpose of hash function:", options: ["Fixed-size digest", "Public key", "Certificate", "WLAN connection"], a: "Fixed-size digest" },
+                { q: "Key Management Phase is responsible for:", options: ["Generating and distributing cryptographic keys", "Routing", "Firewalling", "Switching"], a: "Generating and distributing cryptographic keys" }
             ],
             tf: [
-                { q: "Verification is required in digital signatures to ensure a message was sent by a specific person.", a: "True" },
-                { q: "A certificate links identity to a public key and includes validity information.", a: "True" },
-                { q: "In public-key encryption sender and receiver use the same key.", a: "False" },
-                { q: "User B decrypts a confidential message using his private key.", a: "True" },
-                { q: "Any user can determine the owner's private key from a certificate.", a: "False" },
-                { q: "IEEE 802.11 was developed for Wireless LANs.", a: "True" },
-                { q: "Y<<X>> is a certificate of user X issued by authority Y.", a: "True" },
-                { q: "Message authentication helps ensure sender identity validity.", a: "True" },
-                { q: "WEP provides stronger security than WPA.", a: "False" },
-                { q: "In a wired LAN any station within radio range can transmit and receive.", a: "False" },
-                { q: "A Basic Service Set is a set of stations controlled by a single function.", a: "True" },
-                { q: "Distribution System interconnects BSSs to form an ESS.", a: "True" },
-                { q: "Access Point provides access to the Distribution System.", a: "True" },
-                { q: "Only unauthorized traffic is allowed through a firewall.", a: "False" },
-                { q: "Authentication phase performs mutual authentication.", a: "True" },
-                { q: "Key Management Phase generates and distributes cryptographic keys.", a: "True" },
-                { q: "Stations in WLAN select an Access Point to communicate.", a: "True" },
-                { q: "A station in WLAN is any IEEE 802.11 device.", a: "True" },
-                { q: "Wired LANs require physical connectivity and provide privacy.", a: "True" },
-                { q: "Certificate contents are signed by a trusted Certificate Authority.", a: "True" }
+                { q: "Verification is required in digital signatures to ensure a message was sent by a specific person.", options: ["True", "False"], a: "True" },
+                { q: "A certificate links identity to a public key and includes validity information.", options: ["True", "False"], a: "True" },
+                { q: "In public-key encryption sender and receiver use the same key.", options: ["True", "False"], a: "False" },
+                { q: "User B decrypts a confidential message using his private key.", options: ["True", "False"], a: "True" },
+                { q: "Any user can determine the owner's private key from a certificate.", options: ["True", "False"], a: "False" },
+                { q: "IEEE 802.11 was developed for Wireless LANs.", options: ["True", "False"], a: "True" },
+                { q: "Y<<X>> is a certificate of user X issued by authority Y.", options: ["True", "False"], a: "True" },
+                { q: "Message authentication helps ensure sender identity validity.", options: ["True", "False"], a: "True" },
+                { q: "WEP provides stronger security than WPA.", options: ["True", "False"], a: "False" },
+                { q: "In a wired LAN any station within radio range can transmit and receive.", options: ["True", "False"], a: "False" },
+                { q: "A Basic Service Set is a set of stations controlled by a single function.", options: ["True", "False"], a: "True" },
+                { q: "Distribution System interconnects BSSs to form an ESS.", options: ["True", "False"], a: "True" },
+                { q: "Access Point provides access to the Distribution System.", options: ["True", "False"], a: "True" },
+                { q: "Only unauthorized traffic is allowed through a firewall.", options: ["True", "False"], a: "False" },
+                { q: "Authentication phase performs mutual authentication.", options: ["True", "False"], a: "True" },
+                { q: "Key Management Phase generates and distributes cryptographic keys.", options: ["True", "False"], a: "True" },
+                { q: "Stations in WLAN select an Access Point to communicate.", options: ["True", "False"], a: "True" },
+                { q: "A station in WLAN is any IEEE 802.11 device.", options: ["True", "False"], a: "True" },
+                { q: "Wired LANs require physical connectivity and provide privacy.", options: ["True", "False"], a: "True" },
+                { q: "Certificate contents are signed by a trusted Certificate Authority.", options: ["True", "False"], a: "True" }
             ]
         };
 
-        let currentType = "";
-        let score = 0;
+        let currentScore = 0;
+        let totalAnswered = 0;
 
         function showSectionSelection() { document.getElementById('start-screen').classList.add('hidden'); document.getElementById('section-screen').classList.remove('hidden'); }
 
         function loadQuiz(type) {
-            currentType = type;
             document.getElementById('section-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
             let container = document.getElementById('questions-container');
-            container.innerHTML = "";
-            quizData[type].forEach((item, index) => {
-                container.innerHTML += `<div class="question-box">
-                    <p>${index+1}. ${item.q}</p>
-                    <input type="text" id="ans-${index}" placeholder="اكتب إجابتك هنا">
-                    <button onclick="check('${index}')">تحقق</button>
-                    <span id="res-${index}"></span>
-                </div>`;
+            container.innerHTML = `<h2>قسم ${type.toUpperCase()}</h2>`;
+            quizData[type].forEach((item, qIndex) => {
+                let optionsHtml = item.options.map(opt => 
+                    `<button class="option-btn" onclick="check(this, '${opt}', '${item.a}', ${qIndex}, '${type}')">${opt}</button>`
+                ).join('');
+                container.innerHTML += `<div class="question-box" id="q-${type}-${qIndex}">
+                    <p>${qIndex+1}. ${item.q}</p>${optionsHtml}</div>`;
             });
         }
 
-        function check(index) {
-            let userAns = document.getElementById(`ans-${index}`).value.trim();
-            let correctAns = quizData[currentType][index].a;
-            let span = document.getElementById(`res-${index}`);
-            if(userAns.toLowerCase() === correctAns.toLowerCase()) {
-                span.innerHTML = " إجابة صحيحة يا بشمهندس!"; span.className = "correct";
-            } else {
-                span.innerHTML = " إجابة خاطئة!"; span.className = "wrong";
-            }
-        }
-
-        function calculateResult() {
-            let count = 0;
-            quizData[currentType].forEach((item, index) => {
-                if(document.getElementById(`ans-${index}`).value.trim().toLowerCase() === item.a.toLowerCase()) count++;
-            });
-            let total = quizData[currentType].length;
-            let msg = "";
-            let p = (count/total)*100;
-            if(p < 50) msg = "انت قدها وهتوصل يا بشمهندس، ذاكر كويس وارجع اختبر نفسك تاني!";
-            else if(p < 100) msg = "أنت وصلت لمرحلة حلوة يا بشمهندس، حاول تاني وركز!";
-            else msg = "عاش عليك يا بشمهندس، أنت كده جاهز للامتحان بكرة!";
-            alert(`درجتك هي ${count} من ${total}\n${msg}`);
+        function check(btn, selected, correct, qIndex, type) {
+            let parent = document.getElementById(`q-${type}-${qIndex}`);
+            parent.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+            if(selected === correct) { btn.classList.add('correct'); currentScore++; }
+            else { btn.classList.add('wrong'); }
+            totalAnswered++;
+            if(totalAnswered === quizData[type].length) alert("تم إنهاء القسم! درجتك: " + currentScore + "/" + quizData[type].length);
         }
     </script>
 </body>
 </html>
-
