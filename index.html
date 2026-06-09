@@ -2,26 +2,27 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>منصة المهندس - Cyber Security</title>
+    <title>منصة Cyber Security التعليمية</title>
     <style>
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; min-height: 100vh; padding: 20px; }
-        .card { background: rgba(255, 255, 255, 0.15); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); width: 85%; margin: 20px auto; border: 1px solid rgba(255,255,255,0.2); }
-        .btn { padding: 15px 30px; background: #ff9a9e; border: none; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; margin: 10px; transition: 0.3s; }
-        .btn:hover { transform: scale(1.05); background: #ff6a6a; }
-        .option-btn { display: block; width: 100%; padding: 12px; margin: 8px 0; background: rgba(255,255,255,0.2); border: none; border-radius: 10px; color: white; cursor: pointer; text-align: right; }
-        .correct { background: #27ae60 !important; }
-        .wrong { background: #c0392b !important; }
+        body { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; min-height: 100vh; padding: 20px; }
+        .card { background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); width: 80%; margin: 20px auto; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
+        .btn { padding: 15px 35px; background: #00d2ff; border: none; border-radius: 50px; color: #1e3c72; font-weight: bold; cursor: pointer; margin: 10px; transition: 0.3s; }
+        .btn:hover { transform: scale(1.05); background: #ffffff; }
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; cursor: pointer; text-align: right; font-size: 16px; }
+        .option-btn:hover { background: rgba(255,255,255,0.2); }
+        .correct { background: #27ae60 !important; border-color: #27ae60 !important; }
+        .wrong { background: #c0392b !important; border-color: #c0392b !important; }
         .hidden { display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; color: white; }
-        th, td { padding: 10px; border: 1px solid rgba(255,255,255,0.2); }
-        .admin-link { position: fixed; bottom: 10px; right: 10px; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; color: white; }
+        th, td { padding: 12px; border: 1px solid rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="card">
-        <h1>أهلاً يا بشمهندس!</h1>
-        <input type="text" id="username" placeholder="اكتب اسمك هنا..." style="padding: 12px; border-radius: 10px; border: none; width: 250px;"><br><br>
+        <h1>🚀 أهلاً بك يا بشمهندس!</h1>
+        <p>اكتب اسمك عشان نبدأ رحلة التفوق في السايبر:</p>
+        <input type="text" id="username" placeholder="اسمك الكريم..." style="padding: 12px; border-radius: 10px; border: none; width: 250px;"><br><br>
         <button class="btn" onclick="saveUser()">دخول للاختبار</button>
     </div>
 
@@ -34,15 +35,13 @@
         <div id="quiz-container"></div>
     </div>
 
-    <div id="admin-panel" class="hidden card" style="background: #2c3e50;">
+    <div id="admin-panel" class="hidden card" style="background: #1a1a1a;">
         <h2>🔒 لوحة التحكم</h2>
-        <h3>قائمة المسجلين:</h3>
         <table id="user-table"><tr><th>الاسم</th><th>التوقيت</th></tr></table>
-        <br>
-        <button class="btn" onclick="document.getElementById('admin-panel').classList.add('hidden')">إغلاق</button>
+        <br><button class="btn" onclick="document.getElementById('admin-panel').classList.add('hidden')">إغلاق</button>
     </div>
 
-    <div class="admin-link" onclick="checkAdmin()">Admin Access</div>
+    <div style="position: fixed; bottom: 10px; right: 10px; cursor: pointer; font-size: 10px; opacity: 0.5;" onclick="checkAdmin()">Admin Access</div>
 
     <script>
         const ADMIN_PASS = "mahmoud142536";
