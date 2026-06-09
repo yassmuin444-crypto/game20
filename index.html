@@ -2,14 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>منصة Cyber Security التعليمية</title>
+    <title>منصة المهندس - Cyber Security</title>
     <style>
         body { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; min-height: 100vh; padding: 20px; }
         .card { background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); width: 80%; margin: 20px auto; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
         .btn { padding: 15px 35px; background: #00d2ff; border: none; border-radius: 50px; color: #1e3c72; font-weight: bold; cursor: pointer; margin: 10px; transition: 0.3s; }
-        .btn:hover { transform: scale(1.05); background: #ffffff; }
-        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; cursor: pointer; text-align: right; font-size: 16px; }
-        .option-btn:hover { background: rgba(255,255,255,0.2); }
+        .btn:hover { background: #ffffff; transform: scale(1.05); }
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; cursor: pointer; text-align: right; }
         .correct { background: #27ae60 !important; border-color: #27ae60 !important; }
         .wrong { background: #c0392b !important; border-color: #c0392b !important; }
         .hidden { display: none; }
@@ -21,8 +20,7 @@
 
     <div id="login-screen" class="card">
         <h1>🚀 أهلاً بك يا بشمهندس!</h1>
-        <p>اكتب اسمك عشان نبدأ رحلة التفوق في السايبر:</p>
-        <input type="text" id="username" placeholder="اسمك الكريم..." style="padding: 12px; border-radius: 10px; border: none; width: 250px;"><br><br>
+        <input type="text" id="username" placeholder="اكتب اسمك الكريم..." style="padding: 12px; border-radius: 10px; border: none; width: 250px;"><br><br>
         <button class="btn" onclick="saveUser()">دخول للاختبار</button>
     </div>
 
@@ -33,6 +31,10 @@
             <button class="btn" onclick="loadQuiz('tf')">أسئلة الصح والخطأ (T/F)</button>
         </div>
         <div id="quiz-container"></div>
+        <div id="result-area" class="card hidden">
+            <h2 id="score-text"></h2>
+            <button class="btn" onclick="location.reload()">اختبار جديد</button>
+        </div>
     </div>
 
     <div id="admin-panel" class="hidden card" style="background: #1a1a1a;">
@@ -45,6 +47,8 @@
 
     <script>
         const ADMIN_PASS = "mahmoud142536";
+        let score = 0, totalQuestions = 0, answered = 0;
+
         const quizData = {
             mcq: [
                 { q: "A set of stations controlled by a single function is called:", options: ["Distribution System", "Access Point", "Basic Service Set (BSS)", "Authorized Servers"], a: "Basic Service Set (BSS)" },
@@ -125,7 +129,9 @@
         }
 
         function loadQuiz(type) {
+            score = 0; answered = 0; totalQuestions = quizData[type].length;
             let container = document.getElementById('quiz-container');
+            document.getElementById('result-area').classList.add('hidden');
             container.innerHTML = "<h2>" + (type==='mcq'?'أسئلة الاختياري':'أسئلة الصح والخطأ') + "</h2>";
             quizData[type].forEach((item, qIndex) => {
                 let options = item.options.map(opt => `<button class="option-btn" onclick="check(this, '${opt}', '${item.a}')">${opt}</button>`).join('');
@@ -140,6 +146,19 @@
                 if(b.innerText === correct) b.classList.add('correct');
                 else if(b.innerText === selected && selected !== correct) b.classList.add('wrong');
             });
+            if(selected === correct) score++;
+            answered++;
+            if(answered === totalQuestions) showResult();
+        }
+
+        function showResult() {
+            let area = document.getElementById('result-area');
+            let text = document.getElementById('score-text');
+            area.classList.remove('hidden');
+            let perc = (score / totalQuestions) * 100;
+            if(perc === 100) text.innerText = "عاش يا بشمهندس! أنت جاهز للامتحان! الدرجة: " + score + "/" + totalQuestions;
+            else if(perc >= 70) text.innerText = "قربت توصل للدرجة النهائية، حاول تاني يا بشمهندس! الدرجة: " + score + "/" + totalQuestions;
+            else text.innerText = "متيأسش، ذاكر وتعالى حل تاني.. أنا مستنيك يا بشمهندس. الدرجة: " + score + "/" + totalQuestions;
         }
 
         function checkAdmin() {
@@ -154,3 +173,4 @@
     </script>
 </body>
 </html>
+
