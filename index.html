@@ -5,6 +5,7 @@
     <title>منصة المهندس - Cyber Security</title>
     <style>
         body { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; min-height: 100vh; padding: 20px; }
+        .creator-banner { background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9em; border: 1px solid rgba(255,255,255,0.1); }
         .card { background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 25px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); width: 80%; margin: 20px auto; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37); }
         .btn { padding: 15px 35px; background: #00d2ff; border: none; border-radius: 50px; color: #1e3c72; font-weight: bold; cursor: pointer; margin: 10px; transition: 0.3s; }
         .btn:hover { background: #ffffff; transform: scale(1.05); }
@@ -17,6 +18,8 @@
     </style>
 </head>
 <body>
+
+    <div class="creator-banner">تم إنشاء هذا الموقع بواسطة الطالب: محمود محمد عبد القادر</div>
 
     <div id="login-screen" class="card">
         <h1>🚀 أهلاً بك يا بشمهندس!</h1>
@@ -49,6 +52,7 @@
         const ADMIN_PASS = "mahmoud142536";
         let score = 0, totalQuestions = 0, answered = 0;
 
+        // مصفوفة الأسئلة (نفس البيانات السابقة)
         const quizData = {
             mcq: [
                 { q: "A set of stations controlled by a single function is called:", options: ["Distribution System", "Access Point", "Basic Service Set (BSS)", "Authorized Servers"], a: "Basic Service Set (BSS)" },
@@ -173,4 +177,3 @@
     </script>
 </body>
 </html>
-
